@@ -1,11 +1,11 @@
--- Fish It Auto Farm Script
+-- Fish It Auto Farm Script (Fixed Version)
 -- Load dengan: loadstring(game:HttpGet("YOUR_RAW_GITHUB_URL"))()
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local VirtualInputManager = game:GetService("VirtualInputManager")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -163,7 +163,7 @@ local fishTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 15, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎣 Auto Fishing\nSpam click untuk catch",
+    Text = "🎣 Auto Fishing\nDeteksi tanda seru otomatis",
     Font = Enum.Font.GothamBold,
     TextSize = 15,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -236,7 +236,7 @@ local infoText = create("TextLabel", {
     Size = UDim2.new(1, -20, 1, -20),
     Position = UDim2.new(0, 10, 0, 10),
     BackgroundTransparency = 1,
-    Text = "ℹ️ Instructions:\n• Equip fishing rod sebelum start\n• Drag title bar untuk pindah GUI\n• Auto fishing akan spam click otomatis",
+    Text = "ℹ️ Instructions:\n• Equip fishing rod sebelum start\n• Drag title bar untuk pindah GUI\n• Auto fishing akan deteksi tanda seru otomatis",
     Font = Enum.Font.Gotham,
     TextSize = 13,
     TextColor3 = Color3.fromRGB(180, 200, 230),
@@ -287,7 +287,7 @@ local fishCaught = 0
 local fishSold = 0
 local totalCoins = 0
 
--- ========== LOGIKA FISHING DARI BASE.LUA ==========
+-- ========== VARIABLES UNTUK DETEKSI IKAN ==========
 local net = ReplicatedStorage:WaitForChild("Packages")
     :WaitForChild("_Index")
     :WaitForChild("sleitnick_net@0.2.0")
@@ -297,87 +297,112 @@ local rodRemote = net:WaitForChild("RF/ChargeFishingRod")
 local miniGameRemote = net:WaitForChild("RF/RequestFishingMinigameStarted")
 local finishRemote = net:WaitForChild("RE/FishingCompleted")
 
-local RodDelays = {
-    ["Ares Rod"] = {custom = 1.12, bypass = 1.45},
-    ["Angler Rod"] = {custom = 1.12, bypass = 1.45},
-    ["Ghostfinn Rod"] = {custom = 1.12, bypass = 1.45},
-    ["Astral Rod"] = {custom = 1.9, bypass = 1.45},
-    ["Hazmat Rod"] = {custom = 1.9, bypass = 1.45},
-    ["Chrome Rod"] = {custom = 2.3, bypass = 2},
-    ["Steampunk Rod"] = {custom = 2.5, bypass = 2.3},
-    ["Lucky Rod"] = {custom = 3.5, bypass = 3.6},
-    ["Midnight Rod"] = {custom = 3.3, bypass = 3.4},
-    ["Demascus Rod"] = {custom = 3.9, bypass = 3.8},
-    ["Grass Rod"] = {custom = 3.8, bypass = 3.9},
-    ["Luck Rod"] = {custom = 4.2, bypass = 4.1},
-    ["Carbon Rod"] = {custom = 4, bypass = 3.8},
-    ["Lava Rod"] = {custom = 4.2, bypass = 4.1},
-    ["Starter Rod"] = {custom = 4.3, bypass = 4.2},
-}
+-- Variabel untuk deteksi tanda seru
+local lastExclamationCheck = 0
+local exclamationCheckCooldown = 0.5
+local isFishHooked = false
+local fishingStartTime = 0
 
-local customDelay = 1
-local BypassDelay = 0.5
-local delayInitialized = false
-
-local function getValidRodName()
-    local player = Players.LocalPlayer
-    local display = player.PlayerGui:WaitForChild("Backpack"):WaitForChild("Display")
-    for _, tile in ipairs(display:GetChildren()) do
-        local success, itemNamePath = pcall(function()
-            return tile.Inner.Tags.ItemName
-        end)
-        if success and itemNamePath and itemNamePath:IsA("TextLabel") then
-            local name = itemNamePath.Text
-            if RodDelays[name] then
-                return name
+-- ========== FUNGSI DETEKSI TANDA SERU ==========
+local function checkForExclamationMark()
+    local currentTime = tick()
+    if currentTime - lastExclamationCheck < exclamationCheckCooldown then
+        return false
+    end
+    lastExclamationCheck = currentTime
+    
+    -- Cari character player
+    local character = player.Character
+    if not character then return false end
+    
+    -- Cari kepala player
+    local head = character:FindFirstChild("Head")
+    if not head then return false end
+    
+    -- Cari semua part di sekitar kepala untuk tanda seru
+    for _, part in pairs(workspace:GetDescendants()) do
+        if part:IsA("Part") or part:IsA("MeshPart") then
+            -- Cek jika part berada di dekat kepala player
+            local distance = (head.Position - part.Position).Magnitude
+            if distance < 10 then -- Radius 10 studs dari kepala
+                -- Cek nama part untuk tanda seru (biasanya namanya mengandung "!" atau "Exclamation")
+                if part.Name:find("!") or part.Name:find("Exclamation") or part.Name:find("Effect") then
+                    return true
+                end
+                
+                -- Cek juga di children part untuk decal/texture tanda seru
+                for _, child in pairs(part:GetChildren()) do
+                    if child:IsA("Decal") or child:IsA("Texture") then
+                        if child.Name:find("!") or child.Texture:find("exclamation") then
+                            return true
+                        end
+                    end
+                end
             end
         end
     end
-    return nil
+    
+    return false
 end
 
-local function updateDelayBasedOnRod()
-    if delayInitialized then return end
-    local rodName = getValidRodName()
-    if rodName and RodDelays[rodName] then
-        customDelay = RodDelays[rodName].custom
-        BypassDelay = RodDelays[rodName].bypass
-        delayInitialized = true
-        statusLabel.Text = "✅ Rod Detected: " .. rodName
-        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-    else
-        customDelay = 10
-        BypassDelay = 1
-        delayInitialized = true
-        statusLabel.Text = "⚠️ Default Delay Applied"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+-- ========== FUNGSI SPAM CLICK UNTUK CATCH ==========
+local function spamClickForCatch()
+    statusLabel.Text = "🎯 Fish Hooked! Catching..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
+    local clickStartTime = tick()
+    local maxCatchTime = 5 -- Maksimal 5 detik untuk catch
+    
+    while tick() - clickStartTime < maxCatchTime and isFishHooked do
+        -- Kirim input mouse untuk click
+        virtualInput:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+        task.wait(0.05)
+        virtualInput:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+        task.wait(0.05)
+        
+        -- Cek jika ikan sudah tertangkap (tanda seru hilang)
+        if not checkForExclamationMark() then
+            fishCaught = fishCaught + 1
+            statusLabel.Text = "✅ Fish Caught! Total: " .. fishCaught
+            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            isFishHooked = false
+            break
+        end
+    end
+    
+    -- Jika waktu habis dan ikan belum tertangkap
+    if isFishHooked then
+        statusLabel.Text = "❌ Failed to catch fish"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        isFishHooked = false
     end
 end
 
--- Auto Fishing Loop dari base.lua
+-- ========== AUTO FISHING LOOP YANG DIPERBAIKI ==========
 local function autoFishingLoop()
     while autoFishingEnabled do
         local success, err = pcall(function()
-            updateDelayBasedOnRod()
+            -- Reset status ikan
+            isFishHooked = false
+            fishingStartTime = tick()
             
+            -- Equip rod
             statusLabel.Text = "🎣 Equipping Rod..."
             statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
             
             local equipRemote = net:WaitForChild("RE/EquipToolFromHotbar")
             equipRemote:FireServer(1)
-            task.wait(0.1)
+            task.wait(0.5)
 
+            -- Charge rod
             statusLabel.Text = "⚡ Charging Rod..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
             
-            local chargeRemote = ReplicatedStorage
-                .Packages._Index["sleitnick_net@0.2.0"].net["RF/ChargeFishingRod"]
-            chargeRemote:InvokeServer(workspace:GetServerTimeNow())
-            task.wait(0.5)
-
             local timestamp = workspace:GetServerTimeNow()
             rodRemote:InvokeServer(timestamp)
+            task.wait(0.5)
 
+            -- Cast fishing rod
             local baseX, baseY = -0.7499996423721313, 1
             local x = baseX + (math.random(-500, 500) / 10000000)
             local y = baseY + (math.random(-500, 500) / 10000000)
@@ -387,14 +412,33 @@ local function autoFishingLoop()
             
             miniGameRemote:InvokeServer(x, y)
 
+            -- Tunggu dan deteksi tanda seru
             statusLabel.Text = "⏳ Waiting for fish..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
             
-            task.wait(customDelay)
+            local maxWaitTime = 30 -- Maksimal 30 detik menunggu ikan
+            local waitStart = tick()
             
-            fishCaught = fishCaught + 1
-            statusLabel.Text = "🐟 Fish Caught! Total: " .. fishCaught
-            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            while tick() - waitStart < maxWaitTime and autoFishingEnabled do
+                -- Cek tanda seru
+                if checkForExclamationMark() and not isFishHooked then
+                    isFishHooked = true
+                    task.spawn(spamClickForCatch)
+                    break
+                end
+                
+                -- Jika sudah menunggu cukup lama, coba cast ulang
+                if tick() - waitStart > 15 then
+                    statusLabel.Text = "🔄 No fish, recasting..."
+                    statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+                    break
+                end
+                
+                task.wait(0.5)
+            end
+            
+            -- Tunggu sebentar sebelum casting lagi
+            task.wait(2)
             
         end)
         
@@ -410,7 +454,7 @@ local function autoFishingLoop()
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
 
--- Auto Sell Loop dari base.lua
+-- ========== AUTO SELL LOOP ==========
 local function autoSellLoop()
     while autoSellEnabled do
         task.wait(30) -- Sell every 30 seconds
@@ -419,33 +463,20 @@ local function autoSellLoop()
             statusLabel.Text = "💰 Selling fish..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
             
-            local charFolder = workspace:FindFirstChild("Characters")
-            local char = charFolder and charFolder:FindFirstChild(player.Name)
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            
-            if not hrp then
-                statusLabel.Text = "❌ Character not found"
-                return
-            end
-
-            local originalPos = hrp.CFrame
             local sellRemote = net:WaitForChild("RF/SellAllItems")
 
-            task.spawn(function()
-                task.wait(1)
-                local sellSuccess = pcall(function()
-                    sellRemote:InvokeServer()
-                end)
-
-                if sellSuccess then
-                    fishSold = fishSold + 1
-                    statusLabel.Text = "✅ Sold! Total: " .. fishSold
-                    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-                else
-                    statusLabel.Text = "❌ Sell Failed"
-                    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-                end
+            local sellSuccess = pcall(function()
+                sellRemote:InvokeServer()
             end)
+
+            if sellSuccess then
+                fishSold = fishSold + 1
+                statusLabel.Text = "✅ Sold! Total: " .. fishSold
+                statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            else
+                statusLabel.Text = "❌ Sell Failed"
+                statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            end
         end)
         
         if not success then
@@ -471,7 +502,7 @@ fishBtn.MouseButton1Click:Connect(function()
         fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
         statusLabel.Text = "🔴 Auto Fishing Stopped"
         statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-        delayInitialized = false
+        isFishHooked = false
     end
 end)
 
@@ -524,9 +555,9 @@ addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 
 print("=================================")
-print("🐟 Fish It Auto Farm Loaded!")
+print("🐟 Fish It Auto Farm Loaded! (FIXED)")
 print("=================================")
 print("✅ GUI berhasil dimuat untuk:", player.Name)
-print("📌 Equip fishing rod dan tekan START")
-print("🎯 Menggunakan logika fishing dari base.lua")
+print("🎯 Sistem deteksi tanda seru aktif")
+print("⚡ Auto spam click ketika ikan hooked")
 print("=================================")
