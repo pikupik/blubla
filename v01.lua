@@ -6,10 +6,19 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-local character = player.Character or player.CharacterAdded:Wait()
+
+-- Tunggu karakter muncul
+local character
+if player.Character then
+    character = player.Character
+else
+    character = player.CharacterAdded:Wait()
+end
+
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
 -- Hapus GUI lama
@@ -356,11 +365,12 @@ titleBar.InputBegan:Connect(function(input)
         dragging = true
         dragStart = input.Position
         startPos = mainFrame.Position
+        
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
                 dragging = false
             end
-        end
+        end)
     end
 end)
 
@@ -384,9 +394,23 @@ local fishCaught = 0
 local fishSold = 0
 local totalCoins = 0
 
+-- Mouse click functions
+function mouse1click()
+    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+    task.wait()
+    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+end
+
+function mouse1release()
+    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+end
+
 -- Get player's equipped tool
 local function getEquippedTool()
-    return character:FindFirstChildOfClass("Tool")
+    if character then
+        return character:FindFirstChildOfClass("Tool")
+    end
+    return nil
 end
 
 -- Check if fishing rod is equipped
@@ -755,16 +779,11 @@ addHover(legitFishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(blatantFishBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 
--- Mouse click functions
-function mouse1click()
-    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
-    task.wait()
-    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
-end
-
-function mouse1release()
-    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
-end
+-- Handle character respawn
+player.CharacterAdded:Connect(function(newChar)
+    character = newChar
+    humanoidRootPart = newChar:WaitForChild("HumanoidRootPart")
+end)
 
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
