@@ -221,65 +221,6 @@ local sellBtn = create("TextButton", {
 
 create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 10)})
 
--- Settings Section
-local settingsBox = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 140),
-    Position = UDim2.new(0, 0, 0, 275),
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
-
-create("UICorner", {Parent = settingsBox, CornerRadius = UDim.new(0, 12)})
-create("UIStroke", {Parent = settingsBox, Color = Color3.fromRGB(40, 60, 90), Thickness = 1.5})
-
-local settingsTitle = create("TextLabel", {
-    Parent = settingsBox,
-    Size = UDim2.new(1, -20, 0, 28),
-    Position = UDim2.new(0, 10, 0, 8),
-    BackgroundTransparency = 1,
-    Text = "⚙️ Settings",
-    Font = Enum.Font.GothamBold,
-    TextSize = 16,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    TextXAlignment = Enum.TextXAlignment.Left
-})
-
-local clickSpeedLabel = create("TextLabel", {
-    Parent = settingsBox,
-    Size = UDim2.new(1, -20, 0, 25),
-    Position = UDim2.new(0, 10, 0, 42),
-    BackgroundTransparency = 1,
-    Text = "⚡ Click Speed: 20 clicks/sec",
-    Font = Enum.Font.Gotham,
-    TextSize = 14,
-    TextColor3 = Color3.fromRGB(180, 200, 220),
-    TextXAlignment = Enum.TextXAlignment.Left
-})
-
-local sellIntervalLabel = create("TextLabel", {
-    Parent = settingsBox,
-    Size = UDim2.new(1, -20, 0, 25),
-    Position = UDim2.new(0, 10, 0, 72),
-    BackgroundTransparency = 1,
-    Text = "⏱️ Sell Interval: 30 seconds",
-    Font = Enum.Font.Gotham,
-    TextSize = 14,
-    TextColor3 = Color3.fromRGB(180, 200, 220),
-    TextXAlignment = Enum.TextXAlignment.Left
-})
-
-local castDelayLabel = create("TextLabel", {
-    Parent = settingsBox,
-    Size = UDim2.new(1, -20, 0, 25),
-    Position = UDim2.new(0, 10, 0, 102),
-    BackgroundTransparency = 1,
-    Text = "🎯 Cast Delay: 1.5 seconds",
-    Font = Enum.Font.Gotham,
-    TextSize = 14,
-    TextColor3 = Color3.fromRGB(180, 200, 220),
-    TextXAlignment = Enum.TextXAlignment.Left
-})
-
 -- Info Box
 local infoBox = create("Frame", {
     Parent = contentFrame,
@@ -361,6 +302,7 @@ local RodDelays = {
     ["Angler Rod"] = {custom = 1.12, bypass = 1.45},
     ["Ghostfinn Rod"] = {custom = 1.12, bypass = 1.45},
     ["Astral Rod"] = {custom = 1.9, bypass = 1.45},
+    ["Hazmat Rod"] = {custom = 1.9, bypass = 1.45},
     ["Chrome Rod"] = {custom = 2.3, bypass = 2},
     ["Steampunk Rod"] = {custom = 2.5, bypass = 2.3},
     ["Lucky Rod"] = {custom = 3.5, bypass = 3.6},
