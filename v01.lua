@@ -48,14 +48,14 @@ local screenGui = create("ScreenGui", {
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 270), -- DIPERKECIL
-    Position = UDim2.new(0.5, -150, 0.5, -135), -- DIPERKECIL
+    Size = UDim2.new(0, 300, 0, 320), -- DIPERBESAR untuk menampung button baru
+    Position = UDim2.new(0.5, -150, 0.5, -160), -- DIPERBESAR
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
 
-create("UICorner", {Parent = mainFrame, CornerRadius = UDim.new(0, 10)}) -- DIPERKECIL
-create("UIStroke", {Parent = mainFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5}) -- DIPERKECIL
+create("UICorner", {Parent = mainFrame, CornerRadius = UDim.new(0, 10)})
+create("UIStroke", {Parent = mainFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5})
 
 local gradient = create("UIGradient", {
     Parent = mainFrame,
@@ -69,102 +69,102 @@ local gradient = create("UIGradient", {
 local titleBar = create("Frame", {
     Name = "TitleBar",
     Parent = mainFrame,
-    Size = UDim2.new(1, 0, 0, 33), -- DIPERKECIL
+    Size = UDim2.new(1, 0, 0, 33),
     BackgroundColor3 = Color3.fromRGB(25, 35, 55),
     BorderSizePixel = 0
 })
 
-create("UICorner", {Parent = titleBar, CornerRadius = UDim.new(0, 10)}) -- DIPERKECIL
+create("UICorner", {Parent = titleBar, CornerRadius = UDim.new(0, 10)})
 
 local titleText = create("TextLabel", {
     Parent = titleBar,
-    Size = UDim2.new(1, -66, 1, 0), -- DIPERKECIL
-    Position = UDim2.new(0, 12, 0, 0), -- DIPERKECIL
+    Size = UDim2.new(1, -66, 1, 0),
+    Position = UDim2.new(0, 12, 0, 0),
     BackgroundTransparency = 1,
     Text = "🐟 Fish It - Codepikk",
     Font = Enum.Font.GothamBold,
-    TextSize = 13, -- DIPERKECIL
+    TextSize = 13,
     TextColor3 = Color3.fromRGB(100, 180, 255),
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
 local closeBtn = create("TextButton", {
     Parent = titleBar,
-    Size = UDim2.new(0, 25, 0, 25), -- DIPERKECIL
-    Position = UDim2.new(1, -29, 0, 4), -- DIPERKECIL
+    Size = UDim2.new(0, 25, 0, 25),
+    Position = UDim2.new(1, -29, 0, 4),
     BackgroundColor3 = Color3.fromRGB(220, 50, 50),
     Text = "X",
     Font = Enum.Font.GothamBold,
-    TextSize = 13, -- DIPERKECIL
+    TextSize = 13,
     TextColor3 = Color3.fromRGB(255, 255, 255)
 })
 
-create("UICorner", {Parent = closeBtn, CornerRadius = UDim.new(0, 6)}) -- DIPERKECIL
+create("UICorner", {Parent = closeBtn, CornerRadius = UDim.new(0, 6)})
 
 local minimizeBtn = create("TextButton", {
     Parent = titleBar,
-    Size = UDim2.new(0, 25, 0, 25), -- DIPERKECIL
-    Position = UDim2.new(1, -58, 0, 4), -- DIPERKECIL
+    Size = UDim2.new(0, 25, 0, 25),
+    Position = UDim2.new(1, -58, 0, 4),
     BackgroundColor3 = Color3.fromRGB(70, 80, 100),
     Text = "—",
     Font = Enum.Font.GothamBold,
-    TextSize = 13, -- DIPERKECIL
+    TextSize = 13,
     TextColor3 = Color3.fromRGB(255, 255, 255)
 })
 
-create("UICorner", {Parent = minimizeBtn, CornerRadius = UDim.new(0, 6)}) -- DIPERKECIL
+create("UICorner", {Parent = minimizeBtn, CornerRadius = UDim.new(0, 6)})
 
 local contentFrame = create("ScrollingFrame", {
     Name = "Content",
     Parent = mainFrame,
-    Size = UDim2.new(1, -18, 1, -51), -- DIPERKECIL
-    Position = UDim2.new(0, 9, 0, 42), -- DIPERKECIL
+    Size = UDim2.new(1, -18, 1, -51),
+    Position = UDim2.new(0, 9, 0, 42),
     BackgroundTransparency = 1,
     BorderSizePixel = 0,
-    ScrollBarThickness = 5, -- DIPERKECIL
+    ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 420) -- DIPERKECIL
+    CanvasSize = UDim2.new(0, 0, 0, 470) -- DIPERBESAR untuk menampung button baru
 })
 
 local statusBox = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 54), -- DIPERKECIL
+    Size = UDim2.new(1, 0, 0, 54),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
-create("UICorner", {Parent = statusBox, CornerRadius = UDim.new(0, 7)}) -- DIPERKECIL
-create("UIStroke", {Parent = statusBox, Color = Color3.fromRGB(40, 60, 90), Thickness = 1}) -- DIPERKECIL
+create("UICorner", {Parent = statusBox, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = statusBox, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
 
 local statusLabel = create("TextLabel", {
     Parent = statusBox,
-    Size = UDim2.new(1, -12, 0, 18), -- DIPERKECIL
-    Position = UDim2.new(0, 6, 0, 5), -- DIPERKECIL
+    Size = UDim2.new(1, -12, 0, 18),
+    Position = UDim2.new(0, 6, 0, 5),
     BackgroundTransparency = 1,
     Text = "🔴 Status: Idle",
     Font = Enum.Font.GothamBold,
-    TextSize = 10, -- DIPERKECIL
+    TextSize = 10,
     TextColor3 = Color3.fromRGB(255, 100, 100),
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
 local fishSection = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42), -- DIPERKECIL
-    Position = UDim2.new(0, 0, 0, 63), -- DIPERKECIL
+    Size = UDim2.new(1, 0, 0, 42),
+    Position = UDim2.new(0, 0, 0, 63),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
-create("UICorner", {Parent = fishSection, CornerRadius = UDim.new(0, 7)}) -- DIPERKECIL
-create("UIStroke", {Parent = fishSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1}) -- DIPERKECIL
+create("UICorner", {Parent = fishSection, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = fishSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
 
 local fishTitle = create("TextLabel", {
     Parent = fishSection,
     Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0), -- DIPERKECIL
+    Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
     Text = "🎣 Auto Instant Fishing V1",
     Font = Enum.Font.GothamBold,
-    TextSize = 9, -- DIPERKECIL
+    TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
     TextXAlignment = Enum.TextXAlignment.Left,
     TextYAlignment = Enum.TextYAlignment.Center
@@ -172,35 +172,35 @@ local fishTitle = create("TextLabel", {
 
 local fishBtn = create("TextButton", {
     Parent = fishSection,
-    Size = UDim2.new(0, 72, 0, 29), -- DIPERKECIL
-    Position = UDim2.new(1, -78, 0, 7), -- DIPERKECIL
+    Size = UDim2.new(0, 72, 0, 29),
+    Position = UDim2.new(1, -78, 0, 7),
     BackgroundColor3 = Color3.fromRGB(50, 150, 50),
     Text = "START",
     Font = Enum.Font.GothamBold,
-    TextSize = 10, -- DIPERKECIL
+    TextSize = 10,
     TextColor3 = Color3.fromRGB(255, 255, 255)
 })
 
-create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)}) -- DIPERKECIL
+create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)})
 
 local sellSection = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42), -- DIPERKECIL
-    Position = UDim2.new(0, 0, 0, 114), -- DIPERKECIL
+    Size = UDim2.new(1, 0, 0, 42),
+    Position = UDim2.new(0, 0, 0, 114),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
-create("UICorner", {Parent = sellSection, CornerRadius = UDim.new(0, 7)}) -- DIPERKECIL
-create("UIStroke", {Parent = sellSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1}) -- DIPERKECIL
+create("UICorner", {Parent = sellSection, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = sellSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
 
 local sellTitle = create("TextLabel", {
     Parent = sellSection,
     Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0), -- DIPERKECIL
+    Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
     Text = "💰 Auto Sell All",
     Font = Enum.Font.GothamBold,
-    TextSize = 9, -- DIPERKECIL
+    TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
     TextXAlignment = Enum.TextXAlignment.Left,
     TextYAlignment = Enum.TextYAlignment.Center
@@ -208,21 +208,58 @@ local sellTitle = create("TextLabel", {
 
 local sellBtn = create("TextButton", {
     Parent = sellSection,
-    Size = UDim2.new(0, 72, 0, 29), -- DIPERKECIL
-    Position = UDim2.new(1, -78, 0, 7), -- DIPERKECIL
+    Size = UDim2.new(0, 72, 0, 29),
+    Position = UDim2.new(1, -78, 0, 7),
     BackgroundColor3 = Color3.fromRGB(50, 150, 50),
     Text = "START",
     Font = Enum.Font.GothamBold,
-    TextSize = 10, -- DIPERKECIL
+    TextSize = 10,
     TextColor3 = Color3.fromRGB(255, 255, 255)
 })
 
-create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)}) -- DIPERKECIL
+create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)})
+
+-- ========== TELEPORT SECTION ==========
+local teleportSection = create("Frame", {
+    Parent = contentFrame,
+    Size = UDim2.new(1, 0, 0, 42),
+    Position = UDim2.new(0, 0, 0, 165), -- Ditempatkan di bawah sellSection
+    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+})
+
+create("UICorner", {Parent = teleportSection, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = teleportSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+
+local teleportTitle = create("TextLabel", {
+    Parent = teleportSection,
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 9, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "🚀 Teleport to Islands",
+    Font = Enum.Font.GothamBold,
+    TextSize = 9,
+    TextColor3 = Color3.fromRGB(220, 220, 220),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Center
+})
+
+local teleportBtn = create("TextButton", {
+    Parent = teleportSection,
+    Size = UDim2.new(0, 72, 0, 29),
+    Position = UDim2.new(1, -78, 0, 7),
+    BackgroundColor3 = Color3.fromRGB(150, 100, 50),
+    Text = "OPEN",
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+
+create("UICorner", {Parent = teleportBtn, CornerRadius = UDim.new(0, 6)})
 
 local infoBox = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 48), -- DIPERKECIL
-    Position = UDim2.new(0, 0, 0, 258), -- DIPERKECIL
+    Size = UDim2.new(1, 0, 0, 48),
+    Position = UDim2.new(0, 0, 0, 308), -- DIPERBAIKI posisi
     BackgroundColor3 = Color3.fromRGB(35, 60, 100),
 })
 
@@ -276,6 +313,175 @@ addHover(closeBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80))
 addHover(minimizeBtn, Color3.fromRGB(70, 80, 100), Color3.fromRGB(90, 100, 120))
 addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
+addHover(teleportBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
+
+-- ===================================
+-- ========== TELEPORT SYSTEM =========
+-- ===================================
+
+local islandCoords = {
+    ["Weather Machine"] = Vector3.new(-1471, -3, 1929),
+    ["Esoteric Depths"] = Vector3.new(3157, -1303, 1439),
+    ["Tropical Grove"] = Vector3.new(-2038, 3, 3650),
+    ["Stingray Shores"] = Vector3.new(-32, 4, 2773),
+    ["Kohana Volcano"] = Vector3.new(-519, 24, 189),
+    ["Coral Reefs"] = Vector3.new(-3095, 1, 2177),
+    ["Crater Island"] = Vector3.new(968, 1, 4854),
+    ["Kohana"] = Vector3.new(-658, 3, 719),
+    ["Winter Fest"] = Vector3.new(1611, 4, 3280),
+    ["Isoteric Island"] = Vector3.new(1987, 4, 1400),
+    ["Treasure Hall"] = Vector3.new(-3600, -267, -1558),
+    ["Lost Shore"] = Vector3.new(-3663, 38, -989),
+    ["Sishypus Statue"] = Vector3.new(-3792, -135, -986)
+}
+
+local function createTeleportGUI()
+    local teleportGui = create("ScreenGui", {
+        Name = "TeleportGUI",
+        Parent = playerGui,
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    })
+
+    local teleportFrame = create("Frame", {
+        Name = "TeleportFrame",
+        Parent = teleportGui,
+        Size = UDim2.new(0, 280, 0, 350),
+        Position = UDim2.new(0.5, -140, 0.5, -175),
+        BackgroundColor3 = Color3.fromRGB(15, 20, 30),
+        BorderSizePixel = 0
+    })
+
+    create("UICorner", {Parent = teleportFrame, CornerRadius = UDim.new(0, 10)})
+    create("UIStroke", {Parent = teleportFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5})
+
+    local teleportTitle = create("TextLabel", {
+        Parent = teleportFrame,
+        Size = UDim2.new(1, 0, 0, 40),
+        BackgroundColor3 = Color3.fromRGB(25, 35, 55),
+        Text = "🚀 Island Teleport",
+        Font = Enum.Font.GothamBold,
+        TextSize = 16,
+        TextColor3 = Color3.fromRGB(100, 180, 255),
+        TextYAlignment = Enum.TextYAlignment.Center
+    })
+
+    create("UICorner", {Parent = teleportTitle, CornerRadius = UDim.new(0, 10)})
+
+    local closeTeleportBtn = create("TextButton", {
+        Parent = teleportTitle,
+        Size = UDim2.new(0, 25, 0, 25),
+        Position = UDim2.new(1, -29, 0, 7),
+        BackgroundColor3 = Color3.fromRGB(220, 50, 50),
+        Text = "X",
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        TextColor3 = Color3.fromRGB(255, 255, 255)
+    })
+
+    create("UICorner", {Parent = closeTeleportBtn, CornerRadius = UDim.new(0, 6)})
+
+    local scrollFrame = create("ScrollingFrame", {
+        Parent = teleportFrame,
+        Size = UDim2.new(1, -20, 1, -60),
+        Position = UDim2.new(0, 10, 0, 50),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
+        CanvasSize = UDim2.new(0, 0, 0, #game:GetService("HttpService"):JSONEncode(islandCoords) * 40)
+    })
+
+    local yPosition = 0
+    for islandName, position in pairs(islandCoords) do
+        local islandBtn = create("TextButton", {
+            Parent = scrollFrame,
+            Size = UDim2.new(1, 0, 0, 35),
+            Position = UDim2.new(0, 0, 0, yPosition),
+            BackgroundColor3 = Color3.fromRGB(35, 45, 65),
+            Text = "📍 " .. islandName,
+            Font = Enum.Font.Gotham,
+            TextSize = 12,
+            TextColor3 = Color3.fromRGB(220, 220, 220),
+            TextYAlignment = Enum.TextYAlignment.Center
+        })
+
+        create("UICorner", {Parent = islandBtn, CornerRadius = UDim.new(0, 6)})
+        create("UIStroke", {Parent = islandBtn, Color = Color3.fromRGB(60, 100, 160), Thickness = 1})
+
+        -- Hover effect
+        addHover(islandBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
+
+        islandBtn.MouseButton1Click:Connect(function()
+            local charFolder = workspace:WaitForChild("Characters", 5)
+            local char = charFolder:FindFirstChild(player.Name)
+            if not char then 
+                statusLabel.Text = "❌ Character not found"
+                return 
+            end
+            
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if not hrp then 
+                statusLabel.Text = "❌ HRP not found"
+                return 
+            end
+
+            local success, err = pcall(function()
+                hrp.CFrame = CFrame.new(position + Vector3.new(0, 5, 0))
+            end)
+
+            if success then
+                statusLabel.Text = "✅ Teleported to " .. islandName
+                statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+                teleportGui:Destroy()
+            else
+                statusLabel.Text = "❌ Teleport failed"
+                statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            end
+        end)
+
+        yPosition = yPosition + 40
+    end
+
+    closeTeleportBtn.MouseButton1Click:Connect(function()
+        teleportGui:Destroy()
+    end)
+
+    -- Drag functionality for teleport window
+    local teleportDragging, teleportDragInput, teleportDragStart, teleportStartPos
+
+    local function updateTeleportDrag(input)
+        local delta = input.Position - teleportDragStart
+        TweenService:Create(teleportFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad), {
+            Position = UDim2.new(teleportStartPos.X.Scale, teleportStartPos.X.Offset + delta.X, teleportStartPos.Y.Scale, teleportStartPos.Y.Offset + delta.Y)
+        }):Play()
+    end
+
+    teleportTitle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            teleportDragging = true
+            teleportDragStart = input.Position
+            teleportStartPos = teleportFrame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    teleportDragging = false
+                end
+            end)
+        end
+    end)
+
+    teleportTitle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            teleportDragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if teleportDragging and input == teleportDragInput then
+            updateTeleportDrag(input)
+        end
+    end)
+end
 
 -- ===================================
 -- ========== FISHING CORE ===========
@@ -499,6 +705,11 @@ sellBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- Teleport Button Logic
+teleportBtn.MouseButton1Click:Connect(function()
+    createTeleportGUI()
+end)
+
 closeBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = false
     autoSellEnabled = false
@@ -511,7 +722,7 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 270) -- DIPERKECIL
+        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 320)
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
@@ -522,4 +733,5 @@ print("=================================")
 print("✅ GUI berhasil dimuat untuk:", player.Name)
 print("📌 Equip fishing rod dan tekan START")
 print("🎯 Logic fishing telah diperbaiki.")
+print("🚀 Teleport feature added!")
 print("=================================")
