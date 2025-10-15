@@ -43,8 +43,8 @@ local screenGui = create("ScreenGui", {
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 500, 0, 450),
-    Position = UDim2.new(0.5, -250, 0.5, -225),
+    Size = UDim2.new(0, 500, 0, 500),
+    Position = UDim2.new(0.5, -250, 0.5, -250),
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -78,7 +78,7 @@ local titleText = create("TextLabel", {
     Size = UDim2.new(1, -110, 1, 0),
     Position = UDim2.new(0, 20, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🐟 Fish It Auto Farm",
+    Text = "🐟 Fish It - Codepikk",
     Font = Enum.Font.GothamBold,
     TextSize = 22,
     TextColor3 = Color3.fromRGB(100, 180, 255),
@@ -122,7 +122,7 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 8,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 700)
+    CanvasSize = UDim2.new(0, 0, 0, 750)
 })
 
 -- Status Display
@@ -147,36 +147,23 @@ local statusLabel = create("TextLabel", {
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
-local statsLabel = create("TextLabel", {
-    Parent = statusBox,
-    Size = UDim2.new(1, -20, 0, 50),
-    Position = UDim2.new(0, 10, 0, 38),
-    BackgroundTransparency = 1,
-    Text = "🎣 Fish Caught: 0\n💰 Fish Sold: 0 | Coins: $0",
-    Font = Enum.Font.Gotham,
-    TextSize = 14,
-    TextColor3 = Color3.fromRGB(180, 200, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Top
-})
-
--- Auto Fishing Section
-local fishSection = create("Frame", {
+-- Auto Fishing Section - Legit
+local legitFishSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 70),
     Position = UDim2.new(0, 0, 0, 105),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
-create("UICorner", {Parent = fishSection, CornerRadius = UDim.new(0, 12)})
-create("UIStroke", {Parent = fishSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1.5})
+create("UICorner", {Parent = legitFishSection, CornerRadius = UDim.new(0, 12)})
+create("UIStroke", {Parent = legitFishSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1.5})
 
-local fishTitle = create("TextLabel", {
-    Parent = fishSection,
+local legitFishTitle = create("TextLabel", {
+    Parent = legitFishSection,
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 15, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎣 Auto Fishing\nSpam click untuk catch",
+    Text = "🎣 Auto Fishing (Legit)\nSpam click untuk catch",
     Font = Enum.Font.GothamBold,
     TextSize = 15,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -184,8 +171,8 @@ local fishTitle = create("TextLabel", {
     TextYAlignment = Enum.TextYAlignment.Center
 })
 
-local fishBtn = create("TextButton", {
-    Parent = fishSection,
+local legitFishBtn = create("TextButton", {
+    Parent = legitFishSection,
     Size = UDim2.new(0, 120, 0, 48),
     Position = UDim2.new(1, -130, 0, 11),
     BackgroundColor3 = Color3.fromRGB(50, 150, 50),
@@ -195,13 +182,50 @@ local fishBtn = create("TextButton", {
     TextColor3 = Color3.fromRGB(255, 255, 255)
 })
 
-create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 10)})
+create("UICorner", {Parent = legitFishBtn, CornerRadius = UDim.new(0, 10)})
+
+-- Auto Fishing Section - Blatant
+local blatantFishSection = create("Frame", {
+    Parent = contentFrame,
+    Size = UDim2.new(1, 0, 0, 70),
+    Position = UDim2.new(0, 0, 0, 190),
+    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+})
+
+create("UICorner", {Parent = blatantFishSection, CornerRadius = UDim.new(0, 12)})
+create("UIStroke", {Parent = blatantFishSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1.5})
+
+local blatantFishTitle = create("TextLabel", {
+    Parent = blatantFishSection,
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 15, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "⚡ Auto Fishing (Blatant)\nInstant catch tanpa animasi",
+    Font = Enum.Font.GothamBold,
+    TextSize = 15,
+    TextColor3 = Color3.fromRGB(220, 220, 220),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Center
+})
+
+local blatantFishBtn = create("TextButton", {
+    Parent = blatantFishSection,
+    Size = UDim2.new(0, 120, 0, 48),
+    Position = UDim2.new(1, -130, 0, 11),
+    BackgroundColor3 = Color3.fromRGB(150, 100, 50),
+    Text = "START",
+    Font = Enum.Font.GothamBold,
+    TextSize = 16,
+    TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+
+create("UICorner", {Parent = blatantFishBtn, CornerRadius = UDim.new(0, 10)})
 
 -- Auto Sell Section
 local sellSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 70),
-    Position = UDim2.new(0, 0, 0, 190),
+    Position = UDim2.new(0, 0, 0, 275),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -238,7 +262,7 @@ create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 10)})
 local settingsBox = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 140),
-    Position = UDim2.new(0, 0, 0, 275),
+    Position = UDim2.new(0, 0, 0, 360),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -297,7 +321,7 @@ local castDelayLabel = create("TextLabel", {
 local infoBox = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 80),
-    Position = UDim2.new(0, 0, 0, 430),
+    Position = UDim2.new(0, 0, 0, 515),
     BackgroundColor3 = Color3.fromRGB(35, 60, 100),
 })
 
@@ -308,7 +332,7 @@ local infoText = create("TextLabel", {
     Size = UDim2.new(1, -20, 1, -20),
     Position = UDim2.new(0, 10, 0, 10),
     BackgroundTransparency = 1,
-    Text = "ℹ️ Instructions:\n• Equip fishing rod sebelum start\n• Drag title bar untuk pindah GUI\n• Auto fishing akan spam click otomatis",
+    Text = "ℹ️ Instructions:\n• Equip fishing rod sebelum start\n• Legit: Spam click manual\n• Blatant: Instant catch (risky)\n• Drag title bar untuk pindah GUI",
     Font = Enum.Font.Gotham,
     TextSize = 13,
     TextColor3 = Color3.fromRGB(180, 200, 230),
@@ -336,7 +360,7 @@ titleBar.InputBegan:Connect(function(input)
             if input.UserInputState == Enum.UserInputState.End then
                 dragging = false
             end
-        end)
+        end
     end
 end)
 
@@ -353,7 +377,8 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ========== FISH IT GAME FUNCTIONS ==========
-local autoFishingEnabled = false
+local legitFishingEnabled = false
+local blatantFishingEnabled = false
 local autoSellEnabled = false
 local fishCaught = 0
 local fishSold = 0
@@ -374,10 +399,15 @@ end
 local function castRod()
     local tool = getEquippedTool()
     if tool then
-        tool:Activate()
+        mouse1click()
         return true
     end
     return false
+end
+
+-- Release fishing rod
+local function releaseRod()
+    mouse1release()
 end
 
 -- Spam click for catching fish (Fish It mechanic: click as fast as you can)
@@ -386,33 +416,77 @@ local function spamClick(duration)
     local clickSpeed = 0.05 -- 20 clicks per second
     local endTime = tick() + duration
     
-    while tick() < endTime and autoFishingEnabled do
-        local tool = getEquippedTool()
-        if tool then
-            tool:Activate()
-            clickCount = clickCount + 1
-        end
+    while tick() < endTime and legitFishingEnabled do
+        mouse1click()
+        clickCount = clickCount + 1
         task.wait(clickSpeed)
     end
     
     return clickCount
 end
 
--- Check if player caught a fish
+-- Check if player caught a fish by monitoring inventory changes
 local function checkFishCaught()
-    local tool = getEquippedTool()
-    if tool then
-        -- Check for fish in backpack or inventory increase
-        local backpack = player:FindFirstChild("Backpack")
-        if backpack then
-            for _, item in pairs(backpack:GetChildren()) do
-                if item:IsA("Tool") and item.Name:lower():find("fish") then
-                    return true
-                end
+    local backpack = player:FindFirstChild("Backpack")
+    if backpack then
+        for _, item in pairs(backpack:GetChildren()) do
+            if item:IsA("Tool") and (item.Name:lower():find("fish") or item.Name:lower():find("salmon") or item.Name:lower():find("trout") or item.Name:lower():find("tuna")) then
+                return true
             end
         end
     end
     return false
+end
+
+-- Find fishing remote events/functions
+local function findFishingRemotes()
+    local fishingRemotes = {}
+    
+    -- Check ReplicatedStorage
+    for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
+        if (obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction")) and 
+           (obj.Name:lower():find("fish") or obj.Name:lower():find("cast") or obj.Name:lower():find("catch")) then
+            table.insert(fishingRemotes, obj)
+        end
+    end
+    
+    -- Check workspace
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if (obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction")) and 
+           (obj.Name:lower():find("fish") or obj.Name:lower():find("cast") or obj.Name:lower():find("catch")) then
+            table.insert(fishingRemotes, obj)
+        end
+    end
+    
+    return fishingRemotes
+end
+
+-- Try to catch fish instantly (Blatant method)
+local function instantCatch()
+    local fishingRemotes = findFishingRemotes()
+    
+    for _, remote in pairs(fishingRemotes) do
+        pcall(function()
+            if remote:IsA("RemoteEvent") then
+                remote:FireServer()
+            elseif remote:IsA("RemoteFunction") then
+                remote:InvokeServer()
+            end
+        end)
+    end
+    
+    -- Also try common fishing remote names
+    local commonNames = {"Fish", "Catch", "Cast", "Fishing", "FishEvent", "CatchFish"}
+    for _, name in pairs(commonNames) do
+        pcall(function()
+            local remote = ReplicatedStorage:FindFirstChild(name)
+            if remote and remote:IsA("RemoteEvent") then
+                remote:FireServer()
+            elseif remote and remote:IsA("RemoteFunction") then
+                remote:InvokeServer()
+            end
+        end)
+    end
 end
 
 -- Sell fish at merchant
@@ -421,7 +495,8 @@ local function sellFish()
         -- Find sell NPC/trigger in workspace
         local sellZone = workspace:FindFirstChild("SellZone") or 
                         workspace:FindFirstChild("Merchant") or
-                        workspace:FindFirstChild("Shop")
+                        workspace:FindFirstChild("Shop") or
+                        workspace:FindFirstChild("Sell")
         
         if sellZone then
             local originalPos = humanoidRootPart.CFrame
@@ -438,7 +513,8 @@ local function sellFish()
             -- Try to find sell remote
             local sellRemote = ReplicatedStorage:FindFirstChild("SellFish") or
                               ReplicatedStorage:FindFirstChild("Sell") or
-                              ReplicatedStorage:FindFirstChild("Events")
+                              ReplicatedStorage:FindFirstChild("Events") or
+                              workspace:FindFirstChild("SellFish")
             
             if sellRemote then
                 if sellRemote:IsA("RemoteEvent") then
@@ -461,9 +537,9 @@ local function sellFish()
     return success
 end
 
--- Auto Fishing Loop
-local function autoFishingLoop()
-    while autoFishingEnabled do
+-- Legit Auto Fishing Loop
+local function legitFishingLoop()
+    while legitFishingEnabled do
         local success, err = pcall(function()
             -- Check if rod equipped
             if not hasRodEquipped() then
@@ -479,30 +555,98 @@ local function autoFishingLoop()
             
             castRod()
             task.wait(1.5) -- Hold cast
+            releaseRod()
             
-            -- Phase 2: Wait and spam click
-            statusLabel.Text = "⚡ Spam clicking..."
+            -- Phase 2: Wait for bite and spam click
+            statusLabel.Text = "⏳ Waiting for bite..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+            
+            -- Wait random time for fish to bite (2-5 seconds)
+            local waitTime = math.random(2, 5)
+            local waitStart = tick()
+            
+            while tick() - waitStart < waitTime and legitFishingEnabled do
+                task.wait(0.1)
+            end
+            
+            -- Phase 3: Spam click to catch
+            statusLabel.Text = "⚡ Spam clicking..."
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
             
             local clicks = spamClick(3) -- Spam for 3 seconds
             
-            -- Phase 3: Check if caught
+            -- Phase 4: Check if caught
             task.wait(0.5)
             if checkFishCaught() then
                 fishCaught = fishCaught + 1
-                statusLabel.Text = "🐟 Fish Caught!"
+                statusLabel.Text = "🐟 Fish Caught! Total: " .. fishCaught
                 statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            else
+                statusLabel.Text = "❌ Missed! Trying again..."
+                statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
             end
             
-            -- Update stats
-            statsLabel.Text = string.format("🎣 Fish Caught: %d\n💰 Fish Sold: %d | Coins: $%d", 
-                fishCaught, fishSold, totalCoins)
+            task.wait(0.5) -- Small delay between attempts
             
-            task.wait(1.5) -- Delay before next cast
         end)
         
         if not success then
-            warn("[Auto Fishing Error]:", err)
+            warn("[Legit Fishing Error]:", err)
+            statusLabel.Text = "❌ Error! Check Output"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        end
+    end
+    
+    statusLabel.Text = "🔴 Status: Idle"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+end
+
+-- Blatant Auto Fishing Loop
+local function blatantFishingLoop()
+    while blatantFishingEnabled do
+        local success, err = pcall(function()
+            -- Check if rod equipped
+            if not hasRodEquipped() then
+                statusLabel.Text = "⚠️ Equip Fishing Rod!"
+                statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+                task.wait(2)
+                return
+            end
+            
+            -- Cast rod briefly
+            statusLabel.Text = "🎣 Casting..."
+            statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+            
+            castRod()
+            task.wait(0.5)
+            releaseRod()
+            
+            -- Wait random time (1-5 seconds max)
+            local waitTime = math.random(1, 5)
+            statusLabel.Text = "⏳ Waiting " .. waitTime .. "s..."
+            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+            
+            local waitStart = tick()
+            while tick() - waitStart < waitTime and blatantFishingEnabled do
+                task.wait(0.1)
+            end
+            
+            -- Instant catch
+            statusLabel.Text = "⚡ Instant Catch!"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 255)
+            
+            instantCatch()
+            fishCaught = fishCaught + 1
+            
+            statusLabel.Text = "🐟 Fish Caught! Total: " .. fishCaught
+            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            
+            task.wait(0.5) -- Small delay between attempts
+            
+        end)
+        
+        if not success then
+            warn("[Blatant Fishing Error]:", err)
             statusLabel.Text = "❌ Error! Check Output"
             statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
         end
@@ -522,9 +666,8 @@ local function autoSellLoop()
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
             
             sellFish()
-            
-            statsLabel.Text = string.format("🎣 Fish Caught: %d\n💰 Fish Sold: %d | Coins: $%d", 
-                fishCaught, fishSold, totalCoins)
+            statusLabel.Text = "💰 Sold fish! Total: " .. fishSold
+            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
         end)
         
         if not success then
@@ -534,16 +677,35 @@ local function autoSellLoop()
 end
 
 -- ========== BUTTON FUNCTIONS ==========
-fishBtn.MouseButton1Click:Connect(function()
-    autoFishingEnabled = not autoFishingEnabled
+legitFishBtn.MouseButton1Click:Connect(function()
+    legitFishingEnabled = not legitFishingEnabled
+    blatantFishingEnabled = false -- Ensure only one mode is active
     
-    if autoFishingEnabled then
-        fishBtn.Text = "STOP"
-        fishBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        task.spawn(autoFishingLoop)
+    if legitFishingEnabled then
+        legitFishBtn.Text = "STOP"
+        legitFishBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        blatantFishBtn.Text = "START"
+        blatantFishBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 50)
+        task.spawn(legitFishingLoop)
     else
-        fishBtn.Text = "START"
-        fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        legitFishBtn.Text = "START"
+        legitFishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+    end
+end)
+
+blatantFishBtn.MouseButton1Click:Connect(function()
+    blatantFishingEnabled = not blatantFishingEnabled
+    legitFishingEnabled = false -- Ensure only one mode is active
+    
+    if blatantFishingEnabled then
+        blatantFishBtn.Text = "STOP"
+        blatantFishBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        legitFishBtn.Text = "START"
+        legitFishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        task.spawn(blatantFishingLoop)
+    else
+        blatantFishBtn.Text = "START"
+        blatantFishBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 50)
     end
 end)
 
@@ -561,7 +723,8 @@ sellBtn.MouseButton1Click:Connect(function()
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
-    autoFishingEnabled = false
+    legitFishingEnabled = false
+    blatantFishingEnabled = false
     autoSellEnabled = false
     screenGui:Destroy()
 end)
@@ -571,7 +734,7 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 500, 0, 55) or UDim2.new(0, 500, 0, 450)
+        Size = minimized and UDim2.new(0, 500, 0, 55) or UDim2.new(0, 500, 0, 500)
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
@@ -586,16 +749,28 @@ local function addHover(btn, normal, hover)
     end)
 end
 
-
 addHover(closeBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80)) 
 addHover(minimizeBtn, Color3.fromRGB(70, 80, 100), Color3.fromRGB(90, 100, 120))
-addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
+addHover(legitFishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
+addHover(blatantFishBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
+
+-- Mouse click functions
+function mouse1click()
+    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+    task.wait()
+    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+end
+
+function mouse1release()
+    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+end
 
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
 print("=================================")
 print("✅ GUI berhasil dimuat untuk:", player.Name)
-print("📌 Equip fishing rod dan tekan START")
-print("🎯 Mekanisme: Hold to cast → Spam click to catch")
+print("🎣 Mode Legit: Spam click manual")
+print("⚡ Mode Blatant: Instant catch")
+print("💰 Auto Sell: Jual otomatis setiap 30 detik")
 print("=================================")
