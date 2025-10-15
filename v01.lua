@@ -48,8 +48,8 @@ local screenGui = create("ScreenGui", {
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 320), -- DIPERBESAR untuk menampung button baru
-    Position = UDim2.new(0.5, -150, 0.5, -160), -- DIPERBESAR
+    Size = UDim2.new(0, 300, 0, 370), -- DIPERBESAR lagii
+    Position = UDim2.new(0.5, -150, 0.5, -185), -- DIPERBESAR
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -123,7 +123,7 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 470) -- DIPERBESAR untuk menampung button baru
+    CanvasSize = UDim2.new(0, 0, 0, 520) -- DIPERBESAR
 })
 
 local statusBox = create("Frame", {
@@ -256,6 +256,43 @@ local teleportBtn = create("TextButton", {
 
 create("UICorner", {Parent = teleportBtn, CornerRadius = UDim.new(0, 6)})
 
+-- ========== FISHING V2 SECTION ==========
+local fishSectionV2 = create("Frame", {
+    Parent = contentFrame,
+    Size = UDim2.new(1, 0, 0, 42),
+    Position = UDim2.new(0, 0, 0, 216), -- Di bawah teleport section
+    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+})
+
+create("UICorner", {Parent = fishSectionV2, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = fishSectionV2, Color = Color3.fromRGB(40, 120, 180), Thickness = 1}) -- Warna biru lebih terang
+
+local fishTitleV2 = create("TextLabel", {
+    Parent = fishSectionV2,
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 9, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "⚡ Auto Fishing V2 (FAST)",
+    Font = Enum.Font.GothamBold,
+    TextSize = 9,
+    TextColor3 = Color3.fromRGB(100, 255, 255), -- Warna cyan
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Center
+})
+
+local fishBtnV2 = create("TextButton", {
+    Parent = fishSectionV2,
+    Size = UDim2.new(0, 72, 0, 29),
+    Position = UDim2.new(1, -78, 0, 7),
+    BackgroundColor3 = Color3.fromRGB(0, 150, 200), -- Warna biru terang
+    Text = "START",
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+
+create("UICorner", {Parent = fishBtnV2, CornerRadius = UDim.new(0, 6)})
+
 -- ===================================
 -- ========== DRAG & HOVER ===========
 -- ===================================
@@ -307,6 +344,8 @@ addHover(minimizeBtn, Color3.fromRGB(70, 80, 100), Color3.fromRGB(90, 100, 120))
 addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(teleportBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
+addHover(fishBtnV2, Color3.fromRGB(0, 150, 200), Color3.fromRGB(0, 180, 230))
+
 
 -- ===================================
 -- ========== TELEPORT SYSTEM =========
@@ -477,7 +516,7 @@ local function createTeleportGUI()
 end
 
 -- ===================================
--- ========== FISHING CORE ===========
+-- ========== FISHING V1 ===========
 -- ===================================
 local autoFishingEnabled = false
 local autoSellEnabled = false
@@ -659,6 +698,210 @@ local function autoSellLoop()
 end
 
 -- ===================================
+-- ========== AUTO FISHING V2 =========
+-- ===================================
+
+local autoFishingV2Enabled = false
+local fishingActiveV2 = false
+local delayInitializedV2 = false
+
+-- Remote Events untuk V2
+local rodRemoteV2 = net:WaitForChild("RF/ChargeFishingRod")
+local miniGameRemoteV2 = net:WaitForChild("RF/RequestFishingMinigameStarted")
+local finishRemoteV2 = net:WaitForChild("RE/FishingCompleted")
+local equipRemoteV2 = net:WaitForChild("RE/EquipToolFromHotbar")
+local textEffectRemoteV2 = net:WaitForChild("RE/ReplicateTextEffect")
+
+-- Optimized Rod Delays untuk V2 (LEBIH CEPAT)
+local RodDelaysV2 = {
+    ["Ares Rod"] = {custom = 0.8, bypass = 0.8},      -- DIPERCEPAT
+    ["Angler Rod"] = {custom = 0.8, bypass = 0.8},    -- DIPERCEPAT  
+    ["Ghostfinn Rod"] = {custom = 0.8, bypass = 0.8}, -- DIPERCEPAT
+    ["Astral Rod"] = {custom = 1.2, bypass = 1.0},    -- DIPERCEPAT
+    ["Hazmat Rod"] = {custom = 1.2, bypass = 1.0},    -- DIPERCEPAT
+    ["Chrome Rod"] = {custom = 1.5, bypass = 1.2},    -- DIPERCEPAT
+    ["Steampunk Rod"] = {custom = 1.7, bypass = 1.5}, -- DIPERCEPAT
+    ["Lucky Rod"] = {custom = 2.5, bypass = 2.2},     -- DIPERCEPAT
+    ["Midnight Rod"] = {custom = 2.3, bypass = 2.0},  -- DIPERCEPAT
+    ["Demascus Rod"] = {custom = 2.8, bypass = 2.5},  -- DIPERCEPAT
+    ["Grass Rod"] = {custom = 2.7, bypass = 2.5},     -- DIPERCEPAT
+    ["Luck Rod"] = {custom = 3.0, bypass = 2.8},      -- DIPERCEPAT
+    ["Carbon Rod"] = {custom = 2.8, bypass = 2.5},    -- DIPERCEPAT
+    ["Lava Rod"] = {custom = 3.0, bypass = 2.8},      -- DIPERCEPAT
+    ["Starter Rod"] = {custom = 3.1, bypass = 2.9},   -- DIPERCEPAT
+}
+
+local customDelayV2 = 0.8  -- Default lebih cepat
+local BypassDelayV2 = 0.8  -- Default lebih cepat
+
+-- FAST DETECTION SYSTEM untuk tanda seru
+local exclamationDetected = false
+local lastExclamationTime = 0
+
+-- Event listener untuk detect tanda seru LEBIH CEPAT
+textEffectRemoteV2.OnClientEvent:Connect(function(data)
+    if autoFishingV2Enabled and data and data.TextData then
+        -- Deteksi lebih agresif untuk tanda seru
+        if data.TextData.EffectType == "Exclaim" then
+            exclamationDetected = true
+            lastExclamationTime = tick()
+            
+            -- IMMEDIATE ACTION - langsung finish tanpa delay
+            statusLabel.Text = "⚡ FAST CATCH! (V2)"
+            statusLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
+            
+            -- Finish langsung tanpa tunggu
+            pcall(function()
+                finishRemoteV2:FireServer(true)
+            end)
+        end
+    end
+end)
+
+local function getValidRodNameV2()
+    local display = player.PlayerGui:WaitForChild("Backpack"):WaitForChild("Display")
+    for _, tile in ipairs(display:GetChildren()) do
+        local success, itemNamePath = pcall(function()
+            return tile.Inner.Tags.ItemName
+        end)
+        if success and itemNamePath and itemNamePath:IsA("TextLabel") then
+            local name = itemNamePath.Text
+            if RodDelaysV2[name] then
+                return name
+            end
+        end
+    end
+    return nil
+end
+
+local function updateDelayBasedOnRodV2()
+    if delayInitializedV2 then return end
+    local rodName = getValidRodNameV2()
+    if rodName and RodDelaysV2[rodName] then
+        customDelayV2 = RodDelaysV2[rodName].custom
+        BypassDelayV2 = RodDelaysV2[rodName].bypass
+        delayInitializedV2 = true
+        statusLabel.Text = "⚡ V2 Rod: " .. rodName
+        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
+    else
+        customDelayV2 = 8  -- Lebih cepat dari default V1
+        BypassDelayV2 = 0.8
+        delayInitializedV2 = true
+        statusLabel.Text = "⚡ V2 Default Speed"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    end
+end
+
+-- ULTRA FAST FISHING LOOP V2
+local function autoFishingLoopV2()
+    while autoFishingV2Enabled do
+        fishingActiveV2 = false
+        exclamationDetected = false
+        
+        local success, err = pcall(function()
+            updateDelayBasedOnRodV2()
+            
+            fishingActiveV2 = true
+            
+            -- 1. Equip Rod (LEBIH CEPAT)
+            statusLabel.Text = "⚡ Equipping Rod (V2)..."
+            statusLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+            equipRemoteV2:FireServer(1)
+            task.wait(0.05)  -- Jeda lebih pendek
+
+            -- 2. Charge Rod (LEBIH CEPAT)
+            statusLabel.Text = "⚡ Charging Rod (V2)..."
+            statusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+            local chargeRemote = ReplicatedStorage
+                .Packages._Index["sleitnick_net@0.2.0"].net["RF/ChargeFishingRod"]
+            chargeRemote:InvokeServer(workspace:GetServerTimeNow())
+            task.wait(0.3)  -- Jeda lebih pendek
+
+            local timestamp = workspace:GetServerTimeNow()
+            rodRemoteV2:InvokeServer(timestamp)
+
+            -- 3. Cast Rod dengan timing lebih agresif
+            local baseX, baseY = -0.7499996423721313, 1
+            local x = baseX + (math.random(-300, 300) / 10000000)  -- Range lebih kecil
+            local y = baseY + (math.random(-300, 300) / 10000000)  -- Range lebih kecil
+
+            statusLabel.Text = "🎯 Casting (V2)..."
+            statusLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+            miniGameRemoteV2:InvokeServer(x, y)
+
+            -- 4. WAIT SYSTEM YANG LEBIH PINTAR
+            local waitStart = tick()
+            local maxWaitTime = customDelayV2 + 2.0  -- Maximum wait time
+            
+            while tick() - waitStart < maxWaitTime and autoFishingV2Enabled do
+                -- Cek jika exclamation sudah terdeteksi
+                if exclamationDetected then
+                    statusLabel.Text = "⚡ FAST CATCH! (V2)"
+                    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+                    break
+                end
+                
+                -- Update status dengan countdown
+                local elapsed = tick() - waitStart
+                local remaining = math.max(0, customDelayV2 - elapsed)
+                statusLabel.Text = string.format("⏳ V2 Waiting (%.1fs)...", remaining)
+                
+                task.wait(0.1)  -- Check lebih sering
+            end
+
+            -- 5. FINISHING - lebih agresif
+            if not exclamationDetected then
+                statusLabel.Text = "✅ Finishing (V2 Backup)..."
+                statusLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+                
+                -- Multiple attempts untuk memastikan finish
+                for i = 1, 3 do
+                    pcall(function()
+                        finishRemoteV2:FireServer(true)
+                    end)
+                    task.wait(0.1)
+                end
+            end
+
+            -- 6. SHORTER COOLDOWN
+            task.wait(BypassDelayV2 * 0.7)  -- Cooldown lebih pendek
+            
+            fishingActiveV2 = false
+            exclamationDetected = false
+        end)
+        
+        if not success then
+            warn("[Auto Fishing V2 Error]:", err)
+            statusLabel.Text = "❌ V2 Error! Check Output"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            task.wait(1)
+        end
+        
+        -- Jeda antar siklus LEBIH PENDEK
+        task.wait(0.1)
+    end
+    
+    fishingActiveV2 = false
+    statusLabel.Text = "🔴 Status: Idle"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+end
+
+-- Function control V2
+local function startAutoFishV2()
+    if autoFishingV2Enabled then return end
+    
+    autoFishingV2Enabled = true
+    delayInitializedV2 = false
+    task.spawn(autoFishingLoopV2)
+end
+
+local function stopAutoFishV2()
+    autoFishingV2Enabled = false
+    fishingActiveV2 = false
+    delayInitializedV2 = false
+end
+
+-- ===================================
 -- ========== BUTTON LOGIC ===========
 -- ===================================
 
@@ -703,6 +946,32 @@ teleportBtn.MouseButton1Click:Connect(function()
     createTeleportGUI()
 end)
 
+-- Button logic untuk V2
+fishBtnV2.MouseButton1Click:Connect(function()
+    autoFishingV2Enabled = not autoFishingV2Enabled
+    
+    if autoFishingV2Enabled then
+        -- Stop V1 jika sedang berjalan
+        if autoFishingEnabled then
+            autoFishingEnabled = false
+            fishBtn.Text = "START"
+            fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        end
+        
+        fishBtnV2.Text = "STOP"
+        fishBtnV2.BackgroundColor3 = Color3.fromRGB(200, 50, 100)
+        statusLabel.Text = "⚡ V2 Ultra Fast Started"
+        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
+        startAutoFishV2()
+    else
+        fishBtnV2.Text = "START"
+        fishBtnV2.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+        statusLabel.Text = "🔴 V2 Stopped"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        stopAutoFishV2()
+    end
+end)
+
 closeBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = false
     autoSellEnabled = false
@@ -719,6 +988,7 @@ minimizeBtn.MouseButton1Click:Connect(function()
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
+
 
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
