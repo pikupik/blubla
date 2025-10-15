@@ -256,13 +256,6 @@ local teleportBtn = create("TextButton", {
 
 create("UICorner", {Parent = teleportBtn, CornerRadius = UDim.new(0, 6)})
 
-local infoBox = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 48),
-    Position = UDim2.new(0, 0, 0, 308), -- DIPERBAIKI posisi
-    BackgroundColor3 = Color3.fromRGB(35, 60, 100),
-})
-
 -- ===================================
 -- ========== DRAG & HOVER ===========
 -- ===================================
