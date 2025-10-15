@@ -2,7 +2,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
+local RunService = game:GetService("RunService") -- Ditambahkan untuk koneksi
 local net = ReplicatedStorage:WaitForChild("Packages")
 	:WaitForChild("_Index")
 	:WaitForChild("sleitnick_net@0.2.0")
@@ -33,7 +33,7 @@ local function create(className, properties)
 end
 
 -- ===================================
--- ========== GUI ELEMENTS (REVISI UKURAN KECIL) ===========
+-- ========== GUI ELEMENTS ===========
 -- ===================================
 
 -- ScreenGui
@@ -44,20 +44,18 @@ local screenGui = create("ScreenGui", {
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 })
 
--- Main Frame (Revisi: Ukuran lebih kecil dan menggunakan Scale)
+-- Main Frame (dan elemen-elemen di dalamnya)
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    -- Menggunakan Scale (0.8) untuk lebar agar responsif, tinggi tetap offset tapi kecil
-    Size = UDim2.new(0.8, 0, 0, 300), 
-    Position = UDim2.new(0.5, 0, 0.5, 0),
-    AnchorPoint = Vector2.new(0.5, 0.5), -- Penting untuk penempatan di tengah
+    Size = UDim2.new(0, 300, 0, 270), -- DIPERKECIL
+    Position = UDim2.new(0.5, -150, 0.5, -135), -- DIPERKECIL
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
 
-create("UICorner", {Parent = mainFrame, CornerRadius = UDim.new(0, 8)})
-create("UIStroke", {Parent = mainFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5})
+create("UICorner", {Parent = mainFrame, CornerRadius = UDim.new(0, 10)}) -- DIPERKECIL
+create("UIStroke", {Parent = mainFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5}) -- DIPERKECIL
 
 local gradient = create("UIGradient", {
     Parent = mainFrame,
@@ -71,110 +69,102 @@ local gradient = create("UIGradient", {
 local titleBar = create("Frame", {
     Name = "TitleBar",
     Parent = mainFrame,
-    Size = UDim2.new(1, 0, 0, 35), -- Tinggi diperkecil
+    Size = UDim2.new(1, 0, 0, 33), -- DIPERKECIL
     BackgroundColor3 = Color3.fromRGB(25, 35, 55),
     BorderSizePixel = 0
 })
 
-create("UICorner", {Parent = titleBar, CornerRadius = UDim.new(0, 8)})
+create("UICorner", {Parent = titleBar, CornerRadius = UDim.new(0, 10)}) -- DIPERKECIL
 
 local titleText = create("TextLabel", {
     Parent = titleBar,
-    Size = UDim2.new(0.7, 0, 1, 0), 
-    Position = UDim2.new(0, 8, 0, 0), -- Posisi diperkecil
+    Size = UDim2.new(1, -66, 1, 0), -- DIPERKECIL
+    Position = UDim2.new(0, 12, 0, 0), -- DIPERKECIL
     BackgroundTransparency = 1,
     Text = "🐟 Fish It - Codepikk",
     Font = Enum.Font.GothamBold,
-    TextSize = 16,
-    TextScaled = true, -- PENTING untuk mobile
+    TextSize = 13, -- DIPERKECIL
     TextColor3 = Color3.fromRGB(100, 180, 255),
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
 local closeBtn = create("TextButton", {
     Parent = titleBar,
-    Size = UDim2.new(0, 30, 0, 30), -- Ukuran tombol diperkecil
-    Position = UDim2.new(1, -5, 0.5, 0),
-    AnchorPoint = Vector2.new(1, 0.5),
+    Size = UDim2.new(0, 25, 0, 25), -- DIPERKECIL
+    Position = UDim2.new(1, -29, 0, 4), -- DIPERKECIL
     BackgroundColor3 = Color3.fromRGB(220, 50, 50),
-    Text = "✕",
+    Text = "X",
     Font = Enum.Font.GothamBold,
-    TextSize = 16,
-    TextScaled = true,
+    TextSize = 13, -- DIPERKECIL
     TextColor3 = Color3.fromRGB(255, 255, 255)
 })
 
-create("UICorner", {Parent = closeBtn, CornerRadius = UDim.new(0, 6)})
+create("UICorner", {Parent = closeBtn, CornerRadius = UDim.new(0, 6)}) -- DIPERKECIL
 
 local minimizeBtn = create("TextButton", {
     Parent = titleBar,
-    Size = UDim2.new(0, 30, 0, 30), -- Ukuran tombol diperkecil
-    Position = UDim2.new(1, -40, 0.5, 0),
-    AnchorPoint = Vector2.new(1, 0.5),
+    Size = UDim2.new(0, 25, 0, 25), -- DIPERKECIL
+    Position = UDim2.new(1, -58, 0, 4), -- DIPERKECIL
     BackgroundColor3 = Color3.fromRGB(70, 80, 100),
     Text = "—",
     Font = Enum.Font.GothamBold,
-    TextSize = 16,
-    TextScaled = true,
+    TextSize = 13, -- DIPERKECIL
     TextColor3 = Color3.fromRGB(255, 255, 255)
 })
 
-create("UICorner", {Parent = minimizeBtn, CornerRadius = UDim.new(0, 6)})
+create("UICorner", {Parent = minimizeBtn, CornerRadius = UDim.new(0, 6)}) -- DIPERKECIL
 
 local contentFrame = create("ScrollingFrame", {
     Name = "Content",
     Parent = mainFrame,
-    Size = UDim2.new(1, -16, 1, -45), -- Padding diperkecil
-    Position = UDim2.new(0, 8, 0, 40), -- Posisi disesuaikan
+    Size = UDim2.new(1, -18, 1, -51), -- DIPERKECIL
+    Position = UDim2.new(0, 9, 0, 42), -- DIPERKECIL
     BackgroundTransparency = 1,
     BorderSizePixel = 0,
-    ScrollBarThickness = 5, -- Scrollbar diperkecil
+    ScrollBarThickness = 5, -- DIPERKECIL
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 250) -- Ukuran canvas sementara
+    CanvasSize = UDim2.new(0, 0, 0, 420) -- DIPERKECIL
 })
 
 local statusBox = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 40), -- Tinggi diperkecil
+    Size = UDim2.new(1, 0, 0, 54), -- DIPERKECIL
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-    Position = UDim2.new(0, 0, 0, 3) -- Margin
 })
 
-create("UICorner", {Parent = statusBox, CornerRadius = UDim.new(0, 8)})
-create("UIStroke", {Parent = statusBox, Color = Color3.fromRGB(40, 60, 90), Thickness = 1.0})
+create("UICorner", {Parent = statusBox, CornerRadius = UDim.new(0, 7)}) -- DIPERKECIL
+create("UIStroke", {Parent = statusBox, Color = Color3.fromRGB(40, 60, 90), Thickness = 1}) -- DIPERKECIL
 
 local statusLabel = create("TextLabel", {
     Parent = statusBox,
-    Size = UDim2.new(1, -16, 1, 0),
-    Position = UDim2.new(0, 8, 0, 0),
+    Size = UDim2.new(1, -12, 0, 18), -- DIPERKECIL
+    Position = UDim2.new(0, 6, 0, 5), -- DIPERKECIL
     BackgroundTransparency = 1,
     Text = "🔴 Status: Idle",
     Font = Enum.Font.GothamBold,
-    TextSize = 14,
-    TextScaled = true,
+    TextSize = 10, -- DIPERKECIL
     TextColor3 = Color3.fromRGB(255, 100, 100),
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
 local fishSection = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 40), -- Tinggi diperkecil
-    Position = UDim2.new(0, 0, 0, 50), -- Posisi disesuaikan
+    Size = UDim2.new(1, 0, 0, 42), -- DIPERKECIL
+    Position = UDim2.new(0, 0, 0, 63), -- DIPERKECIL
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
-create("UICorner", {Parent = fishSection, CornerRadius = UDim.new(0, 8)})
-create("UIStroke", {Parent = fishSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1.0})
+create("UICorner", {Parent = fishSection, CornerRadius = UDim.new(0, 7)}) -- DIPERKECIL
+create("UIStroke", {Parent = fishSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1}) -- DIPERKECIL
 
 local fishTitle = create("TextLabel", {
     Parent = fishSection,
-    Size = UDim2.new(0.6, 0, 1, 0),
-    Position = UDim2.new(0, 8, 0, 0),
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 9, 0, 0), -- DIPERKECIL
     BackgroundTransparency = 1,
     Text = "🎣 Auto Instant Fishing V1",
     Font = Enum.Font.GothamBold,
-    TextSize = 13,
-    TextScaled = true,
+    TextSize = 9, -- DIPERKECIL
     TextColor3 = Color3.fromRGB(220, 220, 220),
     TextXAlignment = Enum.TextXAlignment.Left,
     TextYAlignment = Enum.TextYAlignment.Center
@@ -182,38 +172,35 @@ local fishTitle = create("TextLabel", {
 
 local fishBtn = create("TextButton", {
     Parent = fishSection,
-    Size = UDim2.new(0, 65, 0, 30), -- Ukuran tombol diperkecil
-    Position = UDim2.new(1, -8, 0.5, 0), 
-    AnchorPoint = Vector2.new(1, 0.5),
+    Size = UDim2.new(0, 72, 0, 29), -- DIPERKECIL
+    Position = UDim2.new(1, -78, 0, 7), -- DIPERKECIL
     BackgroundColor3 = Color3.fromRGB(50, 150, 50),
     Text = "START",
     Font = Enum.Font.GothamBold,
-    TextSize = 13,
-    TextScaled = true,
+    TextSize = 10, -- DIPERKECIL
     TextColor3 = Color3.fromRGB(255, 255, 255)
 })
 
-create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)})
+create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)}) -- DIPERKECIL
 
 local sellSection = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 40), -- Tinggi diperkecil
-    Position = UDim2.new(0, 0, 0, 95), -- Posisi disesuaikan
+    Size = UDim2.new(1, 0, 0, 42), -- DIPERKECIL
+    Position = UDim2.new(0, 0, 0, 114), -- DIPERKECIL
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
-create("UICorner", {Parent = sellSection, CornerRadius = UDim.new(0, 8)})
-create("UIStroke", {Parent = sellSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1.0})
+create("UICorner", {Parent = sellSection, CornerRadius = UDim.new(0, 7)}) -- DIPERKECIL
+create("UIStroke", {Parent = sellSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1}) -- DIPERKECIL
 
 local sellTitle = create("TextLabel", {
     Parent = sellSection,
-    Size = UDim2.new(0.6, 0, 1, 0),
-    Position = UDim2.new(0, 8, 0, 0),
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 9, 0, 0), -- DIPERKECIL
     BackgroundTransparency = 1,
     Text = "💰 Auto Sell All",
     Font = Enum.Font.GothamBold,
-    TextSize = 13,
-    TextScaled = true,
+    TextSize = 9, -- DIPERKECIL
     TextColor3 = Color3.fromRGB(220, 220, 220),
     TextXAlignment = Enum.TextXAlignment.Left,
     TextYAlignment = Enum.TextYAlignment.Center
@@ -221,36 +208,23 @@ local sellTitle = create("TextLabel", {
 
 local sellBtn = create("TextButton", {
     Parent = sellSection,
-    Size = UDim2.new(0, 65, 0, 30), -- Ukuran tombol diperkecil
-    Position = UDim2.new(1, -8, 0.5, 0),
-    AnchorPoint = Vector2.new(1, 0.5),
+    Size = UDim2.new(0, 72, 0, 29), -- DIPERKECIL
+    Position = UDim2.new(1, -78, 0, 7), -- DIPERKECIL
     BackgroundColor3 = Color3.fromRGB(50, 150, 50),
     Text = "START",
     Font = Enum.Font.GothamBold,
-    TextSize = 13,
-    TextScaled = true,
+    TextSize = 10, -- DIPERKECIL
     TextColor3 = Color3.fromRGB(255, 255, 255)
 })
 
-create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)})
+create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)}) -- DIPERKECIL
 
--- Info Box dihilangkan, diganti TextLabel kecil untuk menghemat ruang
-local infoText = create("TextLabel", {
+local infoBox = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 35),
-    Position = UDim2.new(0, 0, 0, 140),
-    BackgroundTransparency = 1,
-    Text = "Pastikan rod ter-equip sebelum START.\nUI Mobile-Friendly oleh Codepikk.",
-    Font = Enum.Font.Gotham,
-    TextSize = 12,
-    TextScaled = true,
-    TextColor3 = Color3.fromRGB(150, 150, 150),
-    TextWrapped = true,
+    Size = UDim2.new(1, 0, 0, 48), -- DIPERKECIL
+    Position = UDim2.new(0, 0, 0, 258), -- DIPERKECIL
+    BackgroundColor3 = Color3.fromRGB(35, 60, 100),
 })
-
--- Sesuaikan CanvasSize agar konten terlihat semua
-contentFrame.CanvasSize = UDim2.new(0, 0, 0, 190)
-
 
 -- ===================================
 -- ========== DRAG & HOVER ===========
@@ -259,14 +233,8 @@ local dragging, dragInput, dragStart, startPos
 
 local function updateDrag(input)
     local delta = input.Position - dragStart
-    -- Menggunakan AnchorPoint 0.5, 0.5
-    local newX = startPos.X.Offset + delta.X
-    local newY = startPos.Y.Offset + delta.Y
-    
-    local newPos = UDim2.new(startPos.X.Scale, newX, startPos.Y.Scale, newY)
-
     TweenService:Create(mainFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad), {
-        Position = newPos
+        Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     }):Play()
 end
 
@@ -274,8 +242,7 @@ titleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         dragging = true
         dragStart = input.Position
-        -- Ambil posisi offset saat ini
-        startPos = UDim2.new(0, mainFrame.AbsolutePosition.X - mainFrame.AbsoluteSize.X * 0.5, 0, mainFrame.AbsolutePosition.Y - mainFrame.AbsoluteSize.Y * 0.5)
+        startPos = mainFrame.Position
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
                 dragging = false
@@ -322,7 +289,7 @@ local rodRemote = net:WaitForChild("RF/ChargeFishingRod")
 local miniGameRemote = net:WaitForChild("RF/RequestFishingMinigameStarted")
 local finishRemote = net:WaitForChild("RE/FishingCompleted")
 local equipRemote = net:WaitForChild("RE/EquipToolFromHotbar")
-local sellRemote = net:WaitForChild("RF/SellAllItems") 
+local sellRemote = net:WaitForChild("RF/SellAllItems")
 
 -- Rod Delays (dari base.lua)
 local RodDelays = {
@@ -345,7 +312,7 @@ local RodDelays = {
 
 local customDelay = 1
 local BypassDelay = 0.5
-local fishingActive = false 
+local fishingActive = false -- Status memancing
 
 local function getValidRodName()
     local display = player.PlayerGui:WaitForChild("Backpack"):WaitForChild("Display")
@@ -376,7 +343,7 @@ local function updateDelayBasedOnRod()
         customDelay = 10
         BypassDelay = 1
         delayInitialized = true
-        statusLabel.Text = "⚠️ Default Delay (Coba equip ulang rod)"
+        statusLabel.Text = "⚠️ Default Delay Applied"
         statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
     end
 end
@@ -405,7 +372,7 @@ local function autoFishingLoop()
             task.wait(0.5)
 
             local timestamp = workspace:GetServerTimeNow()
-            rodRemote:InvokeServer(timestamp) 
+            rodRemote:InvokeServer(timestamp) -- Panggil remote rod
 
             -- 3. Cast Rod (Request Minigame)
             local baseX, baseY = -0.7499996423721313, 1
@@ -419,15 +386,15 @@ local function autoFishingLoop()
             statusLabel.Text = "⏳ Waiting for fish (" .. string.format("%.2f", customDelay) .. "s)..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
             
-            task.wait(customDelay)
+            task.wait(customDelay) -- Tunggu waktu gigitan
             
-            -- Selesaikan Minigame (Bypass)
+            -- [[ PERBAIKAN STUCK: Selesaikan Minigame (Bypass) ]]
             statusLabel.Text = "✅ Fish Caught! Finishing..."
             statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
             
-            finishRemote:FireServer(true)
+            finishRemote:FireServer(true) -- Kirim sinyal penyelesaian ke server
             
-            task.wait(BypassDelay)
+            task.wait(BypassDelay) -- Jeda bypass sebelum siklus baru
             
             fishingActive = false
                         
@@ -440,6 +407,7 @@ local function autoFishingLoop()
             task.wait(2)
         end
         
+        -- Jeda antar siklus untuk mengurangi tekanan pada server
         task.wait(0.2)
     end
     
@@ -448,38 +416,46 @@ local function autoFishingLoop()
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
 
--- Auto Sell Loop (Revisi Bug Sell All)
+-- Auto Sell Loop (dari base.lua)
 local function autoSellLoop()
     while autoSellEnabled do
-        -- Jual setiap 30 detik
-        task.wait(30) 
+        task.wait(60) -- Sell every 60 seconds
         
-        local success, result = pcall(function()
-            statusLabel.Text = "💰 Mencoba Menjual Ikan..."
+        local success, err = pcall(function()
+            statusLabel.Text = "💰 Selling fish..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
             
-            -- Panggil Remote Function SellAllItems secara langsung (FIXED)
-            local sellResult = sellRemote:InvokeServer() 
+            local charFolder = workspace:FindFirstChild("Characters")
+            local char = charFolder and charFolder:FindFirstChild(player.Name)
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
             
-            -- Asumsi server mengembalikan true/jumlah item terjual
-            if sellResult == true or type(sellResult) == "number" or (type(sellResult) == "string" and sellResult ~= "") then
-                return sellResult
-            else
-                error("SellAllItems did not return a valid success message.")
+            if not hrp then
+                statusLabel.Text = "❌ Character not found"
+                return
             end
+
+            -- Tidak perlu berpindah ke sell spot karena RF/SellAllItems biasanya bekerja di mana saja
+            task.spawn(function()
+                task.wait(1)
+                local sellSuccess = pcall(function()
+                    sellRemote:InvokeServer()
+                end)
+
+                if sellSuccess then
+                    statusLabel.Text = "✅ Sold!"
+                    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+                else
+                    statusLabel.Text = "❌ Sell Failed"
+                    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+                end
+            end)
         end)
         
-        if success then
-            local soldCount = type(result) == "number" and result or "Semua"
-            statusLabel.Text = "✅ Berhasil Terjual! (" .. tostring(soldCount) .. ")"
-            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-        else
-            warn("[Auto Sell Error]:", result)
-            statusLabel.Text = "❌ Gagal Jual! Cek Output"
+        if not success then
+            warn("[Auto Sell Error]:", err)
+            statusLabel.Text = "❌ Sell Error!"
             statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
         end
-        
-        task.wait(1) 
     end
 end
 
@@ -512,7 +488,7 @@ sellBtn.MouseButton1Click:Connect(function()
     if autoSellEnabled then
         sellBtn.Text = "STOP"
         sellBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        statusLabel.Text = "🟢 Auto Sell Started (Jual tiap 30s)"
+        statusLabel.Text = "🟢 Auto Sell Started"
         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
         task.spawn(autoSellLoop)
     else
@@ -535,8 +511,7 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        -- Ukuran minimize/normal baru
-        Size = minimized and UDim2.new(0.8, 0, 0, 35) or UDim2.new(0.8, 0, 0, 300) 
+        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 270) -- DIPERKECIL
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
@@ -544,7 +519,7 @@ end)
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
 print("=================================")
-print("✅ GUI (Mobile Ready) dimuat untuk:", player.Name)
+print("✅ GUI berhasil dimuat untuk:", player.Name)
 print("📌 Equip fishing rod dan tekan START")
-print("🎯 Logic fishing & Sell All diperbaiki.")
+print("🎯 Logic fishing telah diperbaiki.")
 print("=================================")
