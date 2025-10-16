@@ -501,21 +501,21 @@ local sellRemote = net:WaitForChild("RF/SellAllItems")
 
 -- Rod Delays
 local RodDelays = {
-    ["Ares Rod"] = {custom = 1.12, bypass = 1.45},
-    ["Angler Rod"] = {custom = 1.12, bypass = 1.45},
-    ["Ghostfinn Rod"] = {custom = 1.12, bypass = 1.45},
-    ["Astral Rod"] = {custom = 1.9, bypass = 1.45},
-    ["Hazmat Rod"] = {custom = 1.9, bypass = 1.45},
-    ["Chrome Rod"] = {custom = 2.3, bypass = 2},
-    ["Steampunk Rod"] = {custom = 2.5, bypass = 2.3},
-    ["Lucky Rod"] = {custom = 3.5, bypass = 3.6},
-    ["Midnight Rod"] = {custom = 3.3, bypass = 3.4},
-    ["Demascus Rod"] = {custom = 3.9, bypass = 3.8},
-    ["Grass Rod"] = {custom = 3.8, bypass = 3.9},
-    ["Luck Rod"] = {custom = 4.2, bypass = 4.1},
-    ["Carbon Rod"] = {custom = 4, bypass = 3.8},
-    ["Lava Rod"] = {custom = 4.2, bypass = 4.1},
-    ["Starter Rod"] = {custom = 4.3, bypass = 4.2},
+    ["Ares Rod"] = {custom = 1, bypass = 0.5},
+    ["Angler Rod"] = {custom = 1, bypass = 0.5},
+    ["Ghostfinn Rod"] = {custom = 1, bypass = 0.5},
+    ["Astral Rod"] = {custom = 1, bypass = 0.5},
+    ["Hazmat Rod"] = {custom = 1, bypass = 0.5},
+    ["Chrome Rod"] = {custom = 1, bypass = 0.5},
+    ["Steampunk Rod"] = {custom = 1, bypass = 0.5},
+    ["Lucky Rod"] = {custom = 1, bypass = 0.5},
+    ["Midnight Rod"] = {custom = 1, bypass = 0.5},
+    ["Demascus Rod"] = {custom = 1, bypass = 0.5},
+    ["Grass Rod"] = {custom = 1, bypass = 0.5},
+    ["Luck Rod"] = {custom = 1, bypass = 0.5},
+    ["Carbon Rod"] = {custom = 1, bypass = 0.5},
+    ["Lava Rod"] = {custom = 1, bypass = 0.5},
+    ["Starter Rod"] = {custom = 1, bypass = 0.5},
 }
 
 local customDelay = 1
