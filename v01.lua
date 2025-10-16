@@ -136,7 +136,7 @@ local statusLabel = create("TextLabel", {
     Size = UDim2.new(1, -12, 0, 18),
     Position = UDim2.new(0, 6, 0, 5),
     BackgroundTransparency = 1,
-    Text = "🔴 Status: Idle",
+    Text = "🔴 Status: Idle\nDalam Tahap Pengembangan",
     Font = Enum.Font.GothamBold,
     TextSize = 10,
     TextColor3 = Color3.fromRGB(255, 100, 100),
@@ -158,7 +158,7 @@ local fishTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎣 Auto Instant Fishing V1",
+    Text = "🎣 Auto Instant Fishing V1\nAuto Perfect",
     Font = Enum.Font.GothamBold,
     TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -596,11 +596,6 @@ local function autoFishingLoop()
             statusLabel.Text = "🎯 Casting..."
             statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
             miniGameRemote:InvokeServer(x, y)
-
-            statusLabel.Text = "⏳ Waiting for fish (" .. string.format("%.2f", customDelay) .. "s)..."
-            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-            
-            task.wait(customDelay)
             
             -- Selesaikan Minigame
             statusLabel.Text = "✅ Fish Caught! Finishing..."
