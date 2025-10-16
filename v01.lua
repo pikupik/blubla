@@ -1,5 +1,3 @@
-Bikinin script config baru dong Mancing Kaya fishing V1 tapi auto prioritas Mytic / Secret / Rare
-
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
