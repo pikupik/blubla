@@ -567,6 +567,7 @@ local function updateDelayBasedOnRod()
     end
 end
 
+
 -- Fungsi utama Auto Fishing
 local function autoFishingLoop()
     while autoFishingEnabled do
@@ -596,51 +597,19 @@ local function autoFishingLoop()
             statusLabel.Text = "🎯 Casting..."
             statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
             miniGameRemote:InvokeServer(x, y)
+
+            statusLabel.Text = "⏳ Cast Up"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
             
-            -- Tunggu sampai muncul tanda seru di atas kepala
-            statusLabel.Text = "⏳ Waiting for fish..."
-            statusLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
+            task.wait(customDelay)
             
-            local exclaimDetected = false
-            local startWaitTime = os.clock()
-            local maxWaitTime = 30 -- Maximum wait time in seconds
+            -- Selesaikan Minigame
+            statusLabel.Text = "✅ Fish Caught! Finishing..."
+            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
             
-            while autoFishingEnabled and not exclaimDetected and (os.clock() - startWaitTime) < maxWaitTime do
-                -- Check for exclaim effect
-                for _, effect in pairs(workspace:GetChildren()) do
-                    if effect.Name == "Effect" then
-                        local data = effect:FindFirstChild("Data")
-                        if data and data:FindFirstChild("TextData") then
-                            local textData = data.TextData
-                            if textData:FindFirstChild("EffectType") and textData.EffectType.Value == "Exclaim" then
-                                local myHead = Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("Head")
-                                if myHead and data:FindFirstChild("Container") and data.Container.Value == myHead then
-                                    exclaimDetected = true
-                                    break
-                                end
-                            end
-                        end
-                    end
-                end
-                task.wait(0.1)
-            end
+            finishRemote:FireServer(true)
             
-            if exclaimDetected then
-                -- Selesaikan fishing ketika tanda seru muncul
-                statusLabel.Text = "✅ Fish Caught! Finishing..."
-                statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-                
-                task.wait(CustomDelay)
-                for i = 1, 3 do
-                    finishRemote:FireServer(true)
-                    task.wait(BypassDelay)
-                end
-                rconsoleclear()
-            else
-                statusLabel.Text = "⏰ Timeout - No fish caught"
-                statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
-                task.wait(1)
-            end
+            task.wait(BypassDelay)
             
             fishingActive = false
                         
