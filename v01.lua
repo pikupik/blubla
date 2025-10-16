@@ -501,21 +501,21 @@ local sellRemote = net:WaitForChild("RF/SellAllItems")
 
 -- Rod Delays
 local RodDelays = {
-    ["Ares Rod"] = {custom = 1, bypass = 0.5},
-    ["Angler Rod"] = {custom = 1, bypass = 0.5},
-    ["Ghostfinn Rod"] = {custom = 1, bypass = 0.5},
-    ["Astral Rod"] = {custom = 1, bypass = 0.5},
-    ["Hazmat Rod"] = {custom = 1, bypass = 0.5},
-    ["Chrome Rod"] = {custom = 1, bypass = 0.5},
-    ["Steampunk Rod"] = {custom = 1, bypass = 0.5},
-    ["Lucky Rod"] = {custom = 1, bypass = 0.5},
-    ["Midnight Rod"] = {custom = 1, bypass = 0.5},
-    ["Demascus Rod"] = {custom = 1, bypass = 0.5},
-    ["Grass Rod"] = {custom = 1, bypass = 0.5},
-    ["Luck Rod"] = {custom = 1, bypass = 0.5},
-    ["Carbon Rod"] = {custom = 1, bypass = 0.5},
-    ["Lava Rod"] = {custom = 1, bypass = 0.5},
-    ["Starter Rod"] = {custom = 1, bypass = 0.5},
+    ["Ares Rod"] = {custom = 1.12, bypass = 1.45},
+    ["Angler Rod"] = {custom = 1.12, bypass = 1.45},
+    ["Ghostfinn Rod"] = {custom = 1.12, bypass = 1.45},
+    ["Astral Rod"] = {custom = 1.9, bypass = 1.45},
+    ["Hazmat Rod"] = {custom = 1.9, bypass = 1.45},
+    ["Chrome Rod"] = {custom = 2.3, bypass = 2},
+    ["Steampunk Rod"] = {custom = 2.5, bypass = 2.3},
+    ["Lucky Rod"] = {custom = 3.5, bypass = 3.6},
+    ["Midnight Rod"] = {custom = 3.3, bypass = 3.4},
+    ["Demascus Rod"] = {custom = 3.9, bypass = 3.8},
+    ["Grass Rod"] = {custom = 3.8, bypass = 3.9},
+    ["Luck Rod"] = {custom = 4.2, bypass = 4.1},
+    ["Carbon Rod"] = {custom = 4, bypass = 3.8},
+    ["Lava Rod"] = {custom = 4.2, bypass = 4.1},
+    ["Starter Rod"] = {custom = 4.3, bypass = 4.2},
 }
 
 local customDelay = 1
@@ -559,8 +559,8 @@ local function updateDelayBasedOnRod()
         statusLabel.Text = "✅ Rod Detected: " .. rodName
         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
     else
-        customDelay = 4.3
-        BypassDelay = 4.2
+        customDelay = 10
+        BypassDelay = 1
         delayInitialized = true
         statusLabel.Text = "⚠️ Default Delay Applied"
         statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
@@ -596,20 +596,16 @@ local function autoFishingLoop()
             statusLabel.Text = "🎯 Casting..."
             statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
             miniGameRemote:InvokeServer(x, y)
-
-            statusLabel.Text = "⏳ Waiting for fish (" .. string.format("%.2f", customDelay) .. "s)..."
-            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-            
             task.wait(customDelay)
             
             -- Selesaikan Minigame
             statusLabel.Text = "✅ Fish Caught! Finishing..."
             statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-            
-            finishRemote:FireServer(true)
-            
+
             task.wait(BypassDelay)
-            
+            finishRemote:FireServer(true)
+            rconsoleclear()
+                
             fishingActive = false
                         
         end)
@@ -625,7 +621,7 @@ local function autoFishingLoop()
     end
     
     fishingActive = false
-    statusLabel.Text = "🔴 Status: Idle"
+    statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
 
@@ -653,6 +649,7 @@ local function autoSellLoop()
                 statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
             end
         end)
+          
         
         if not success then
             warn("[Auto Sell Error]:", err)
@@ -660,6 +657,8 @@ local function autoSellLoop()
             statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
         end
     end
+    statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
 
 -- ===================================
