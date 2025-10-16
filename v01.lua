@@ -77,7 +77,7 @@ local titleText = create("TextLabel", {
     Size = UDim2.new(1, -66, 1, 0),
     Position = UDim2.new(0, 12, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🐟 Fish It - INSTANT",
+    Text = "🐟 Fish It - Codepikk",
     Font = Enum.Font.GothamBold,
     TextSize = 13,
     TextColor3 = Color3.fromRGB(100, 180, 255),
@@ -158,7 +158,7 @@ local fishTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎣 Auto Instant Fishing",
+    Text = "🎣 Auto Instant Fishing V1",
     Font = Enum.Font.GothamBold,
     TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -473,10 +473,11 @@ local function createTeleportGUI()
 end
 
 -- ===================================
--- ========== FISHING SYSTEM =========
+-- ========== FISHING V1 ===========
 -- ===================================
 local autoFishingEnabled = false
 local autoSellEnabled = false
+local delayInitialized = false
 
 -- Remote Events/Functions
 local net
@@ -498,14 +499,88 @@ local finishRemote = net:WaitForChild("RE/FishingCompleted")
 local equipRemote = net:WaitForChild("RE/EquipToolFromHotbar")
 local sellRemote = net:WaitForChild("RF/SellAllItems")
 
--- Fungsi utama Auto Fishing - VERSI INSTANT
+-- Rod Delays
+local RodDelays = {
+    ["Ares Rod"] = {custom = 1.12, bypass = 1.45},
+    ["Angler Rod"] = {custom = 1.12, bypass = 1.45},
+    ["Ghostfinn Rod"] = {custom = 1.12, bypass = 1.45},
+    ["Astral Rod"] = {custom = 1.9, bypass = 1.45},
+    ["Hazmat Rod"] = {custom = 1.9, bypass = 1.45},
+    ["Chrome Rod"] = {custom = 2.3, bypass = 2},
+    ["Steampunk Rod"] = {custom = 2.5, bypass = 2.3},
+    ["Lucky Rod"] = {custom = 3.5, bypass = 3.6},
+    ["Midnight Rod"] = {custom = 3.3, bypass = 3.4},
+    ["Demascus Rod"] = {custom = 3.9, bypass = 3.8},
+    ["Grass Rod"] = {custom = 3.8, bypass = 3.9},
+    ["Luck Rod"] = {custom = 4.2, bypass = 4.1},
+    ["Carbon Rod"] = {custom = 4, bypass = 3.8},
+    ["Lava Rod"] = {custom = 4.2, bypass = 4.1},
+    ["Starter Rod"] = {custom = 4.3, bypass = 4.2},
+}
+
+local customDelay = 1
+local BypassDelay = 0.5
+local fishingActive = false
+
+local function getValidRodName()
+    local backpackGui = player.PlayerGui:FindFirstChild("Backpack")
+    if not backpackGui then return nil end
+    
+    local display = backpackGui:FindFirstChild("Display")
+    if not display then return nil end
+    
+    for _, tile in ipairs(display:GetChildren()) do
+        if tile:IsA("Frame") then
+            local inner = tile:FindFirstChild("Inner")
+            if inner then
+                local tags = inner:FindFirstChild("Tags")
+                if tags then
+                    local itemName = tags:FindFirstChild("ItemName")
+                    if itemName and itemName:IsA("TextLabel") then
+                        local name = itemName.Text
+                        if RodDelays[name] then
+                            return name
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return nil
+end
+
+local function updateDelayBasedOnRod()
+    if delayInitialized then return end
+    local rodName = getValidRodName()
+    if rodName and RodDelays[rodName] then
+        customDelay = RodDelays[rodName].custom
+        BypassDelay = RodDelays[rodName].bypass
+        delayInitialized = true
+        statusLabel.Text = "✅ Rod Detected: " .. rodName
+        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+    else
+        customDelay = 4.3
+        BypassDelay = 4.2
+        delayInitialized = true
+        statusLabel.Text = "⚠️ Default Delay Applied"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    end
+end
+
+-- Fungsi utama Auto Fishing
 local function autoFishingLoop()
     while autoFishingEnabled do
+        fishingActive = false
         local success, err = pcall(function()
+            updateDelayBasedOnRod()
+            
+            fishingActive = true
+            
             -- 1. Equip Rod
             statusLabel.Text = "🎣 Equipping Rod..."
             statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
             equipRemote:FireServer(1)
+            task.wait(0.1)
 
             -- 2. Charge Rod
             statusLabel.Text = "⚡ Charging Rod..."
@@ -522,23 +597,31 @@ local function autoFishingLoop()
             statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
             miniGameRemote:InvokeServer(x, y)
 
-            -- 4. INSTANT FINISH - Tidak menunggu
-            statusLabel.Text = "✅ Instant Catch!"
+            task.wait(0.5)
+            
+            -- Selesaikan Minigame
+            statusLabel.Text = "✅ Fish Caught! Finishing..."
             statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            
             finishRemote:FireServer(true)
+            
+            task.wait(0.5)
+            
+            fishingActive = false
+                        
         end)
         
         if not success then
             warn("[Auto Fishing Error]:", err)
             statusLabel.Text = "❌ Error! Check Output"
             statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-            task.wait(0.5) -- Jeda sebentar jika error
+            task.wait(2)
         end
         
-        -- Jeda sangat kecil untuk mencegah crash (0.01 detik)
-        task.wait(0.01)
+        task.wait(0.2)
     end
     
+    fishingActive = false
     statusLabel.Text = "🔴 Status: Idle"
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
@@ -549,6 +632,8 @@ end
 
 local function autoSellLoop()
     while autoSellEnabled do
+        task.wait(60)
+        
         local success, err = pcall(function()
             statusLabel.Text = "💰 Selling fish..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
@@ -571,8 +656,6 @@ local function autoSellLoop()
             statusLabel.Text = "❌ Sell Error!"
             statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
         end
-        
-        task.wait(60) -- Tetap jual setiap 60 detik
     end
 end
 
@@ -586,15 +669,16 @@ fishBtn.MouseButton1Click:Connect(function()
     if autoFishingEnabled then
         fishBtn.Text = "STOP"
         fishBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        statusLabel.Text = "🟢 INSTANT Fishing Started"
+        statusLabel.Text = "🟢 Auto Fishing Started"
         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-        _G.fishCount = 0
         task.spawn(autoFishingLoop)
     else
         fishBtn.Text = "START"
         fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        statusLabel.Text = "🔴 Fishing Stopped"
+        statusLabel.Text = "🔴 Auto Fishing Stopped"
         statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        delayInitialized = false
+        fishingActive = false
     end
 end)
 
@@ -623,6 +707,7 @@ end)
 closeBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = false
     autoSellEnabled = false
+    fishingActive = false
     screenGui:Destroy()
 end)
 
@@ -637,10 +722,10 @@ minimizeBtn.MouseButton1Click:Connect(function()
 end)
 
 print("=================================")
-print("🐟 Fish It - INSTANT MODE Loaded!")
+print("🐟 Fish It Auto Farm Loaded!")
 print("=================================")
 print("✅ GUI berhasil dimuat untuk:", player.Name)
-print("⚡ INSTANT FISHING - No delays!")
 print("📌 Equip fishing rod dan tekan START")
-print("🚀 Teleport feature ready!")
+print("🎯 Logic fishing telah diperbaiki.")
+print("🚀 Teleport feature added!")
 print("=================================")
