@@ -654,6 +654,10 @@ local function autoFishingLoop()
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
 
+-- ===================================
+-- ========== AUTO SELL LOOP =========
+-- ===================================
+
 -- Auto Sell Loop (dari base.lua)
 local function autoSellLoop()
     while autoSellEnabled do
@@ -698,228 +702,107 @@ local function autoSellLoop()
 end
 
 -- ===================================
--- ========== AUTO FISHING V2 FIXED =========
+-- ========== AUTO FISHING V2 =========
 -- ===================================
 
+local RunService = game:GetService("RunService")
+
 local autoFishingV2Enabled = false
-local fishingActiveV2 = false
-local delayInitializedV2 = false
+local fastLoopConnection
+local finishRemoteConnection
+local isCasting = false
 
--- Remote Events untuk V2
-local rodRemoteV2 = net:WaitForChild("RF/ChargeFishingRod")
-local miniGameRemoteV2 = net:WaitForChild("RF/RequestFishingMinigameStarted")
-local finishRemoteV2 = net:WaitForChild("RE/FishingCompleted")
-local equipRemoteV2 = net:WaitForChild("RE/EquipToolFromHotbar")
-
--- Cari remote untuk text effect dengan approach yang lebih safe
-local textEffectRemoteV2
-pcall(function()
-    textEffectRemoteV2 = net:WaitForChild("RE/ReplicateTextEffect")
-end)
-
--- Jika tidak ketemu, coba alternatif
-if not textEffectRemoteV2 then
-    pcall(function()
-        textEffectRemoteV2 = ReplicatedStorage.Packages._Index["sleitnick_net@0.2.0"].net["RE/ReplicateTextEffect"]
-    end)
+-- 🔧 Helper: cari rod yang valid
+local function getValidRodName()
+	local backpack = game.Players.LocalPlayer:WaitForChild("Backpack")
+	for _, item in ipairs(backpack:GetChildren()) do
+		if RodDelays[item.Name] then
+			return item.Name
+		end
+	end
+	local character = game.Players.LocalPlayer.Character
+	if character then
+		for _, item in ipairs(character:GetChildren()) do
+			if RodDelays[item.Name] then
+				return item.Name
+			end
+		end
+	end
+	return nil
 end
 
--- Optimized Rod Delays untuk V2
-local RodDelaysV2 = {
-    ["Ares Rod"] = {custom = 0.9, bypass = 0.8},
-    ["Angler Rod"] = {custom = 0.9, bypass = 0.8},  
-    ["Ghostfinn Rod"] = {custom = 0.9, bypass = 0.8},
-    ["Astral Rod"] = {custom = 1.3, bypass = 1.0},
-    ["Hazmat Rod"] = {custom = 1.3, bypass = 1.0},
-    ["Chrome Rod"] = {custom = 1.6, bypass = 1.2},
-    ["Steampunk Rod"] = {custom = 1.8, bypass = 1.5},
-    ["Lucky Rod"] = {custom = 2.6, bypass = 2.2},
-    ["Midnight Rod"] = {custom = 2.4, bypass = 2.0},
-    ["Demascus Rod"] = {custom = 2.9, bypass = 2.5},
-    ["Grass Rod"] = {custom = 2.8, bypass = 2.5},
-    ["Luck Rod"] = {custom = 3.1, bypass = 2.8},
-    ["Carbon Rod"] = {custom = 2.9, bypass = 2.5},
-    ["Lava Rod"] = {custom = 3.1, bypass = 2.8},
-    ["Starter Rod"] = {custom = 3.2, bypass = 2.9},
-}
+-- 🚀 Mulai Auto Fishing V2
+local function startAutoFishingV2()
+	if autoFishingV2Enabled then return end
+	autoFishingV2Enabled = true
+	statusLabel.Text = "🟢 Fast Fishing V2 Running..."
+	statusLabel.TextColor3 = Color3.fromRGB(100, 255, 255)
 
-local customDelayV2 = 0.9
-local BypassDelayV2 = 0.8
+	local rodName = getValidRodName()
+	if not rodName then
+		statusLabel.Text = "❌ No fishing rod found!"
+		statusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+		autoFishingV2Enabled = false
+		return
+	end
 
--- SIMPLE DETECTION SYSTEM tanpa event listener kompleks
-local exclamationDetected = false
+	local rodDelay = RodDelays[rodName] and RodDelays[rodName].bypass or 1.2
+	local nextFishTime = 0
 
--- Approach alternatif: Gunakan timing-based yang lebih reliable
-local function waitForExclamationTiming()
-    local waitStart = tick()
-    local maxWaitTime = customDelayV2
-    
-    while tick() - waitStart < maxWaitTime and autoFishingV2Enabled do
-        -- Simple timing-based approach tanpa event complex
-        local elapsed = tick() - waitStart
-        local remaining = math.max(0, customDelayV2 - elapsed)
-        statusLabel.Text = string.format("⏳ V2 Waiting (%.1fs)...", remaining)
-        task.wait(0.05)
-    end
-    
-    return true -- Always return true untuk timing-based
+	-- Hapus listener lama biar gak nabrak
+	if finishRemoteConnection then
+		finishRemoteConnection:Disconnect()
+	end
+
+	-- Saat server kirim event ikan tertangkap, reset flag
+	finishRemoteConnection = finishRemote.OnClientEvent:Connect(function()
+		isCasting = false
+		nextFishTime = tick() + 0.15
+	end)
+
+	-- Loop utama super cepat tapi aman
+	fastLoopConnection = RunService.Heartbeat:Connect(function()
+		if not autoFishingV2Enabled then return end
+		if tick() < nextFishTime then return end
+		if isCasting then return end
+
+		isCasting = true
+		task.spawn(function()
+			pcall(function()
+				-- 1️⃣ Tarik kail (charge penuh)
+				rodRemote:InvokeServer(100)
+				task.wait(0.05)
+
+				-- 2️⃣ Mulai minigame (langsung)
+				miniGameRemote:InvokeServer()
+				task.wait(rodDelay / 3)
+
+				-- 3️⃣ Claim hasil pancing
+				finishRemote:Fire()
+
+				-- 4️⃣ Delay kecil agar terlihat natural
+				task.wait(0.05)
+			end)
+
+			isCasting = false
+			nextFishTime = tick() + 0.1
+		end)
+	end)
 end
 
-local function getValidRodNameV2()
-    local display = player.PlayerGui:WaitForChild("Backpack"):WaitForChild("Display")
-    for _, tile in ipairs(display:GetChildren()) do
-        local success, itemNamePath = pcall(function()
-            return tile.Inner.Tags.ItemName
-        end)
-        if success and itemNamePath and itemNamePath:IsA("TextLabel") then
-            local name = itemNamePath.Text
-            if RodDelaysV2[name] then
-                return name
-            end
-        end
-    end
-    return nil
-end
-
-local function updateDelayBasedOnRodV2()
-    if delayInitializedV2 then return end
-    local rodName = getValidRodNameV2()
-    if rodName and RodDelaysV2[rodName] then
-        customDelayV2 = RodDelaysV2[rodName].custom
-        BypassDelayV2 = RodDelaysV2[rodName].bypass
-        delayInitializedV2 = true
-        statusLabel.Text = "⚡ V2 Rod: " .. rodName
-        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
-    else
-        customDelayV2 = 3.0  -- Default lebih pendek
-        BypassDelayV2 = 0.8
-        delayInitializedV2 = true
-        statusLabel.Text = "⚡ V2 Default Speed"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-    end
-end
-
--- FIXED FISHING LOOP V2 - LEBIH SIMPLE
-local function autoFishingLoopV2()
-    while autoFishingV2Enabled do
-        local success, err = pcall(function()
-            updateDelayBasedOnRodV2()
-            
-            fishingActiveV2 = true
-            
-            -- 1. Equip Rod
-            statusLabel.Text = "⚡ Equipping Rod (V2)..."
-            statusLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
-            equipRemoteV2:FireServer(1)
-            task.wait(0.1)
-
-            -- 2. Charge Rod
-            statusLabel.Text = "⚡ Charging Rod (V2)..."
-            statusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-            
-            local chargeSuccess = pcall(function()
-                local chargeRemote = ReplicatedStorage.Packages._Index["sleitnick_net@0.2.0"].net["RF/ChargeFishingRod"]
-                chargeRemote:InvokeServer(workspace:GetServerTimeNow())
-            end)
-            
-            if not chargeSuccess then
-                statusLabel.Text = "❌ Charge Failed"
-                return
-            end
-            
-            task.wait(0.3)
-
-            -- 3. Cast Rod
-            local timestamp = workspace:GetServerTimeNow()
-            local castSuccess = pcall(function()
-                rodRemoteV2:InvokeServer(timestamp)
-            end)
-            
-            if not castSuccess then
-                statusLabel.Text = "❌ Cast Failed"
-                return
-            end
-
-            -- 4. Request Minigame
-            local baseX, baseY = -0.7499996423721313, 1
-            local x = baseX + (math.random(-300, 300) / 10000000)
-            local y = baseY + (math.random(-300, 300) / 10000000)
-
-            statusLabel.Text = "🎯 Casting (V2)..."
-            statusLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
-            
-            local minigameSuccess = pcall(function()
-                miniGameRemoteV2:InvokeServer(x, y)
-            end)
-            
-            if not minigameSuccess then
-                statusLabel.Text = "❌ Minigame Failed"
-                return
-            end
-
-            -- 5. Wait dengan timing simple
-            statusLabel.Text = "⏳ Waiting for bite (V2)..."
-            statusLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
-            
-            waitForExclamationTiming()
-
-            -- 6. Finish fishing - MULTIPLE ATTEMPTS
-            statusLabel.Text = "✅ Finishing (V2)..."
-            statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-            
-            for i = 1, 2 do
-                pcall(function()
-                    finishRemoteV2:FireServer(true)
-                end)
-                task.wait(0.1)
-            end
-
-            -- 7. Short cooldown
-            task.wait(BypassDelayV2)
-            
-            fishingActiveV2 = false
-            statusLabel.Text = "⚡ V2 Cycle Complete"
-            statusLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
-        end)
-        
-        if not success then
-            warn("[V2 Error]:", err)
-            statusLabel.Text = "❌ V2 Error - Retrying..."
-            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-            task.wait(1)
-        end
-        
-        -- Short break antara cycles
-        if autoFishingV2Enabled then
-            task.wait(0.2)
-        end
-    end
-    
-    fishingActiveV2 = false
-    statusLabel.Text = "🔴 V2 Stopped"
-    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-end
-
--- Function control V2
-local function startAutoFishV2()
-    if autoFishingV2Enabled then return end
-    
-    autoFishingV2Enabled = true
-    delayInitializedV2 = false
-    
-    -- Debug info
-    print("=== V2 STARTED ===")
-    print("Rod Remote:", rodRemoteV2)
-    print("Minigame Remote:", miniGameRemoteV2)
-    print("Finish Remote:", finishRemoteV2)
-    
-    task.spawn(autoFishingLoopV2)
-end
-
-local function stopAutoFishV2()
-    autoFishingV2Enabled = false
-    fishingActiveV2 = false
-    delayInitializedV2 = false
+-- 🛑 Hentikan Auto Fishing V2
+local function stopAutoFishingV2()
+	autoFishingV2Enabled = false
+	if fastLoopConnection then
+		fastLoopConnection:Disconnect()
+		fastLoopConnection = nil
+	end
+	if finishRemoteConnection then
+		finishRemoteConnection:Disconnect()
+		finishRemoteConnection = nil
+	end
+	statusLabel.Text = "🔴 Fast Fishing V2 Stopped"
+	statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
 
 -- ===================================
@@ -969,28 +852,15 @@ end)
 
 -- Button logic untuk V2
 fishBtnV2.MouseButton1Click:Connect(function()
-    autoFishingV2Enabled = not autoFishingV2Enabled
-    
-    if autoFishingV2Enabled then
-        -- Stop V1 jika sedang berjalan
-        if autoFishingEnabled then
-            autoFishingEnabled = false
-            fishBtn.Text = "START"
-            fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        end
-        
-        fishBtnV2.Text = "STOP"
-        fishBtnV2.BackgroundColor3 = Color3.fromRGB(200, 50, 100)
-        statusLabel.Text = "⚡ V2 Ultra Fast Started"
-        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
-        startAutoFishV2()
-    else
-        fishBtnV2.Text = "START"
-        fishBtnV2.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
-        statusLabel.Text = "🔴 V2 Stopped"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-        stopAutoFishV2()
-    end
+	if autoFishingV2Enabled then
+		stopAutoFishingV2()
+		fishBtnV2.Text = "START"
+		fishBtnV2.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+	else
+		startAutoFishingV2()
+		fishBtnV2.Text = "STOP"
+		fishBtnV2.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+	end
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
