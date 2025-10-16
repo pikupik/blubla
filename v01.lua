@@ -428,10 +428,9 @@ local function createTeleportGUI()
                 statusLabel.Text = "❌ Teleport failed"
                 statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
             end
-            statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
-            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-
         end)
+        statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 
         yPosition = yPosition + 40
     end
@@ -571,65 +570,6 @@ local function updateDelayBasedOnRod()
     end
 end
 
--- ✅ Simpan posisi terakhir berdiri
-local lastPosition = nil
-local stuckTimer = 0
-local maxIdleTime = 5 -- detik diam maksimal sebelum dianggap bug
-
--- Fungsi untuk respawn player & pindah ke posisi terakhir
-local function respawnAtLastPosition()
-	if not player.Character or not lastPosition then return end
-	autoFishingEnabled = false
-	statusLabel.Text = "⚠️ Bug detected, respawning..."
-	statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
-
-	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-	if humanoid then
-		humanoid.Health = 0 -- bunuh diri supaya respawn
-	end
-
-	player.CharacterAdded:Wait()
-	task.wait(2) -- tunggu karakter kebentuk ulang
-
-	local newRoot = player.Character:WaitForChild("HumanoidRootPart", 5)
-	if newRoot then
-		newRoot.CFrame = CFrame.new(lastPosition)
-		statusLabel.Text = "✅ Respawned and returned to last position."
-		statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-	else
-		statusLabel.Text = "❌ Respawn failed!"
-		statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-	end
-end
-
--- 🧭 Loop untuk memantau apakah player diam (anti-stuck)
-task.spawn(function()
-	while true do
-		task.wait(1)
-		if autoFishingEnabled and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-			local root = player.Character.HumanoidRootPart
-			local currentPos = root.Position
-
-			if lastPosition then
-				local moved = (currentPos - lastPosition).Magnitude
-				if moved < 0.5 then
-					stuckTimer += 1
-				else
-					stuckTimer = 0
-				end
-
-				if stuckTimer >= maxIdleTime then
-					respawnAtLastPosition()
-					stuckTimer = 0
-				end
-			end
-
-			lastPosition = currentPos
-		end
-	end
-end)
-
-
 -- 🎯 Exclaim (Tanda Seru) Listener + Auto Cast lagi
 task.spawn(function()
 	local success, exclaimEvent = pcall(function()
@@ -642,14 +582,14 @@ task.spawn(function()
 				and data.TextData.EffectType == "Exclaim" then
 
 				local head = player.Character and player.Character:FindFirstChild("Head")
-				if head and data.Container == head then
+				if head and data.Container and data.Container.Parent == player.Character then
 					task.spawn(function()
 						-- 🐟 Ikan digigit → tarik ikan
 						task.wait(BypassDelay)
 						finishRemote:FireServer(true)
 
-						-- 🕒 Tunggu animasi tarik
-						task.wait(0.8)
+						-- 🕒 Tunggu sedikit agar animasi tarik selesai
+						task.wait(0.4)
 
 						-- 🎣 Langsung lempar lagi kalau autoFishing masih aktif
 						if autoFishingEnabled then
@@ -665,49 +605,38 @@ task.spawn(function()
 				end
 			end
 		end)
-		print("[✅] Exclaim detection active (auto recast + anti-stuck).")
+		print("[✅] Exclaim detection active (auto recast).")
 	else
 		warn("[⚠️] ReplicateTextEffect not found, skipping Exclaim logic.")
 	end
 end)
 
+-- Fungsi utama Auto Fishing
 
--- 🎣 AUTO FISHING LOOP
 local function autoFishingLoop()
 	while autoFishingEnabled do
 		local ok, err = pcall(function()
 			updateDelayBasedOnRod()
 			fishingActive = true
 			statusLabel.Text = "🎣 Casting..."
-			statusLabel.TextColor3 = Color3.fromRGB(255, 255, 150)
-
 			equipRemote:FireServer(1)
 			task.wait(0.1)
-
 			local timestamp = workspace:GetServerTimeNow()
 			rodRemote:InvokeServer(timestamp)
-
 			local baseX, baseY = -0.7499996, 1
 			local x = baseX + (math.random(-500, 500) / 10000000)
 			local y = baseY + (math.random(-500, 500) / 10000000)
 			miniGameRemote:InvokeServer(x, y)
-
 			task.wait(customDelay)
 			finishRemote:FireServer(true)
 			task.wait(BypassDelay)
 		end)
-
-		if not ok then
-			warn(err)
-			statusLabel.Text = "❌ Error in fishing loop!"
-			statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-		end
+		if not ok then warn(err) end
 		task.wait(0.2)
 	end
-
 	fishingActive = false
-	statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
-	statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+   statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
+   statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
 
 -- ===================================
