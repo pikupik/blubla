@@ -489,7 +489,7 @@ local eventsList = {
     "Meteor Rain" 
 }
 
--- Tambah tombol baru di bawah tombol teleport island
+-- Section Event Teleport
 local eventTeleportSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 42),
@@ -568,6 +568,19 @@ local function createEventTeleportGUI()
     })
     create("UICorner", {Parent = closeBtn, CornerRadius = UDim.new(0, 6)})
 
+    -- Dapatkan event yang benar-benar aktif
+    local props = workspace:FindFirstChild("Props")
+    local activeEvents = {}
+
+    if props then
+        for _, eventName in ipairs(eventsList) do
+            if props:FindFirstChild(eventName) then
+                table.insert(activeEvents, eventName)
+            end
+        end
+    end
+
+    -- Scroll
     local scroll = create("ScrollingFrame", {
         Parent = eventFrame,
         Size = UDim2.new(1, -20, 1, -60),
@@ -575,44 +588,67 @@ local function createEventTeleportGUI()
         BackgroundTransparency = 1,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-        CanvasSize = UDim2.new(0, 0, 0, #eventsList * 40)
+        CanvasSize = UDim2.new(0, 0, 0, #activeEvents * 40)
     })
 
-    local y = 0
-    for _, eventName in ipairs(eventsList) do
-        local eventBtn = create("TextButton", {
+    if #activeEvents == 0 then
+        local none = create("TextLabel", {
             Parent = scroll,
-            Size = UDim2.new(1, 0, 0, 35),
-            Position = UDim2.new(0, 0, 0, y),
-            BackgroundColor3 = Color3.fromRGB(35, 45, 65),
-            Text = "📍 " .. eventName,
-            Font = Enum.Font.Gotham,
-            TextSize = 12,
-            TextColor3 = Color3.fromRGB(220, 220, 220)
+            Size = UDim2.new(1, 0, 1, 0),
+            BackgroundTransparency = 1,
+            Text = "❌ No active events detected",
+            Font = Enum.Font.GothamBold,
+            TextSize = 13,
+            TextColor3 = Color3.fromRGB(255, 120, 120)
         })
-        create("UICorner", {Parent = eventBtn, CornerRadius = UDim.new(0, 6)})
-        create("UIStroke", {Parent = eventBtn, Color = Color3.fromRGB(60, 100, 160), Thickness = 1})
-        addHover(eventBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
+    else
+        local y = 0
+        for _, eventName in ipairs(activeEvents) do
+            local eventBtn = create("TextButton", {
+                Parent = scroll,
+                Size = UDim2.new(1, 0, 0, 35),
+                Position = UDim2.new(0, 0, 0, y),
+                BackgroundColor3 = Color3.fromRGB(35, 45, 65),
+                Text = "📍 " .. eventName,
+                Font = Enum.Font.Gotham,
+                TextSize = 12,
+                TextColor3 = Color3.fromRGB(220, 220, 220)
+            })
+            create("UICorner", {Parent = eventBtn, CornerRadius = UDim.new(0, 6)})
+            create("UIStroke", {Parent = eventBtn, Color = Color3.fromRGB(60, 100, 160), Thickness = 1})
+            addHover(eventBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
 
-        eventBtn.MouseButton1Click:Connect(function()
-            local props = workspace:FindFirstChild("Props")
-            if props and props:FindFirstChild(eventName) and props[eventName]:FindFirstChild("Fishing Boat") then
-                local fishingBoat = props[eventName]["Fishing Boat"]
-                local boatCFrame = fishingBoat:GetPivot()
-                local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    hrp.CFrame = boatCFrame + Vector3.new(0, 15, 0)
-                    statusLabel.Text = "✅ Teleported to " .. eventName
-                    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-                    eventGui:Destroy()
+            eventBtn.MouseButton1Click:Connect(function()
+                local eventModel = props and props:FindFirstChild(eventName)
+                if eventModel then
+                    local teleportCFrame
+
+                    -- Cari target teleport (prioritaskan Fishing Boat)
+                    local fishingBoat = eventModel:FindFirstChild("Fishing Boat")
+                    if fishingBoat then
+                        teleportCFrame = fishingBoat:GetPivot()
+                    else
+                        teleportCFrame = eventModel:GetPivot()
+                    end
+
+                    local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                    if hrp and teleportCFrame then
+                        hrp.CFrame = teleportCFrame + Vector3.new(0, 10, 0)
+                        statusLabel.Text = "✅ Teleported to " .. eventName
+                        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+                        eventGui:Destroy()
+                    else
+                        statusLabel.Text = "❌ Teleport failed"
+                        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+                    end
+                else
+                    statusLabel.Text = "❌ Event not found: " .. eventName
+                    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
                 end
-            else
-                statusLabel.Text = "❌ Event not found: " .. eventName
-                statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-            end
-        end)
+            end)
 
-        y += 40
+            y += 40
+        end
     end
 
     closeBtn.MouseButton1Click:Connect(function()
@@ -624,6 +660,7 @@ end
 eventTeleportBtn.MouseButton1Click:Connect(function()
     createEventTeleportGUI()
 end)
+
 
 -- ===================================
 -- ========== NPC TELEPORT ===========
@@ -875,6 +912,19 @@ end)
 local autoFishingEnabled = false
 local autoSellEnabled = false
 local delayInitialized = false
+
+local RodIdle = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("FishingRodReelIdle")
+local RodReel = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("EasyFishReelStart")
+local RodShake = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("CastFromFullChargePosition1Hand")
+
+local character = Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", humanoid)
+
+local RodShakeAnim = animator:LoadAnimation(RodShake)
+local RodIdleAnim = animator:LoadAnimation(RodIdle)
+local RodReelAnim = animator:LoadAnimation(RodReel)
+
 
 -- Remote Events/Functions
 local net
