@@ -321,7 +321,8 @@ local islandCoords = {
     ["Isoteric Island"] = Vector3.new(1987, 4, 1400),
     ["Treasure Hall"] = Vector3.new(-3600, -267, -1558),
     ["Lost Shore"] = Vector3.new(-3663, 38, -989),
-    ["Sishypus Statue"] = Vector3.new(-3792, -135, -986)
+    ["Sishypus Statue"] = Vector3.new(-3792, -135, -986),
+    ["Ancient Jungle"] = Vector3.new(1316, 7, -196)
 }
 
 local function createTeleportGUI()
@@ -428,6 +429,8 @@ local function createTeleportGUI()
                 statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
             end
         end)
+        statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 
         yPosition = yPosition + 40
     end
