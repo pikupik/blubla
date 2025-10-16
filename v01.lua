@@ -582,25 +582,13 @@ task.spawn(function()
 				and data.TextData.EffectType == "Exclaim" then
 
 				local head = player.Character and player.Character:FindFirstChild("Head")
-				if head and data.Container and data.Container.Parent == player.Character then
+				if head and data.Container == head then
 					task.spawn(function()
-						-- 🐟 Ikan digigit → tarik ikan
-						task.wait(BypassDelay)
-						finishRemote:FireServer(true)
-
-						-- 🕒 Tunggu sedikit agar animasi tarik selesai
-						task.wait(0.4)
-
-						-- 🎣 Langsung lempar lagi kalau autoFishing masih aktif
-						if autoFishingEnabled then
-							local timestamp = workspace:GetServerTimeNow()
-							rodRemote:InvokeServer(timestamp)
-
-							local baseX, baseY = -0.7499996, 1
-							local x = baseX + (math.random(-500, 500) / 10000000)
-							local y = baseY + (math.random(-500, 500) / 10000000)
-							miniGameRemote:InvokeServer(x, y)
-						end
+                 for i = 1, 3 do
+                    task.wait(BypassDelayV2)
+                    finishRemote:FireServer()
+                    rconsoleclear()
+                 end
 					end)
 				end
 			end
