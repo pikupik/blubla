@@ -21,37 +21,7 @@ local function create(className, properties)
         if property ~= "Parent" then
             instance[property] = value
         end
-    endlocal function autoSellLoop()
-    while autoSellEnabled do
-        task.wait(1)
-        
-        local success, err = pcall(function()
-            statusLabel.Text = "💰 Selling fish..."
-            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-            
-            local sellSuccess = pcall(function()
-                sellRemote:InvokeServer()
-            end)
-
-            if sellSuccess then
-                statusLabel.Text = "✅ Sold!"
-                statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-            else
-                statusLabel.Text = "❌ Sell Failed"
-                statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-            end
-        end)
-          
-        
-        if not success then
-            warn("[Auto Sell Error]:", err)
-            statusLabel.Text = "❌ Sell Error!"
-            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-        end
     end
-    statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
-    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-end
     if properties.Parent then
         instance.Parent = properties.Parent
     end
@@ -638,130 +608,69 @@ task.spawn(function()
 	end
 end)
 
+-- Fungsi utama Auto Fishing
 
-
--- 🕐 Fungsi bantu untuk pastikan server siap cast ulang
-local function waitUntilReady()
-	local char = player.Character or player.CharacterAdded:Wait()
-	local timeout = os.clock()
-	while char:FindFirstChild("FishingBusy") or char:FindFirstChild("FishingActive") do
-		task.wait(0.1)
-		-- antisipasi biar gak infinite loop kalau tag gak ada
-		if os.clock() - timeout > 3 then break end
-	end
-end
-
-
-
--- 🎣 AUTO FISHING LOOP (dengan Exclaim + fallback manual)
 local function autoFishingLoop()
 	while autoFishingEnabled do
 		local ok, err = pcall(function()
 			updateDelayBasedOnRod()
 			fishingActive = true
-
-			statusLabel.Text = "🎣 Casting bait..."
-			statusLabel.TextColor3 = Color3.fromRGB(255, 255, 150)
-
-			-- Equip rod slot 1
+			statusLabel.Text = "🎣 Casting..."
 			equipRemote:FireServer(1)
 			task.wait(0.1)
-
-			-- Kirim sinyal lempar kail
 			local timestamp = workspace:GetServerTimeNow()
 			rodRemote:InvokeServer(timestamp)
-
-			-- Kirim posisi acak biar tidak ke-detect pattern
 			local baseX, baseY = -0.7499996, 1
 			local x = baseX + (math.random(-500, 500) / 10000000)
 			local y = baseY + (math.random(-500, 500) / 10000000)
 			miniGameRemote:InvokeServer(x, y)
-
-			-- Tunggu ikan menggigit (via Exclaim) atau fallback delay manual
-			local startTime = os.clock()
-			local biteDetected = false
-
-			repeat
-				task.wait(0.1)
-				if not autoFishingEnabled then return end
-				-- kalau tanda seru muncul, biteDetected akan true di listener
-			until biteDetected or (os.clock() - startTime) >= customDelay
-
-			-- Kalau Exclaim gak muncul, pakai delay manual untuk selesaikan
-			if not biteDetected then
-				statusLabel.Text = "⌛ No bite detected, finishing manually..."
-				statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
-				finishRemote:FireServer(true)
-			end
-
-			-- Tunggu animasi tarik ikan & reset server state
+			task.wait(customDelay)
+			finishRemote:FireServer(true)
 			task.wait(BypassDelay)
-			waitUntilReady()
 		end)
-
-		if not ok then
-			warn("[Fishing Error]:", err)
-			statusLabel.Text = "❌ Error in fishing loop!"
-			statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-		end
-
+		if not ok then warn(err) end
 		task.wait(0.2)
 	end
-
 	fishingActive = false
-	statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
-	statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+   statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
+   statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
-
 
 -- ===================================
 -- ========== AUTO SELL LOOP =========
 -- ===================================
+
 local function autoSellLoop()
-    local lastSellTime = 0 -- waktu terakhir jual
-    local cooldown = 60    -- jeda 60 detik sebelum bisa jual lagi
-
     while autoSellEnabled do
-        task.wait(1) -- loop tetap hidup, tapi cek tiap 1 detik
-
-        local now = os.time()
-        if now - lastSellTime >= cooldown then
-            -- waktunya jual lagi
-            local success, err = pcall(function()
-                statusLabel.Text = "💰 Selling fish..."
-                statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-
-                local sellSuccess = pcall(function()
-                    sellRemote:InvokeServer()
-                end)
-
-                if sellSuccess then
-                    statusLabel.Text = "✅ Sold! (Next sell in 60s)"
-                    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-                    lastSellTime = os.time() -- update waktu terakhir jual
-                else
-                    statusLabel.Text = "❌ Sell Failed"
-                    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-                end
+        task.wait(1)
+        
+        local success, err = pcall(function()
+            statusLabel.Text = "💰 Selling fish..."
+            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+            
+            local sellSuccess = pcall(function()
+                sellRemote:InvokeServer()
             end)
 
-            if not success then
-                warn("[Auto Sell Error]:", err)
-                statusLabel.Text = "❌ Sell Error!"
+            if sellSuccess then
+                statusLabel.Text = "✅ Sold!"
+                statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            else
+                statusLabel.Text = "❌ Sell Failed"
                 statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
             end
-        else
-            -- masih cooldown
-            local remaining = cooldown - (now - lastSellTime)
-            statusLabel.Text = string.format("⏳ Next sell in %ds", remaining)
-            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+        end)
+          
+        
+        if not success then
+            warn("[Auto Sell Error]:", err)
+            statusLabel.Text = "❌ Sell Error!"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
         end
     end
-
     statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
-
 
 -- ===================================
 -- ========== BUTTON LOGIC ===========
