@@ -2,11 +2,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService") -- Ditambahkan untuk koneksi
-local net = ReplicatedStorage:WaitForChild("Packages")
-	:WaitForChild("_Index")
-	:WaitForChild("sleitnick_net@0.2.0")
-	:WaitForChild("net")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -44,12 +40,12 @@ local screenGui = create("ScreenGui", {
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 })
 
--- Main Frame (dan elemen-elemen di dalamnya)
+-- Main Frame
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 370), -- DIPERBESAR lagii
-    Position = UDim2.new(0.5, -150, 0.5, -185), -- DIPERBESAR
+    Size = UDim2.new(0, 300, 0, 370),
+    Position = UDim2.new(0.5, -150, 0.5, -185),
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -123,7 +119,7 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 520) -- DIPERBESAR
+    CanvasSize = UDim2.new(0, 0, 0, 520)
 })
 
 local statusBox = create("Frame", {
@@ -223,7 +219,7 @@ create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)})
 local teleportSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 165), -- Ditempatkan di bawah sellSection
+    Position = UDim2.new(0, 0, 0, 165),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -484,13 +480,26 @@ local autoSellEnabled = false
 local delayInitialized = false
 
 -- Remote Events/Functions
+local net
+local success, err = pcall(function()
+    net = ReplicatedStorage:WaitForChild("Packages")
+        :WaitForChild("_Index")
+        :WaitForChild("sleitnick_net@0.2.0")
+        :WaitForChild("net")
+end)
+
+if not success then
+    warn("Net package not found, trying alternative path...")
+    net = ReplicatedStorage:WaitForChild("Net")
+end
+
 local rodRemote = net:WaitForChild("RF/ChargeFishingRod")
 local miniGameRemote = net:WaitForChild("RF/RequestFishingMinigameStarted")
 local finishRemote = net:WaitForChild("RE/FishingCompleted")
 local equipRemote = net:WaitForChild("RE/EquipToolFromHotbar")
 local sellRemote = net:WaitForChild("RF/SellAllItems")
 
--- Rod Delays (dari base.lua)
+-- Rod Delays
 local RodDelays = {
     ["Ares Rod"] = {custom = 1.12, bypass = 1.45},
     ["Angler Rod"] = {custom = 1.12, bypass = 1.45},
@@ -511,18 +520,29 @@ local RodDelays = {
 
 local customDelay = 1
 local BypassDelay = 0.5
-local fishingActive = false -- Status memancing
+local fishingActive = false
 
 local function getValidRodName()
-    local display = player.PlayerGui:WaitForChild("Backpack"):WaitForChild("Display")
+    local backpackGui = player.PlayerGui:FindFirstChild("Backpack")
+    if not backpackGui then return nil end
+    
+    local display = backpackGui:FindFirstChild("Display")
+    if not display then return nil end
+    
     for _, tile in ipairs(display:GetChildren()) do
-        local success, itemNamePath = pcall(function()
-            return tile.Inner.Tags.ItemName
-        end)
-        if success and itemNamePath and itemNamePath:IsA("TextLabel") then
-            local name = itemNamePath.Text
-            if RodDelays[name] then
-                return name
+        if tile:IsA("Frame") then
+            local inner = tile:FindFirstChild("Inner")
+            if inner then
+                local tags = inner:FindFirstChild("Tags")
+                if tags then
+                    local itemName = tags:FindFirstChild("ItemName")
+                    if itemName and itemName:IsA("TextLabel") then
+                        local name = itemName.Text
+                        if RodDelays[name] then
+                            return name
+                        end
+                    end
+                end
             end
         end
     end
@@ -539,15 +559,15 @@ local function updateDelayBasedOnRod()
         statusLabel.Text = "✅ Rod Detected: " .. rodName
         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
     else
-        customDelay = 10
-        BypassDelay = 1
+        customDelay = 4.3
+        BypassDelay = 4.2
         delayInitialized = true
         statusLabel.Text = "⚠️ Default Delay Applied"
         statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
     end
 end
 
- Fungsi utama Auto Fishing
+-- Fungsi utama Auto Fishing
 local function autoFishingLoop()
     while autoFishingEnabled do
         fishingActive = false
@@ -565,13 +585,8 @@ local function autoFishingLoop()
             -- 2. Charge Rod
             statusLabel.Text = "⚡ Charging Rod..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-            local chargeRemote = ReplicatedStorage
-                .Packages._Index["sleitnick_net@0.2.0"].net["RF/ChargeFishingRod"]
-            chargeRemote:InvokeServer(workspace:GetServerTimeNow())
-            task.wait(0.5)
-
             local timestamp = workspace:GetServerTimeNow()
-            rodRemote:InvokeServer(timestamp) -- Panggil remote rod
+            rodRemote:InvokeServer(timestamp)
 
             -- 3. Cast Rod (Request Minigame)
             local baseX, baseY = -0.7499996423721313, 1
@@ -585,15 +600,15 @@ local function autoFishingLoop()
             statusLabel.Text = "⏳ Waiting for fish (" .. string.format("%.2f", customDelay) .. "s)..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
             
-            task.wait(customDelay) -- Tunggu waktu gigitan
+            task.wait(customDelay)
             
-            -- [[ PERBAIKAN STUCK: Selesaikan Minigame (Bypass) ]]
+            -- Selesaikan Minigame
             statusLabel.Text = "✅ Fish Caught! Finishing..."
             statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
             
-            finishRemote:FireServer(true) -- Kirim sinyal penyelesaian ke server
+            finishRemote:FireServer(true)
             
-            task.wait(BypassDelay) -- Jeda bypass sebelum siklus baru
+            task.wait(BypassDelay)
             
             fishingActive = false
                         
@@ -606,7 +621,6 @@ local function autoFishingLoop()
             task.wait(2)
         end
         
-        -- Jeda antar siklus untuk mengurangi tekanan pada server
         task.wait(0.2)
     end
     
@@ -619,39 +633,25 @@ end
 -- ========== AUTO SELL LOOP =========
 -- ===================================
 
--- Auto Sell Loop (dari base.lua)
 local function autoSellLoop()
     while autoSellEnabled do
-        task.wait(60) -- Sell every 60 seconds
+        task.wait(60)
         
         local success, err = pcall(function()
             statusLabel.Text = "💰 Selling fish..."
             statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
             
-            local charFolder = workspace:FindFirstChild("Characters")
-            local char = charFolder and charFolder:FindFirstChild(player.Name)
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            
-            if not hrp then
-                statusLabel.Text = "❌ Character not found"
-                return
-            end
-
-            -- Tidak perlu berpindah ke sell spot karena RF/SellAllItems biasanya bekerja di mana saja
-            task.spawn(function()
-                task.wait(1)
-                local sellSuccess = pcall(function()
-                    sellRemote:InvokeServer()
-                end)
-
-                if sellSuccess then
-                    statusLabel.Text = "✅ Sold!"
-                    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-                else
-                    statusLabel.Text = "❌ Sell Failed"
-                    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-                end
+            local sellSuccess = pcall(function()
+                sellRemote:InvokeServer()
             end)
+
+            if sellSuccess then
+                statusLabel.Text = "✅ Sold!"
+                statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            else
+                statusLabel.Text = "❌ Sell Failed"
+                statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            end
         end)
         
         if not success then
@@ -719,11 +719,10 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 320)
+        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 370)
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
-
 
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
