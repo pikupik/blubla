@@ -44,8 +44,8 @@ local screenGui = create("ScreenGui", {
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 370),
-    Position = UDim2.new(0.5, -150, 0.5, -185),
+    Size = UDim2.new(0, 300, 0, 400), -- Diperbesar untuk muat semua button
+    Position = UDim2.new(0.5, -150, 0.5, -200),
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -119,7 +119,7 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 520)
+    CanvasSize = UDim2.new(0, 0, 0, 650) -- Diperbesar untuk muat semua section
 })
 
 local statusBox = create("Frame", {
@@ -143,6 +143,7 @@ local statusLabel = create("TextLabel", {
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
+-- ========== FISHING SECTION ==========
 local fishSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 42),
@@ -179,6 +180,7 @@ local fishBtn = create("TextButton", {
 
 create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)})
 
+-- ========== SELL SECTION ==========
 local sellSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 42),
@@ -215,7 +217,7 @@ local sellBtn = create("TextButton", {
 
 create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)})
 
--- ========== TELEPORT SECTION ==========
+-- ========== ISLAND TELEPORT SECTION ==========
 local teleportSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 42),
@@ -251,6 +253,111 @@ local teleportBtn = create("TextButton", {
 })
 
 create("UICorner", {Parent = teleportBtn, CornerRadius = UDim.new(0, 6)})
+
+-- ========== EVENT TELEPORT SECTION ==========
+local eventTeleportSection = create("Frame", {
+    Parent = contentFrame,
+    Size = UDim2.new(1, 0, 0, 42),
+    Position = UDim2.new(0, 0, 0, 216),
+    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+})
+create("UICorner", {Parent = eventTeleportSection, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = eventTeleportSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+
+local eventTeleportTitle = create("TextLabel", {
+    Parent = eventTeleportSection,
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 9, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "🌪️ Teleport to Event",
+    Font = Enum.Font.GothamBold,
+    TextSize = 9,
+    TextColor3 = Color3.fromRGB(220, 220, 220),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Center
+})
+
+local eventTeleportBtn = create("TextButton", {
+    Parent = eventTeleportSection,
+    Size = UDim2.new(0, 72, 0, 29),
+    Position = UDim2.new(1, -78, 0, 7),
+    BackgroundColor3 = Color3.fromRGB(100, 120, 180),
+    Text = "OPEN",
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+create("UICorner", {Parent = eventTeleportBtn, CornerRadius = UDim.new(0, 6)})
+
+-- ========== NPC TELEPORT SECTION ==========
+local npcTeleportSection = create("Frame", {
+    Parent = contentFrame,
+    Size = UDim2.new(1, 0, 0, 42),
+    Position = UDim2.new(0, 0, 0, 267),
+    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+})
+create("UICorner", {Parent = npcTeleportSection, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = npcTeleportSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+
+local npcTeleportTitle = create("TextLabel", {
+    Parent = npcTeleportSection,
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 9, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "🧍 Teleport to NPC",
+    Font = Enum.Font.GothamBold,
+    TextSize = 9,
+    TextColor3 = Color3.fromRGB(220, 220, 220),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Center
+})
+
+local npcTeleportBtn = create("TextButton", {
+    Parent = npcTeleportSection,
+    Size = UDim2.new(0, 72, 0, 29),
+    Position = UDim2.new(1, -78, 0, 7),
+    BackgroundColor3 = Color3.fromRGB(80, 120, 160),
+    Text = "OPEN",
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+create("UICorner", {Parent = npcTeleportBtn, CornerRadius = UDim.new(0, 6)})
+
+-- ========== ANTI-AFK SECTION ==========
+local antiAFKSection = create("Frame", {
+    Parent = contentFrame,
+    Size = UDim2.new(1, 0, 0, 42),
+    Position = UDim2.new(0, 0, 0, 318),
+    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+})
+create("UICorner", {Parent = antiAFKSection, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = antiAFKSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+
+local antiAFKTitle = create("TextLabel", {
+    Parent = antiAFKSection,
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 9, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "👤 Anti-AFK System",
+    Font = Enum.Font.GothamBold,
+    TextSize = 9,
+    TextColor3 = Color3.fromRGB(220, 220, 220),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Center
+})
+
+local antiAFKBtn = create("TextButton", {
+    Parent = antiAFKSection,
+    Size = UDim2.new(0, 72, 0, 29),
+    Position = UDim2.new(1, -78, 0, 7),
+    BackgroundColor3 = Color3.fromRGB(150, 100, 50),
+    Text = "ENABLE",
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+create("UICorner", {Parent = antiAFKBtn, CornerRadius = UDim.new(0, 6)})
 
 -- ===================================
 -- ========== DRAG & HOVER ==========
@@ -303,6 +410,9 @@ addHover(minimizeBtn, Color3.fromRGB(70, 80, 100), Color3.fromRGB(90, 100, 120))
 addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(teleportBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
+addHover(eventTeleportBtn, Color3.fromRGB(100, 120, 180), Color3.fromRGB(120, 140, 200))
+addHover(npcTeleportBtn, Color3.fromRGB(80, 120, 160), Color3.fromRGB(100, 140, 180))
+addHover(antiAFKBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
 
 -- ===================================
 -- ========== TELEPORT SYSTEM =========
@@ -326,6 +436,10 @@ local islandCoords = {
 }
 
 local function createTeleportGUI()
+    if playerGui:FindFirstChild("TeleportGUI") then
+        playerGui:FindFirstChild("TeleportGUI"):Destroy()
+    end
+
     local teleportGui = create("ScreenGui", {
         Name = "TeleportGUI",
         Parent = playerGui,
@@ -379,7 +493,7 @@ local function createTeleportGUI()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-        CanvasSize = UDim2.new(0, 0, 0, #game:GetService("HttpService"):JSONEncode(islandCoords) * 40)
+        CanvasSize = UDim2.new(0, 0, 0, #islandCoords * 40)
     })
 
     local yPosition = 0
@@ -429,8 +543,6 @@ local function createTeleportGUI()
                 statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
             end
         end)
-        statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 
         yPosition = yPosition + 40
     end
@@ -489,42 +601,6 @@ local eventsList = {
     "Meteor Rain"
 }
 
--- Section Event Teleport
-local eventTeleportSection = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 216),
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
-create("UICorner", {Parent = eventTeleportSection, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = eventTeleportSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
-
-local eventTeleportTitle = create("TextLabel", {
-    Parent = eventTeleportSection,
-    Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "🌪️ Teleport to Event",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Center
-})
-
-local eventTeleportBtn = create("TextButton", {
-    Parent = eventTeleportSection,
-    Size = UDim2.new(0, 72, 0, 29),
-    Position = UDim2.new(1, -78, 0, 7),
-    BackgroundColor3 = Color3.fromRGB(100, 120, 180),
-    Text = "OPEN",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
-create("UICorner", {Parent = eventTeleportBtn, CornerRadius = UDim.new(0, 6)})
-addHover(eventTeleportBtn, Color3.fromRGB(100, 120, 180), Color3.fromRGB(120, 140, 200))
-
 -- Fungsi buat GUI event teleport
 local function createEventTeleportGUI()
     if playerGui:FindFirstChild("EventTeleportGUI") then
@@ -556,7 +632,6 @@ local function createEventTeleportGUI()
         Position = UDim2.new(0.5, -140, 0.5, -175),
         BackgroundColor3 = Color3.fromRGB(15, 20, 30),
         BorderSizePixel = 0,
-        ZIndex = 5
     })
     create("UICorner", {Parent = eventFrame, CornerRadius = UDim.new(0, 10)})
     create("UIStroke", {Parent = eventFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5})
@@ -569,7 +644,6 @@ local function createEventTeleportGUI()
         Font = Enum.Font.GothamBold,
         TextSize = 16,
         TextColor3 = Color3.fromRGB(100, 180, 255),
-        ZIndex = 6
     })
     create("UICorner", {Parent = title, CornerRadius = UDim.new(0, 10)})
 
@@ -582,7 +656,6 @@ local function createEventTeleportGUI()
         Font = Enum.Font.GothamBold,
         TextSize = 13,
         TextColor3 = Color3.fromRGB(255, 255, 255),
-        ZIndex = 6
     })
     create("UICorner", {Parent = closeBtn, CornerRadius = UDim.new(0, 6)})
 
@@ -594,7 +667,6 @@ local function createEventTeleportGUI()
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
         CanvasSize = UDim2.new(0, 0, 0, math.max(#activeEvents * 40, 100)),
-        ZIndex = 5
     })
 
     if #activeEvents == 0 then
@@ -606,7 +678,6 @@ local function createEventTeleportGUI()
             Font = Enum.Font.GothamBold,
             TextSize = 13,
             TextColor3 = Color3.fromRGB(255, 120, 120),
-            ZIndex = 5
         })
     else
         local y = 0
@@ -620,7 +691,6 @@ local function createEventTeleportGUI()
                 Font = Enum.Font.Gotham,
                 TextSize = 12,
                 TextColor3 = Color3.fromRGB(220, 220, 220),
-                ZIndex = 5
             })
             create("UICorner", {Parent = eventBtn, CornerRadius = UDim.new(0, 6)})
             create("UIStroke", {Parent = eventBtn, Color = Color3.fromRGB(60, 100, 160), Thickness = 1})
@@ -662,10 +732,6 @@ local function createEventTeleportGUI()
     end)
 end
 
-eventTeleportBtn.MouseButton1Click:Connect(function()
-    createEventTeleportGUI()
-end)
-
 -- ===================================
 -- ========== NPC TELEPORT ===========
 -- ===================================
@@ -684,45 +750,12 @@ for _, npc in pairs(npcFolder:GetChildren()) do
 	end
 end
 
--- Tambah section baru di bawah event teleport
-local npcTeleportSection = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 267), -- di bawah Event Teleport
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
-create("UICorner", {Parent = npcTeleportSection, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = npcTeleportSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
-
-local npcTeleportTitle = create("TextLabel", {
-    Parent = npcTeleportSection,
-    Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "🧍 Teleport to NPC",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Center
-})
-
-local npcTeleportBtn = create("TextButton", {
-    Parent = npcTeleportSection,
-    Size = UDim2.new(0, 72, 0, 29),
-    Position = UDim2.new(1, -78, 0, 7),
-    BackgroundColor3 = Color3.fromRGB(80, 120, 160),
-    Text = "OPEN",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
-create("UICorner", {Parent = npcTeleportBtn, CornerRadius = UDim.new(0, 6)})
-addHover(npcTeleportBtn, Color3.fromRGB(80, 120, 160), Color3.fromRGB(100, 140, 180))
-
-
 -- Fungsi buat GUI list NPC
 local function createNPCTeleportGUI()
+    if playerGui:FindFirstChild("NPCTeleportGUI") then
+        playerGui:FindFirstChild("NPCTeleportGUI"):Destroy()
+    end
+
     local npcGui = create("ScreenGui", {
         Name = "NPCTeleportGUI",
         Parent = playerGui,
@@ -822,11 +855,6 @@ local function createNPCTeleportGUI()
     end)
 end
 
--- Buka GUI NPC Teleport
-npcTeleportBtn.MouseButton1Click:Connect(function()
-    createNPCTeleportGUI()
-end)
-
 -- ===================================
 -- ========== ANTI-AFK SYSTEM =========
 -- ===================================
@@ -834,43 +862,6 @@ end)
 local VirtualUser = game:GetService("VirtualUser")
 local AntiAFKEnabled = false
 local AFKConnection = nil
-
--- Tambah section Anti-AFK di bawah NPC Teleport
-local antiAFKSection = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 318), -- di bawah Teleport to NPC
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
-create("UICorner", {Parent = antiAFKSection, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = antiAFKSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
-
-local antiAFKTitle = create("TextLabel", {
-    Parent = antiAFKSection,
-    Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "👤 Anti-AFK System",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Center
-})
-
-local antiAFKBtn = create("TextButton", {
-    Parent = antiAFKSection,
-    Size = UDim2.new(0, 72, 0, 29),
-    Position = UDim2.new(1, -78, 0, 7),
-    BackgroundColor3 = Color3.fromRGB(150, 100, 50),
-    Text = "ENABLE",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
-create("UICorner", {Parent = antiAFKBtn, CornerRadius = UDim.new(0, 6)})
-addHover(antiAFKBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
-
 
 -- Fungsi untuk mengaktifkan/menonaktifkan Anti-AFK
 local function toggleAntiAFK(enable)
@@ -905,11 +896,6 @@ local function toggleAntiAFK(enable)
     end
 end
 
--- Klik tombol untuk aktifkan/matikan anti-AFK
-antiAFKBtn.MouseButton1Click:Connect(function()
-    toggleAntiAFK(not AntiAFKEnabled)
-end)
-
 -- ===================================
 -- ========== FISHING V1 ===========
 -- ===================================
@@ -928,7 +914,6 @@ local animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Ani
 local RodShakeAnim = animator:LoadAnimation(RodShake)
 local RodIdleAnim = animator:LoadAnimation(RodIdle)
 local RodReelAnim = animator:LoadAnimation(RodReel)
-
 
 -- Remote Events/Functions
 local net
@@ -1033,9 +1018,8 @@ task.spawn(function()
 				if head and data.Container == head then
 					task.spawn(function()
                  for i = 1, 3 do
-                    task.wait(BypassDelayV2)
+                    task.wait(BypassDelay)
                     finishRemote:FireServer()
-                    rconsoleclear()
                  end
 					end)
 				end
@@ -1048,7 +1032,6 @@ task.spawn(function()
 end)
 
 -- Fungsi utama Auto Fishing
-
 local function autoFishingLoop()
 	while autoFishingEnabled do
 		local ok, err = pcall(function()
@@ -1131,7 +1114,6 @@ local function autoSellLoop()
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
 
-
 -- ===================================
 -- ========== BUTTON LOGIC ===========
 -- ===================================
@@ -1177,6 +1159,21 @@ teleportBtn.MouseButton1Click:Connect(function()
     createTeleportGUI()
 end)
 
+-- Event Teleport Button Logic
+eventTeleportBtn.MouseButton1Click:Connect(function()
+    createEventTeleportGUI()
+end)
+
+-- NPC Teleport Button Logic
+npcTeleportBtn.MouseButton1Click:Connect(function()
+    createNPCTeleportGUI()
+end)
+
+-- Anti-AFK Button Logic
+antiAFKBtn.MouseButton1Click:Connect(function()
+    toggleAntiAFK(not AntiAFKEnabled)
+end)
+
 closeBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = false
     autoSellEnabled = false
@@ -1189,7 +1186,7 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 370)
+        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 400)
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
