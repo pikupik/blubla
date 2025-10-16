@@ -479,21 +479,21 @@ end
 -- ========== EVENT TELEPORT ==========
 -- ===================================
 
-local eventsList = { 
-    "Shark Hunt", 
-    "Ghost Shark Hunt", 
-    "Worm Hunt", 
-    "Black Hole", 
-    "Shocked", 
-    "Ghost Worm", 
-    "Meteor Rain" 
+local eventsList = {
+    "Shark Hunt",
+    "Ghost Shark Hunt",
+    "Worm Hunt",
+    "Black Hole",
+    "Shocked",
+    "Ghost Worm",
+    "Meteor Rain"
 }
 
 -- Section Event Teleport
 local eventTeleportSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 216), -- di bawah teleport island
+    Position = UDim2.new(0, 0, 0, 216),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 create("UICorner", {Parent = eventTeleportSection, CornerRadius = UDim.new(0, 7)})
@@ -525,50 +525,12 @@ local eventTeleportBtn = create("TextButton", {
 create("UICorner", {Parent = eventTeleportBtn, CornerRadius = UDim.new(0, 6)})
 addHover(eventTeleportBtn, Color3.fromRGB(100, 120, 180), Color3.fromRGB(120, 140, 200))
 
-
--- Fungsi untuk buat GUI teleport event
+-- Fungsi buat GUI event teleport
 local function createEventTeleportGUI()
-    local eventGui = create("ScreenGui", {
-        Name = "EventTeleportGUI",
-        Parent = playerGui,
-        ResetOnSpawn = false,
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    })
+    if playerGui:FindFirstChild("EventTeleportGUI") then
+        playerGui:FindFirstChild("EventTeleportGUI"):Destroy()
+    end
 
-    local eventFrame = create("Frame", {
-        Parent = eventGui,
-        Size = UDim2.new(0, 280, 0, 350),
-        Position = UDim2.new(0.5, -140, 0.5, -175),
-        BackgroundColor3 = Color3.fromRGB(15, 20, 30),
-        BorderSizePixel = 0
-    })
-    create("UICorner", {Parent = eventFrame, CornerRadius = UDim.new(0, 10)})
-    create("UIStroke", {Parent = eventFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5})
-
-    local title = create("TextLabel", {
-        Parent = eventFrame,
-        Size = UDim2.new(1, 0, 0, 40),
-        BackgroundColor3 = Color3.fromRGB(25, 35, 55),
-        Text = "🌪️ Active Event Teleport",
-        Font = Enum.Font.GothamBold,
-        TextSize = 16,
-        TextColor3 = Color3.fromRGB(100, 180, 255)
-    })
-    create("UICorner", {Parent = title, CornerRadius = UDim.new(0, 10)})
-
-    local closeBtn = create("TextButton", {
-        Parent = title,
-        Size = UDim2.new(0, 25, 0, 25),
-        Position = UDim2.new(1, -29, 0, 7),
-        BackgroundColor3 = Color3.fromRGB(220, 50, 50),
-        Text = "X",
-        Font = Enum.Font.GothamBold,
-        TextSize = 13,
-        TextColor3 = Color3.fromRGB(255, 255, 255)
-    })
-    create("UICorner", {Parent = closeBtn, CornerRadius = UDim.new(0, 6)})
-
-    -- Dapatkan event yang benar-benar aktif
     local props = workspace:FindFirstChild("Props")
     local activeEvents = {}
 
@@ -580,7 +542,50 @@ local function createEventTeleportGUI()
         end
     end
 
-    -- Scroll
+    -- GUI utama
+    local eventGui = create("ScreenGui", {
+        Name = "EventTeleportGUI",
+        Parent = playerGui,
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    })
+
+    local eventFrame = create("Frame", {
+        Parent = eventGui,
+        Size = UDim2.new(0, 280, 0, 350),
+        Position = UDim2.new(0.5, -140, 0.5, -175),
+        BackgroundColor3 = Color3.fromRGB(15, 20, 30),
+        BorderSizePixel = 0,
+        ZIndex = 5
+    })
+    create("UICorner", {Parent = eventFrame, CornerRadius = UDim.new(0, 10)})
+    create("UIStroke", {Parent = eventFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5})
+
+    local title = create("TextLabel", {
+        Parent = eventFrame,
+        Size = UDim2.new(1, 0, 0, 40),
+        BackgroundColor3 = Color3.fromRGB(25, 35, 55),
+        Text = "🌪️ Active Event Teleport",
+        Font = Enum.Font.GothamBold,
+        TextSize = 16,
+        TextColor3 = Color3.fromRGB(100, 180, 255),
+        ZIndex = 6
+    })
+    create("UICorner", {Parent = title, CornerRadius = UDim.new(0, 10)})
+
+    local closeBtn = create("TextButton", {
+        Parent = title,
+        Size = UDim2.new(0, 25, 0, 25),
+        Position = UDim2.new(1, -29, 0, 7),
+        BackgroundColor3 = Color3.fromRGB(220, 50, 50),
+        Text = "X",
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        ZIndex = 6
+    })
+    create("UICorner", {Parent = closeBtn, CornerRadius = UDim.new(0, 6)})
+
     local scroll = create("ScrollingFrame", {
         Parent = eventFrame,
         Size = UDim2.new(1, -20, 1, -60),
@@ -588,18 +593,20 @@ local function createEventTeleportGUI()
         BackgroundTransparency = 1,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-        CanvasSize = UDim2.new(0, 0, 0, #activeEvents * 40)
+        CanvasSize = UDim2.new(0, 0, 0, math.max(#activeEvents * 40, 100)),
+        ZIndex = 5
     })
 
     if #activeEvents == 0 then
-        local none = create("TextLabel", {
+        create("TextLabel", {
             Parent = scroll,
             Size = UDim2.new(1, 0, 1, 0),
             BackgroundTransparency = 1,
             Text = "❌ No active events detected",
             Font = Enum.Font.GothamBold,
             TextSize = 13,
-            TextColor3 = Color3.fromRGB(255, 120, 120)
+            TextColor3 = Color3.fromRGB(255, 120, 120),
+            ZIndex = 5
         })
     else
         local y = 0
@@ -612,7 +619,8 @@ local function createEventTeleportGUI()
                 Text = "📍 " .. eventName,
                 Font = Enum.Font.Gotham,
                 TextSize = 12,
-                TextColor3 = Color3.fromRGB(220, 220, 220)
+                TextColor3 = Color3.fromRGB(220, 220, 220),
+                ZIndex = 5
             })
             create("UICorner", {Parent = eventBtn, CornerRadius = UDim.new(0, 6)})
             create("UIStroke", {Parent = eventBtn, Color = Color3.fromRGB(60, 100, 160), Thickness = 1})
@@ -621,19 +629,18 @@ local function createEventTeleportGUI()
             eventBtn.MouseButton1Click:Connect(function()
                 local eventModel = props and props:FindFirstChild(eventName)
                 if eventModel then
-                    local teleportCFrame
-
-                    -- Cari target teleport (prioritaskan Fishing Boat)
+                    local targetCFrame
                     local fishingBoat = eventModel:FindFirstChild("Fishing Boat")
+
                     if fishingBoat then
-                        teleportCFrame = fishingBoat:GetPivot()
+                        targetCFrame = fishingBoat:GetPivot()
                     else
-                        teleportCFrame = eventModel:GetPivot()
+                        targetCFrame = eventModel:GetPivot()
                     end
 
                     local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp and teleportCFrame then
-                        hrp.CFrame = teleportCFrame + Vector3.new(0, 10, 0)
+                    if hrp and targetCFrame then
+                        hrp.CFrame = targetCFrame + Vector3.new(0, 10, 0)
                         statusLabel.Text = "✅ Teleported to " .. eventName
                         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
                         eventGui:Destroy()
@@ -646,7 +653,6 @@ local function createEventTeleportGUI()
                     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
                 end
             end)
-
             y += 40
         end
     end
@@ -656,11 +662,9 @@ local function createEventTeleportGUI()
     end)
 end
 
--- Buka GUI Event Teleport
 eventTeleportBtn.MouseButton1Click:Connect(function()
     createEventTeleportGUI()
 end)
-
 
 -- ===================================
 -- ========== NPC TELEPORT ===========
