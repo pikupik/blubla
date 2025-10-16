@@ -713,23 +713,22 @@ local finishRemoteConnection
 local isCasting = false
 
 -- 🔧 Helper: cari rod yang valid
-local function getValidRodName()
-	local backpack = game.Players.LocalPlayer:WaitForChild("Backpack")
-	for _, item in ipairs(backpack:GetChildren()) do
-		if RodDelays[item.Name] then
-			return item.Name
-		end
-	end
-	local character = game.Players.LocalPlayer.Character
-	if character then
-		for _, item in ipairs(character:GetChildren()) do
-			if RodDelays[item.Name] then
-				return item.Name
-			end
-		end
-	end
-	return nil
+local function getValidRodNameV2()
+    local display = player.PlayerGui:WaitForChild("Backpack"):WaitForChild("Display")
+    for _, tile in ipairs(display:GetChildren()) do
+        local success, itemNamePath = pcall(function()
+            return tile.Inner.Tags.ItemName
+        end)
+        if success and itemNamePath and itemNamePath:IsA("TextLabel") then
+            local name = itemNamePath.Text
+            if RodDelays[name] then
+                return name
+            end
+        end
+    end
+    return nil
 end
+
 
 -- 🚀 Mulai Auto Fishing V2
 local function startAutoFishingV2()
@@ -738,7 +737,7 @@ local function startAutoFishingV2()
 	statusLabel.Text = "🟢 Fast Fishing V2 Running..."
 	statusLabel.TextColor3 = Color3.fromRGB(100, 255, 255)
 
-	local rodName = getValidRodName()
+	local rodName = getValidRodNameV2()
 	if not rodName then
 		statusLabel.Text = "❌ No fishing rod found!"
 		statusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
