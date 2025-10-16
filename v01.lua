@@ -44,8 +44,8 @@ local screenGui = create("ScreenGui", {
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 420),
-    Position = UDim2.new(0.5, -150, 0.5, -210),
+    Size = UDim2.new(0, 300, 0, 370),
+    Position = UDim2.new(0.5, -150, 0.5, -185),
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -77,7 +77,7 @@ local titleText = create("TextLabel", {
     Size = UDim2.new(1, -66, 1, 0),
     Position = UDim2.new(0, 12, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🐟 Fish It - Auto Priority",
+    Text = "🐟 Fish It - Codepikk",
     Font = Enum.Font.GothamBold,
     TextSize = 13,
     TextColor3 = Color3.fromRGB(100, 180, 255),
@@ -119,7 +119,7 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 570)
+    CanvasSize = UDim2.new(0, 0, 0, 520)
 })
 
 local statusBox = create("Frame", {
@@ -136,67 +136,17 @@ local statusLabel = create("TextLabel", {
     Size = UDim2.new(1, -12, 0, 18),
     Position = UDim2.new(0, 6, 0, 5),
     BackgroundTransparency = 1,
-    Text = "🔴 Status: Idle\n🔴 Script: Auto Priority V1\nPriority: Mytic > Secret > Rare",
+    Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!",
     Font = Enum.Font.GothamBold,
     TextSize = 10,
     TextColor3 = Color3.fromRGB(255, 100, 100),
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
--- ========== PRIORITY SETTINGS SECTION ==========
-local prioritySection = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 85),
-    Position = UDim2.new(0, 0, 0, 63),
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
-
-create("UICorner", {Parent = prioritySection, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = prioritySection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
-
-local priorityTitle = create("TextLabel", {
-    Parent = prioritySection,
-    Size = UDim2.new(1, -12, 0, 20),
-    Position = UDim2.new(0, 6, 0, 5),
-    BackgroundTransparency = 1,
-    Text = "🎯 FISH PRIORITY SETTINGS",
-    Font = Enum.Font.GothamBold,
-    TextSize = 11,
-    TextColor3 = Color3.fromRGB(100, 180, 255),
-    TextXAlignment = Enum.TextXAlignment.Left
-})
-
--- Priority Toggles
-local mythicToggle = create("TextButton", {
-    Parent = prioritySection,
-    Size = UDim2.new(0.9, 0, 0, 20),
-    Position = UDim2.new(0.05, 0, 0, 30),
-    BackgroundColor3 = Color3.fromRGB(50, 150, 50),
-    Text = "⭐ MYTHIC: ON",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
-
-create("UICorner", {Parent = mythicToggle, CornerRadius = UDim.new(0, 5)})
-
-local secretToggle = create("TextButton", {
-    Parent = prioritySection,
-    Size = UDim2.new(0.9, 0, 0, 20),
-    Position = UDim2.new(0.05, 0, 0, 55),
-    BackgroundColor3 = Color3.fromRGB(50, 150, 50),
-    Text = "🔮 SECRET: ON", 
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
-
-create("UICorner", {Parent = secretToggle, CornerRadius = UDim.new(0, 5)})
-
 local fishSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 157),
+    Position = UDim2.new(0, 0, 0, 63),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -208,7 +158,7 @@ local fishTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎣 Auto Priority Fishing",
+    Text = "🎣 Auto Instant Fishing V1",
     Font = Enum.Font.GothamBold,
     TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -232,7 +182,7 @@ create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)})
 local sellSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 208),
+    Position = UDim2.new(0, 0, 0, 114),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -269,7 +219,7 @@ create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)})
 local teleportSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 259),
+    Position = UDim2.new(0, 0, 0, 165),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -353,95 +303,6 @@ addHover(minimizeBtn, Color3.fromRGB(70, 80, 100), Color3.fromRGB(90, 100, 120))
 addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(teleportBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
-addHover(mythicToggle, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
-addHover(secretToggle, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
-
--- ===================================
--- ========== PRIORITY SYSTEM ========
--- ===================================
-
-local PrioritySettings = {
-    Mythic = true,
-    Secret = true,
-    Rare = true
-}
-
--- Fish rarity detection system
-local FishRarities = {
-    -- Mythic Fish
-    ["Hammerhead Shark"] = "Mythic",
-    ["Prismy Seahorse"] = "Mythic", 
-    ["Loggerhead Turtle"] = "Mythic",
-    ["Blob Fish"] = "Mythic",
-    ["Armor Catfish"] = "Mythic",
-    
-    -- Secret Fish
-    ["Orca"] = "Secret",
-    ["Monster Shark"] = "Secret",
-    ["Eerie Shark"] = "Secret",
-    ["Great Whale"] = "Secret",
-    ["Robot Kraken"] = "Secret",
-    
-    -- Rare Fish
-    ["Kau Cardinal"] = "Rare",
-    ["Candy Butterfly"] = "Rare",
-    ["Jewel Tang"] = "Rare",
-    ["Fire Goby"] = "Rare",
-    ["Manta Ray"] = "Rare"
-}
-
-local currentPriority = "Mythic"
-local priorityCycle = {"Mythic", "Secret", "Rare"}
-local currentCycleIndex = 1
-
--- Function to detect fish rarity from game
-local function detectFishRarity()
-    -- This function would need to be customized based on how the game displays caught fish
-    -- For now, we'll use a simulated detection system
-    local backpack = player:FindFirstChild("Backpack")
-    if backpack then
-        for _, item in pairs(backpack:GetChildren()) do
-            if item:IsA("Tool") then
-                local itemName = item.Name
-                for fishName, rarity in pairs(FishRarities) do
-                    if string.find(itemName, fishName) then
-                        return rarity, fishName
-                    end
-                end
-            end
-        end
-    end
-    return "Common", "Unknown"
-end
-
--- Function to update priority based on current settings
-local function updatePriority()
-    for i = 1, #priorityCycle do
-        local priority = priorityCycle[currentCycleIndex]
-        if PrioritySettings[priority] then
-            currentPriority = priority
-            return priority
-        end
-        currentCycleIndex = currentCycleIndex % #priorityCycle + 1
-    end
-    currentPriority = "Rare" -- Fallback
-    return "Rare"
-end
-
--- Toggle functions for priority settings
-mythicToggle.MouseButton1Click:Connect(function()
-    PrioritySettings.Mythic = not PrioritySettings.Mythic
-    mythicToggle.Text = "⭐ MYTHIC: " .. (PrioritySettings.Mythic and "ON" or "OFF")
-    mythicToggle.BackgroundColor3 = PrioritySettings.Mythic and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(150, 50, 50)
-    updatePriority()
-end)
-
-secretToggle.MouseButton1Click:Connect(function()
-    PrioritySettings.Secret = not PrioritySettings.Secret
-    secretToggle.Text = "🔮 SECRET: " .. (PrioritySettings.Secret and "ON" or "OFF")
-    secretToggle.BackgroundColor3 = PrioritySettings.Secret and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(150, 50, 50)
-    updatePriority()
-end)
 
 -- ===================================
 -- ========== TELEPORT SYSTEM =========
@@ -706,79 +567,56 @@ local function updateDelayBasedOnRod()
     end
 end
 
--- Enhanced Auto Fishing with Priority System
+-- 🎯 Exclaim (Tanda Seru) Listener
+task.spawn(function()
+	local success, exclaimEvent = pcall(function()
+		return net:WaitForChild("RE/ReplicateTextEffect", 5)
+	end)
+	if success and exclaimEvent then
+		exclaimEvent.OnClientEvent:Connect(function(data)
+			if autoFishingEnabled and data and data.TextData
+				and data.TextData.EffectType == "Exclaim" then
+				-- jika tanda seru muncul di kepala player
+				local head = player.Character and player.Character:FindFirstChild("Head")
+				if head and data.Container == head then
+					task.spawn(function()
+						task.wait(BypassDelay)
+						finishRemote:FireServer()
+					end)
+				end
+			end
+		end)
+	else
+		warn("ReplicateTextEffect not found")
+	end
+end)
+
+
+-- Fungsi utama Auto Fishing
+
 local function autoFishingLoop()
-    while autoFishingEnabled do
-        fishingActive = false
-        local success, err = pcall(function()
-            updateDelayBasedOnRod()
-            
-            fishingActive = true
-            
-            -- Update current priority
-            local activePriority = updatePriority()
-            
-            -- 1. Equip Rod
-            statusLabel.Text = "🎣 Equipping Rod..."
-            statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-            equipRemote:FireServer(1)
-            task.wait(0.1)
-
-            -- 2. Charge Rod
-            statusLabel.Text = "⚡ Charging Rod..."
-            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-            local timestamp = workspace:GetServerTimeNow()
-            rodRemote:InvokeServer(timestamp)
-
-            -- 3. Cast Rod (Request Minigame)
-            local baseX, baseY = -0.7499996423721313, 1
-            local x = baseX + (math.random(-500, 500) / 10000000)
-            local y = baseY + (math.random(-500, 500) / 10000000)
-
-            statusLabel.Text = "🎯 Casting..."
-            statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-            miniGameRemote:InvokeServer(x, y)
-
-            statusLabel.Text = "⏳ Cast Up - Priority: " .. activePriority
-            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-            
-            task.wait(customDelay)
-            
-            -- Selesaikan Minigame
-            statusLabel.Text = "✅ Fish Caught! Finishing..."
-            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-            
-            finishRemote:FireServer(true)
-            
-            task.wait(BypassDelay)
-            
-            -- Check if we caught a high priority fish and cycle accordingly
-            local caughtRarity, fishName = detectFishRarity()
-            if caughtRarity == currentPriority then
-                -- Successfully caught target rarity, move to next priority
-                currentCycleIndex = currentCycleIndex % #priorityCycle + 1
-                statusLabel.Text = "🎉 Caught " .. caughtRarity .. "! Moving to next priority..."
-            else
-                statusLabel.Text = "🐟 Caught " .. caughtRarity .. " fish. Continuing..."
-            end
-            
-            fishingActive = false
-                        
-        end)
-        
-        if not success then
-            warn("[Auto Fishing Error]:", err)
-            statusLabel.Text = "❌ Error! Check Output"
-            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-            task.wait(2)
-        end
-        
-        task.wait(0.2)
-    end
-    
-    fishingActive = false
-    statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Auto Priority V1\nPriority: Mytic > Secret > Rare"
-    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+	while autoFishingEnabled do
+		local ok, err = pcall(function()
+			updateDelayBasedOnRod()
+			fishingActive = true
+			statusLabel.Text = "🎣 Casting..."
+			equipRemote:FireServer(1)
+			task.wait(0.1)
+			local timestamp = workspace:GetServerTimeNow()
+			rodRemote:InvokeServer(timestamp)
+			local baseX, baseY = -0.7499996, 1
+			local x = baseX + (math.random(-500, 500) / 10000000)
+			local y = baseY + (math.random(-500, 500) / 10000000)
+			miniGameRemote:InvokeServer(x, y)
+			task.wait(customDelay)
+			finishRemote:FireServer(true)
+			task.wait(BypassDelay)
+		end)
+		if not ok then warn(err) end
+		task.wait(0.2)
+	end
+	fishingActive = false
+   statusLabel.Text = "🔴 Idle"
 end
 
 -- ===================================
@@ -787,7 +625,7 @@ end
 
 local function autoSellLoop()
     while autoSellEnabled do
-        task.wait(60)
+        task.wait(1)
         
         local success, err = pcall(function()
             statusLabel.Text = "💰 Selling fish..."
@@ -813,7 +651,7 @@ local function autoSellLoop()
             statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
         end
     end
-    statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Auto Priority V1\nPriority: Mytic > Secret > Rare"
+    statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
 
@@ -827,7 +665,7 @@ fishBtn.MouseButton1Click:Connect(function()
     if autoFishingEnabled then
         fishBtn.Text = "STOP"
         fishBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        statusLabel.Text = "🟢 Auto Priority Fishing Started"
+        statusLabel.Text = "🟢 Auto Fishing Started"
         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
         task.spawn(autoFishingLoop)
     else
@@ -874,16 +712,16 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 420)
+        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 370)
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
 
 print("=================================")
-print("🐟 Fish It Auto Priority Loaded!")
+print("🐟 Fish It Auto Farm Loaded!")
 print("=================================")
 print("✅ GUI berhasil dimuat untuk:", player.Name)
-print("🎯 Priority System: Mytic > Secret > Rare")
-print("⚙️  Configure priority settings sebelum start")
-print("🚀 Teleport feature available!")
+print("📌 Equip fishing rod dan tekan START")
+print("🎯 Logic fishing telah diperbaiki.")
+print("🚀 Teleport feature added!")
 print("=================================")
