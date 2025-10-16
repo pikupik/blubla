@@ -9,6 +9,19 @@ local playerGui = player:WaitForChild("PlayerGui")
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
+local RodIdle = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("FishingRodReelIdle")
+local RodReel = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("EasyFishReelStart")
+local RodShake = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("CastFromFullChargePosition1Hand")
+
+local character = Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", humanoid)
+
+local RodShakeAnim = animator:LoadAnimation(RodShake)
+local RodIdleAnim = animator:LoadAnimation(RodIdle)
+local RodReelAnim = animator:LoadAnimation(RodReel)
+
+
 ---- Hapus GUI lama
 if playerGui:FindFirstChild("FishItAutoGUI") then
     playerGui:FindFirstChild("FishItAutoGUI"):Destroy()
@@ -476,268 +489,11 @@ local function createTeleportGUI()
 end
 
 -- ===================================
--- ========== NPC TELEPORT ===========
--- ===================================
-
--- Ambil folder NPC
-local npcFolder = game:GetService("ReplicatedStorage"):WaitForChild("NPC")
-
--- Ambil semua NPC yang punya HumanoidRootPart
-local npcList = {}
-for _, npc in pairs(npcFolder:GetChildren()) do
-	if npc:IsA("Model") then
-		local hrp = npc:FindFirstChild("HumanoidRootPart") or npc.PrimaryPart
-		if hrp then
-			table.insert(npcList, npc.Name)
-		end
-	end
-end
-
--- Tambah section baru di bawah event teleport
-local npcTeleportSection = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 267), -- di bawah Event Teleport
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
-create("UICorner", {Parent = npcTeleportSection, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = npcTeleportSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
-
-local npcTeleportTitle = create("TextLabel", {
-    Parent = npcTeleportSection,
-    Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "🧍 Teleport to NPC",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Center
-})
-
-local npcTeleportBtn = create("TextButton", {
-    Parent = npcTeleportSection,
-    Size = UDim2.new(0, 72, 0, 29),
-    Position = UDim2.new(1, -78, 0, 7),
-    BackgroundColor3 = Color3.fromRGB(80, 120, 160),
-    Text = "OPEN",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
-create("UICorner", {Parent = npcTeleportBtn, CornerRadius = UDim.new(0, 6)})
-addHover(npcTeleportBtn, Color3.fromRGB(80, 120, 160), Color3.fromRGB(100, 140, 180))
-
-
--- Fungsi buat GUI list NPC
-local function createNPCTeleportGUI()
-    local npcGui = create("ScreenGui", {
-        Name = "NPCTeleportGUI",
-        Parent = playerGui,
-        ResetOnSpawn = false,
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    })
-
-    local npcFrame = create("Frame", {
-        Parent = npcGui,
-        Size = UDim2.new(0, 280, 0, 350),
-        Position = UDim2.new(0.5, -140, 0.5, -175),
-        BackgroundColor3 = Color3.fromRGB(15, 20, 30),
-        BorderSizePixel = 0
-    })
-    create("UICorner", {Parent = npcFrame, CornerRadius = UDim.new(0, 10)})
-    create("UIStroke", {Parent = npcFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5})
-
-    local title = create("TextLabel", {
-        Parent = npcFrame,
-        Size = UDim2.new(1, 0, 0, 40),
-        BackgroundColor3 = Color3.fromRGB(25, 35, 55),
-        Text = "🧍 NPC Teleport List",
-        Font = Enum.Font.GothamBold,
-        TextSize = 16,
-        TextColor3 = Color3.fromRGB(100, 180, 255)
-    })
-    create("UICorner", {Parent = title, CornerRadius = UDim.new(0, 10)})
-
-    local closeBtn = create("TextButton", {
-        Parent = title,
-        Size = UDim2.new(0, 25, 0, 25),
-        Position = UDim2.new(1, -29, 0, 7),
-        BackgroundColor3 = Color3.fromRGB(220, 50, 50),
-        Text = "X",
-        Font = Enum.Font.GothamBold,
-        TextSize = 13,
-        TextColor3 = Color3.fromRGB(255, 255, 255)
-    })
-    create("UICorner", {Parent = closeBtn, CornerRadius = UDim.new(0, 6)})
-
-    local scroll = create("ScrollingFrame", {
-        Parent = npcFrame,
-        Size = UDim2.new(1, -20, 1, -60),
-        Position = UDim2.new(0, 10, 0, 50),
-        BackgroundTransparency = 1,
-        ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-        CanvasSize = UDim2.new(0, 0, 0, #npcList * 40)
-    })
-
-    local y = 0
-    for _, npcName in ipairs(npcList) do
-        local npcBtn = create("TextButton", {
-            Parent = scroll,
-            Size = UDim2.new(1, 0, 0, 35),
-            Position = UDim2.new(0, 0, 0, y),
-            BackgroundColor3 = Color3.fromRGB(35, 45, 65),
-            Text = "📍 " .. npcName,
-            Font = Enum.Font.Gotham,
-            TextSize = 12,
-            TextColor3 = Color3.fromRGB(220, 220, 220)
-        })
-        create("UICorner", {Parent = npcBtn, CornerRadius = UDim.new(0, 6)})
-        create("UIStroke", {Parent = npcBtn, Color = Color3.fromRGB(60, 100, 160), Thickness = 1})
-        addHover(npcBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
-
-        npcBtn.MouseButton1Click:Connect(function()
-            local npc = npcFolder:FindFirstChild(npcName)
-            if npc and npc:IsA("Model") then
-                local npcHrp = npc:FindFirstChild("HumanoidRootPart") or npc.PrimaryPart
-                if npcHrp then
-                    local charFolder = workspace:FindFirstChild("Characters", 5)
-                    local char = charFolder and charFolder:FindFirstChild(player.Name)
-                    if not char then 
-                        statusLabel.Text = "❌ Character not found"
-                        return 
-                    end
-
-                    local myHRP = char:FindFirstChild("HumanoidRootPart")
-                    if myHRP then
-                        myHRP.CFrame = npcHrp.CFrame + Vector3.new(0, 3, 0)
-                        statusLabel.Text = "✅ Teleported to NPC: " .. npcName
-                        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-                        npcGui:Destroy()
-                    end
-                end
-            else
-                statusLabel.Text = "❌ NPC not found: " .. npcName
-                statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-            end
-        end)
-        y += 40
-    end
-
-    closeBtn.MouseButton1Click:Connect(function()
-        npcGui:Destroy()
-    end)
-end
-
--- Buka GUI NPC Teleport
-npcTeleportBtn.MouseButton1Click:Connect(function()
-    createNPCTeleportGUI()
-end)
-
--- ===================================
--- ========== ANTI-AFK SYSTEM =========
--- ===================================
-
-local VirtualUser = game:GetService("VirtualUser")
-local AntiAFKEnabled = false
-local AFKConnection = nil
-
--- Tambah section Anti-AFK di bawah NPC Teleport
-local antiAFKSection = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 318), -- di bawah Teleport to NPC
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
-create("UICorner", {Parent = antiAFKSection, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = antiAFKSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
-
-local antiAFKTitle = create("TextLabel", {
-    Parent = antiAFKSection,
-    Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "👤 Anti-AFK System",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Center
-})
-
-local antiAFKBtn = create("TextButton", {
-    Parent = antiAFKSection,
-    Size = UDim2.new(0, 72, 0, 29),
-    Position = UDim2.new(1, -78, 0, 7),
-    BackgroundColor3 = Color3.fromRGB(150, 100, 50),
-    Text = "ENABLE",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
-create("UICorner", {Parent = antiAFKBtn, CornerRadius = UDim.new(0, 6)})
-addHover(antiAFKBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
-
-
--- Fungsi untuk mengaktifkan/menonaktifkan Anti-AFK
-local function toggleAntiAFK(enable)
-    AntiAFKEnabled = enable
-
-    if enable then
-        if AFKConnection then
-            AFKConnection:Disconnect()
-        end
-
-        AFKConnection = player.Idled:Connect(function()
-            pcall(function()
-                VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-                task.wait(1)
-                VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-            end)
-        end)
-
-        statusLabel.Text = "🟢 Anti-AFK Activated"
-        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-        antiAFKBtn.Text = "DISABLE"
-        antiAFKBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-    else
-        if AFKConnection then
-            AFKConnection:Disconnect()
-            AFKConnection = nil
-        end
-        statusLabel.Text = "🔴 Anti-AFK Disabled"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-        antiAFKBtn.Text = "ENABLE"
-        antiAFKBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 50)
-    end
-end
-
--- Klik tombol untuk aktifkan/matikan anti-AFK
-antiAFKBtn.MouseButton1Click:Connect(function()
-    toggleAntiAFK(not AntiAFKEnabled)
-end)
-
--- ===================================
 -- ========== FISHING V1 ===========
 -- ===================================
 local autoFishingEnabled = false
 local autoSellEnabled = false
 local delayInitialized = false
-
-local RodIdle = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("FishingRodReelIdle")
-local RodReel = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("EasyFishReelStart")
-local RodShake = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("CastFromFullChargePosition1Hand")
-
-local character = Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", humanoid)
-
-local RodShakeAnim = animator:LoadAnimation(RodShake)
-local RodIdleAnim = animator:LoadAnimation(RodIdle)
-local RodReelAnim = animator:LoadAnimation(RodReel)
-
 
 -- Remote Events/Functions
 local net
@@ -841,11 +597,11 @@ task.spawn(function()
 				local head = player.Character and player.Character:FindFirstChild("Head")
 				if head and data.Container == head then
 					task.spawn(function()
-                 for i = 1, 3 do
+						for i = 1, 3 do
                     task.wait(BypassDelayV2)
                     finishRemote:FireServer()
                     rconsoleclear()
-                 end
+                  end
 					end)
 				end
 			end
@@ -861,9 +617,9 @@ end)
 local function autoFishingLoop()
 	while autoFishingEnabled do
 		local ok, err = pcall(function()
+
 			updateDelayBasedOnRod()
 			fishingActive = true
-
 			statusLabel.Text = "🎣 Casting..."
 			equipRemote:FireServer(1)
 			task.wait(0.1)
@@ -876,11 +632,11 @@ local function autoFishingLoop()
 			local x = baseX + (math.random(-500, 500) / 10000000)
 			local y = baseY + (math.random(-500, 500) / 10000000)
 
-         RodIdleAnim:Play()
 			miniGameRemote:InvokeServer(x, y)
+         RodIdleAnim:Play()
 			task.wait(customDelay)
-
 			finishRemote:FireServer(true)
+
 			task.wait(BypassDelay)
 		end)
 		if not ok then warn(err) end
@@ -896,50 +652,36 @@ end
 -- ===================================
 
 local function autoSellLoop()
-    local lastSellTime = 0 -- waktu terakhir jual
-    local cooldown = 60    -- jeda 60 detik sebelum bisa jual lagi
-
     while autoSellEnabled do
-        task.wait(1) -- loop tetap hidup, tapi cek tiap 1 detik
-
-        local now = os.time()
-        if now - lastSellTime >= cooldown then
-            -- waktunya jual lagi
-            local success, err = pcall(function()
-                statusLabel.Text = "💰 Selling fish..."
-                statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-
-                local sellSuccess = pcall(function()
-                    sellRemote:InvokeServer()
-                end)
-
-                if sellSuccess then
-                    statusLabel.Text = "✅ Sold! (Next sell in 60s)"
-                    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-                    lastSellTime = os.time() -- update waktu terakhir jual
-                else
-                    statusLabel.Text = "❌ Sell Failed"
-                    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-                end
+        task.wait(1)
+        
+        local success, err = pcall(function()
+            statusLabel.Text = "💰 Selling fish..."
+            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+            
+            local sellSuccess = pcall(function()
+                sellRemote:InvokeServer()
             end)
 
-            if not success then
-                warn("[Auto Sell Error]:", err)
-                statusLabel.Text = "❌ Sell Error!"
+            if sellSuccess then
+                statusLabel.Text = "✅ Sold!. Please Stop Selling Button"
+                statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            else
+                statusLabel.Text = "❌ Sell Failed"
                 statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
             end
-        else
-            -- masih cooldown
-            local remaining = cooldown - (now - lastSellTime)
-            statusLabel.Text = string.format("⏳ Next sell in %ds", remaining)
-            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+        end)
+          
+        
+        if not success then
+            warn("[Auto Sell Error]:", err)
+            statusLabel.Text = "❌ Sell Error!"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
         end
     end
-
     statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
-
 
 -- ===================================
 -- ========== BUTTON LOGIC ===========
@@ -1005,9 +747,4 @@ end)
 
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
-print("=================================")
-print("✅ GUI berhasil dimuat untuk:", player.Name)
-print("📌 Equip fishing rod dan tekan START")
-print("🎯 Logic fishing telah diperbaiki.")
-print("🚀 Teleport feature added!")
 print("=================================")
