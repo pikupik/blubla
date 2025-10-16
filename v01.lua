@@ -13,7 +13,7 @@ local playerGui = player:WaitForChild("PlayerGui")
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
--- Hapus GUI lama
+---- Hapus GUI lama
 if playerGui:FindFirstChild("FishItAutoGUI") then
     playerGui:FindFirstChild("FishItAutoGUI"):Destroy()
 end
@@ -586,7 +586,7 @@ local function updateDelayBasedOnRod()
     end
 end
 
--- Fungsi utama Auto Fishing
+ Fungsi utama Auto Fishing
 local function autoFishingLoop()
     while autoFishingEnabled do
         fishingActive = false
@@ -705,11 +705,7 @@ end
 -- ========== AUTO FISHING V2 =========
 -- ===================================
 
-local RunService = game:GetService("RunService")
-
 local autoFishingV2Enabled = false
-local fastLoopConnection
-local finishRemoteConnection
 local isCasting = false
 
 -- 🔧 Helper: cari rod yang valid
@@ -731,77 +727,65 @@ end
 
 
 -- 🚀 Mulai Auto Fishing V2
-local function startAutoFishingV2()
-	if autoFishingV2Enabled then return end
-	autoFishingV2Enabled = true
-	statusLabel.Text = "🟢 Fast Fishing V2 Running..."
-	statusLabel.TextColor3 = Color3.fromRGB(100, 255, 255)
+local function autoFishingLoopV2()
+    while autoFishingV2Enabled do
+        isCasting = false
+        local success, err = pcall(function()
+            
+            isCasting = true
+            
+            -- 1. Equip Rod
+            statusLabel.Text = "🎣 Equipping Rod..."
+            statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+            equipRemote:FireServer(1)
+            task.wait(0.1)
 
-	local rodName = getValidRodNameV2()
-	if not rodName then
-		statusLabel.Text = "❌ No fishing rod found!"
-		statusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
-		autoFishingV2Enabled = false
-		return
-	end
+            -- 2. Charge Rod
+            statusLabel.Text = "⚡ Charging Rod..."
+            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+            local chargeRemote = ReplicatedStorage
+                .Packages._Index["sleitnick_net@0.2.0"].net["RF/ChargeFishingRod"]
+            chargeRemote:InvokeServer(workspace:GetServerTimeNow())
+            task.wait(0.5)
 
-	local rodDelay = RodDelays[rodName] and RodDelays[rodName].bypass or 1.2
-	local nextFishTime = 0
+            local timestamp = workspace:GetServerTimeNow()
+            rodRemote:InvokeServer(timestamp) -- Panggil remote rod
 
-	-- Hapus listener lama biar gak nabrak
-	if finishRemoteConnection then
-		finishRemoteConnection:Disconnect()
-	end
+            -- 3. Cast Rod (Request Minigame)
+            local baseX, baseY = -0.7499996423721313, 1
+            local x = baseX + (math.random(-500, 500) / 10000000)
+            local y = baseY + (math.random(-500, 500) / 10000000)
 
-	-- Saat server kirim event ikan tertangkap, reset flag
-	finishRemoteConnection = finishRemote.OnClientEvent:Connect(function()
-		isCasting = false
-		nextFishTime = tick() + 0.15
-	end)
-
-	-- Loop utama super cepat tapi aman
-	fastLoopConnection = RunService.Heartbeat:Connect(function()
-		if not autoFishingV2Enabled then return end
-		if tick() < nextFishTime then return end
-		if isCasting then return end
-
-		isCasting = true
-		task.spawn(function()
-			pcall(function()
-				-- 1️⃣ Tarik kail (charge penuh)
-				rodRemote:InvokeServer(100)
-				task.wait(0.05)
-
-				-- 2️⃣ Mulai minigame (langsung)
-				miniGameRemote:InvokeServer()
-				task.wait(rodDelay / 3)
-
-				-- 3️⃣ Claim hasil pancing
-				finishRemote:Fire()
-
-				-- 4️⃣ Delay kecil agar terlihat natural
-				task.wait(0.05)
-			end)
-
-			isCasting = false
-			nextFishTime = tick() + 0.1
-		end)
-	end)
-end
-
--- 🛑 Hentikan Auto Fishing V2
-local function stopAutoFishingV2()
-	autoFishingV2Enabled = false
-	if fastLoopConnection then
-		fastLoopConnection:Disconnect()
-		fastLoopConnection = nil
-	end
-	if finishRemoteConnection then
-		finishRemoteConnection:Disconnect()
-		finishRemoteConnection = nil
-	end
-	statusLabel.Text = "🔴 Fast Fishing V2 Stopped"
-	statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            statusLabel.Text = "🎯 Casting..."
+            statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+            miniGameRemote:InvokeServer(x, y)
+    
+            -- [[ PERBAIKAN STUCK: Selesaikan Minigame (Bypass) ]]
+            statusLabel.Text = "✅ Fish Caught! Finishing..."
+            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            
+            finishRemote:FireServer(true) -- Kirim sinyal penyelesaian ke server
+            
+            task.wait(0.1)
+            
+            isCasting = false
+                        
+        end)
+        
+        if not success then
+            warn("[Auto Fishing Error]:", err)
+            statusLabel.Text = "❌ Error! Check Output"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            task.wait(2)
+        end
+        
+        -- Jeda antar siklus untuk mengurangi tekanan pada server
+        task.wait(0.2)
+    end
+    
+    isCasting = false
+    statusLabel.Text = "🔴 Status: Idle"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 end
 
 -- ===================================
@@ -851,15 +835,22 @@ end)
 
 -- Button logic untuk V2
 fishBtnV2.MouseButton1Click:Connect(function()
-	if autoFishingV2Enabled then
-		stopAutoFishingV2()
-		fishBtnV2.Text = "START"
-		fishBtnV2.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
-	else
-		startAutoFishingV2()
-		fishBtnV2.Text = "STOP"
-		fishBtnV2.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-	end
+    autoFishingEnabled = not autoFishingEnabled
+    
+    if autoFishingV2Enabled then
+        fishBtn.Text = "STOP"
+        fishBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        statusLabel.Text = "🟢 Auto Fishing Started"
+        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+        task.spawn(autoFishingLoopV2)
+    else
+        fishBtn.Text = "START"
+        fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        statusLabel.Text = "🔴 Auto Fishing Stopped"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+ 
+        isCasting = false
+    end
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
