@@ -256,45 +256,8 @@ local teleportBtn = create("TextButton", {
 
 create("UICorner", {Parent = teleportBtn, CornerRadius = UDim.new(0, 6)})
 
--- ========== FISHING V2 SECTION ==========
-local fishSectionV2 = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 216), -- Di bawah teleport section
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
-
-create("UICorner", {Parent = fishSectionV2, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = fishSectionV2, Color = Color3.fromRGB(40, 120, 180), Thickness = 1}) -- Warna biru lebih terang
-
-local fishTitleV2 = create("TextLabel", {
-    Parent = fishSectionV2,
-    Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "⚡ Auto Fishing V2 (FAST)",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
-    TextColor3 = Color3.fromRGB(100, 255, 255), -- Warna cyan
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Center
-})
-
-local fishBtnV2 = create("TextButton", {
-    Parent = fishSectionV2,
-    Size = UDim2.new(0, 72, 0, 29),
-    Position = UDim2.new(1, -78, 0, 7),
-    BackgroundColor3 = Color3.fromRGB(0, 150, 200), -- Warna biru terang
-    Text = "START",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
-
-create("UICorner", {Parent = fishBtnV2, CornerRadius = UDim.new(0, 6)})
-
 -- ===================================
--- ========== DRAG & HOVER ===========
+-- ========== DRAG & HOVER ==========
 -- ===================================
 local dragging, dragInput, dragStart, startPos
 
@@ -344,8 +307,6 @@ addHover(minimizeBtn, Color3.fromRGB(70, 80, 100), Color3.fromRGB(90, 100, 120))
 addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(teleportBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
-addHover(fishBtnV2, Color3.fromRGB(0, 150, 200), Color3.fromRGB(0, 180, 230))
-
 
 -- ===================================
 -- ========== TELEPORT SYSTEM =========
@@ -702,93 +663,6 @@ local function autoSellLoop()
 end
 
 -- ===================================
--- ========== AUTO FISHING V2 =========
--- ===================================
-
-local autoFishingV2Enabled = false
-local isCasting = false
-
--- 🔧 Helper: cari rod yang valid
-local function getValidRodNameV2()
-    local display = player.PlayerGui:WaitForChild("Backpack"):WaitForChild("Display")
-    for _, tile in ipairs(display:GetChildren()) do
-        local success, itemNamePath = pcall(function()
-            return tile.Inner.Tags.ItemName
-        end)
-        if success and itemNamePath and itemNamePath:IsA("TextLabel") then
-            local name = itemNamePath.Text
-            if RodDelays[name] then
-                return name
-            end
-        end
-    end
-    return nil
-end
-
-
--- 🚀 Mulai Auto Fishing V2
-local function autoFishingLoopV2()
-    while autoFishingV2Enabled do
-        isCasting = false
-        local success, err = pcall(function()
-            
-            isCasting = true
-            
-            -- 1. Equip Rod
-            statusLabel.Text = "🎣 Equipping Rod..."
-            statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-            equipRemote:FireServer(1)
-            task.wait(0.1)
-
-            -- 2. Charge Rod
-            statusLabel.Text = "⚡ Charging Rod..."
-            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-            local chargeRemote = ReplicatedStorage
-                .Packages._Index["sleitnick_net@0.2.0"].net["RF/ChargeFishingRod"]
-            chargeRemote:InvokeServer(workspace:GetServerTimeNow())
-            task.wait(0.5)
-
-            local timestamp = workspace:GetServerTimeNow()
-            rodRemote:InvokeServer(timestamp) -- Panggil remote rod
-
-            -- 3. Cast Rod (Request Minigame)
-            local baseX, baseY = -0.7499996423721313, 1
-            local x = baseX + (math.random(-500, 500) / 10000000)
-            local y = baseY + (math.random(-500, 500) / 10000000)
-
-            statusLabel.Text = "🎯 Casting..."
-            statusLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-            miniGameRemote:InvokeServer(x, y)
-    
-            -- [[ PERBAIKAN STUCK: Selesaikan Minigame (Bypass) ]]
-            statusLabel.Text = "✅ Fish Caught! Finishing..."
-            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-            
-            finishRemote:FireServer(true) -- Kirim sinyal penyelesaian ke server
-            
-            task.wait(0.1)
-            
-            isCasting = false
-                        
-        end)
-        
-        if not success then
-            warn("[Auto Fishing Error]:", err)
-            statusLabel.Text = "❌ Error! Check Output"
-            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-            task.wait(2)
-        end
-        
-        -- Jeda antar siklus untuk mengurangi tekanan pada server
-        task.wait(0.2)
-    end
-    
-    isCasting = false
-    statusLabel.Text = "🔴 Status: Idle"
-    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-end
-
--- ===================================
 -- ========== BUTTON LOGIC ===========
 -- ===================================
 
@@ -831,26 +705,6 @@ end)
 -- Teleport Button Logic
 teleportBtn.MouseButton1Click:Connect(function()
     createTeleportGUI()
-end)
-
--- Button logic untuk V2
-fishBtnV2.MouseButton1Click:Connect(function()
-    autoFishingEnabled = not autoFishingEnabled
-    
-    if autoFishingV2Enabled then
-        fishBtn.Text = "STOP"
-        fishBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        statusLabel.Text = "🟢 Auto Fishing Started"
-        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-        task.spawn(autoFishingLoopV2)
-    else
-        fishBtn.Text = "START"
-        fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        statusLabel.Text = "🔴 Auto Fishing Stopped"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
- 
-        isCasting = false
-    end
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
