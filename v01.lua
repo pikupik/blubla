@@ -1230,7 +1230,7 @@ local miniGameRemoteV2 = net:WaitForChild("RF/RequestFishingMinigameStarted")
 local finishRemoteV2 = net:WaitForChild("RE/FishingCompleted")
 local equipRemoteV2 = net:WaitForChild("RE/EquipToolFromHotbar")
 
--- 🎯 Exclaim Listener untuk V2 - TUNGGU 1 DETIK SETELAH TANDA SERU
+-- 🎯 Exclaim Listener untuk V2 - FIXED VERSION
 task.spawn(function()
     local success, exclaimEvent = pcall(function()
         return net:WaitForChild("RE/ReplicateTextEffect", 5)
@@ -1243,105 +1243,141 @@ task.spawn(function()
 
                 local head = player.Character and player.Character:FindFirstChild("Head")
                 if head and data.Container == head then
+                    print("[🎣] STRIKE DETECTED! Waiting 1 second then finishing...")
                     
-                    -- SETELAH TANDA SERU: TUNGGU 1 DETIK
                     task.spawn(function()
                         waitingForStrike = false
+                        
+                        -- TUNGGU 1 DETIK SETELAH TANDA SERU
                         task.wait(1)
                         
                         if autoFishingV2Enabled then
-                            -- FINISH setelah 1 detik
-                            pcall(function()
+                            -- FINISH FISHING
+                            local finishSuccess = pcall(function()
                                 finishRemoteV2:FireServer(true)
+                                print("[✅] Fishing finished successfully")
                             end)
                             
-                            -- LANGSUNG LEMPAR LAGI TANPA TUNGGU
-                            task.wait(1)
-                            
-                            if autoFishingV2Enabled then
-                                -- RECAST INSTANT
-                                pcall(function()
-                                    local timestamp = workspace:GetServerTimeNow()
-                                    rodRemoteV2:InvokeServer(timestamp)
-                                    
-                                    task.wait(1)
-                                    
-                                    local baseX, baseY = -0.7499996, 1
-                                    local x = baseX + (math.random(-500, 500) / 10000000)
-                                    local y = baseY + (math.random(-500, 500) / 10000000)
-                                    
-                                    miniGameRemoteV2:InvokeServer(x, y)
-                                    
-                                    -- Set state kembali ke waiting for strike
-                                    waitingForStrike = true
-                                end)
+                            if not finishSuccess then
+                                print("[❌] Failed to finish fishing")
                             end
+                            
+                            -- TUNGGU SEBENTAR SEBELUM RECAST
+                            task.wait(0.5)
                         end
                     end)
                 end
             end
         end)
-        print("[✅] Exclaim detection active V2 (tunggu 1 detik).")
+        print("[✅] Exclaim detection active V2")
     else
-        warn("[⚠️] ReplicateTextEffect not found, skipping Exclaim logic V2.")
+        warn("[⚠️] ReplicateTextEffect not found, using fallback method")
     end
 end)
 
--- Fungsi utama Auto Fishing V2
+-- Fungsi utama Auto Fishing V2 - FIXED
 local function autoFishingLoopV2()
     while autoFishingV2Enabled do
         local ok, err = pcall(function()
             fishingActiveV2 = true
-            updateStatus("🎣 Status: Fishing V2", Color3.fromRGB(100, 255, 100))
+            updateStatus("🎣 Status: Fishing V2 - Waiting for strike", Color3.fromRGB(100, 255, 100))
             
             -- Equip rod
             pcall(function()
                 equipRemoteV2:FireServer(1)
             end)
-            task.wait(0.2)
+            task.wait(0.3)
 
             -- Start fishing
             local timestamp = workspace:GetServerTimeNow()
             rodRemoteV2:InvokeServer(timestamp)
+            print("[🎣] Casting rod...")
 
             local baseX, baseY = -0.7499996, 1
             local x = baseX + (math.random(-500, 500) / 10000000)
             local y = baseY + (math.random(-500, 500) / 10000000)
 
             miniGameRemoteV2:InvokeServer(x, y)
+            print("[🎣] Minigame started, waiting for strike...")
             
             -- Set state menunggu strike
             waitingForStrike = true
             
-            -- Fallback: jika tidak ada strike dalam 10 detik, finish dan recast
-            local fallbackTimer = 0
-            while waitingForStrike and fallbackTimer < 10 and autoFishingV2Enabled do
+            -- FALLBACK SYSTEM: Jika tidak ada strike dalam waktu tertentu, recast
+            local maxWaitTime = 15  -- Maksimal menunggu 15 detik
+            local waitTime = 0
+            
+            while waitingForStrike and waitTime < maxWaitTime and autoFishingV2Enabled do
                 task.wait(0.5)
-                fallbackTimer = fallbackTimer + 0.5
+                waitTime = waitTime + 0.5
+                
+                -- Update status setiap 5 detik
+                if waitTime % 5 < 0.6 then
+                    updateStatus("🎣 Status: Fishing V2 - Waiting " .. math.floor(waitTime) .. "s", Color3.fromRGB(100, 255, 100))
+                end
             end
             
-            -- Fallback finish jika timeout
+            -- Jika timeout, finish dan lanjut ke cast berikutnya
             if waitingForStrike and autoFishingV2Enabled then
+                print("[⏰] Fallback: No strike detected, finishing...")
                 pcall(function()
                     finishRemoteV2:FireServer(true)
                 end)
                 waitingForStrike = false
+            end
+            
+            -- Tunggu sebentar sebelum cast berikutnya
+            if autoFishingV2Enabled then
                 task.wait(0.5)
             end
             
         end)
+        
         if not ok then 
             warn("[V2 Error]:", err)
             waitingForStrike = false
+            -- Tunggu sebelum retry
+            if autoFishingV2Enabled then
+                task.wait(2)
+            end
         end
-        
-        task.wait(0.2)
     end
     
+    -- Cleanup ketika loop berhenti
     fishingActiveV2 = false
     waitingForStrike = false
     updateStatus("🔴 Status: Idle")
 end
+
+-- Fishing V2 Button
+fishV2Btn.MouseButton1Click:Connect(function()
+    autoFishingV2Enabled = not autoFishingV2Enabled
+    
+    if autoFishingV2Enabled then
+        -- Stop V1 jika sedang berjalan
+        if autoFishingEnabled then
+            autoFishingEnabled = false
+            fishBtn.Text = "START"
+            fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        end
+        
+        fishV2Btn.Text = "STOP"
+        fishV2Btn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        updateStatus("⚡ Status: Auto Fishing V2 Started", Color3.fromRGB(100, 255, 100))
+        
+        -- Reset state
+        waitingForStrike = false
+        
+        -- Start loop
+        task.spawn(autoFishingLoopV2)
+    else
+        fishV2Btn.Text = "START"
+        fishV2Btn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        updateStatus("🔴 Status: Auto Fishing V2 Stopped")
+        fishingActiveV2 = false
+        waitingForStrike = false
+    end
+end)
 
 -- ===================================
 -- ========== AUTO SELL LOOP =========
