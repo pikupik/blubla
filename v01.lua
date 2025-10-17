@@ -598,7 +598,7 @@ task.spawn(function()
 				if head and data.Container == head then
 					task.spawn(function()
 						for i = 1, 3 do
-                    task.wait(BypassDelayV2)
+                    task.wait(BypassDelay)
                     finishRemote:FireServer()
                     rconsoleclear()
                   end
