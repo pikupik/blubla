@@ -357,7 +357,7 @@ local teleportEventTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎯 Teleport to Events (Bug dont use it now)",
+    Text = "🎯 Teleport to Events",
     Font = Enum.Font.GothamBold,
     TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -1245,7 +1245,7 @@ task.spawn(function()
 					print("🎯 Tanda seru detected! Instant finish...")
 					
 					-- Langsung finish tanpa delay
-					finishRemoteV2:FireServer(true)  -- true = success
+					finishRemoteV2:FireServer()
 					
 					-- Auto recast cepat
 					task.wait(0.2)  -- Delay kecil biar smooth
