@@ -40,12 +40,12 @@ local screenGui = create("ScreenGui", {
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 })
 
--- Main Frame
+-- Main Frame - Diperkecil menjadi ukuran kotak
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 370),
-    Position = UDim2.new(0.5, -150, 0.5, -185),
+    Size = UDim2.new(0, 300, 0, 250), -- Diperkecil dari 370 menjadi 250
+    Position = UDim2.new(0.5, -150, 0.5, -125),
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -110,6 +110,7 @@ local minimizeBtn = create("TextButton", {
 
 create("UICorner", {Parent = minimizeBtn, CornerRadius = UDim.new(0, 6)})
 
+-- Content Frame - Diperkecil dan diatur ulang posisinya
 local contentFrame = create("ScrollingFrame", {
     Name = "Content",
     Parent = mainFrame,
@@ -119,12 +120,13 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 520)
+    CanvasSize = UDim2.new(0, 0, 0, 320) -- Diperkecil dari 520 menjadi 320
 })
 
+-- Status Box - Diperkecil
 local statusBox = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 54),
+    Size = UDim2.new(1, 0, 0, 50), -- Diperkecil dari 54 menjadi 50
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -134,8 +136,8 @@ create("UIStroke", {Parent = statusBox, Color = Color3.fromRGB(40, 60, 90), Thic
 -- Status Label dengan format yang dipertahankan
 local statusLabel = create("TextLabel", {
     Parent = statusBox,
-    Size = UDim2.new(1, -12, 0, 18),
-    Position = UDim2.new(0, 6, 0, 5),
+    Size = UDim2.new(1, -12, 1, -8),
+    Position = UDim2.new(0, 6, 0, 4),
     BackgroundTransparency = 1,
     Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!",
     Font = Enum.Font.GothamBold,
@@ -154,10 +156,11 @@ end
 -- Inisialisasi status awal
 updateStatus("🔴 Status: Idle")
 
+-- Fish Section - Posisi diatur ulang
 local fishSection = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 63),
+    Size = UDim2.new(1, 0, 0, 40), -- Diperkecil dari 42 menjadi 40
+    Position = UDim2.new(0, 0, 0, 58), -- Posisi diatur ulang
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -179,8 +182,8 @@ local fishTitle = create("TextLabel", {
 
 local fishBtn = create("TextButton", {
     Parent = fishSection,
-    Size = UDim2.new(0, 72, 0, 29),
-    Position = UDim2.new(1, -78, 0, 7),
+    Size = UDim2.new(0, 72, 0, 27), -- Diperkecil dari 29 menjadi 27
+    Position = UDim2.new(1, -78, 0, 6), -- Posisi diatur ulang
     BackgroundColor3 = Color3.fromRGB(50, 150, 50),
     Text = "START",
     Font = Enum.Font.GothamBold,
@@ -190,10 +193,11 @@ local fishBtn = create("TextButton", {
 
 create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)})
 
+-- Sell Section - Posisi diatur ulang
 local sellSection = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 114),
+    Size = UDim2.new(1, 0, 0, 40), -- Diperkecil dari 42 menjadi 40
+    Position = UDim2.new(0, 0, 0, 106), -- Posisi diatur ulang
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -215,8 +219,8 @@ local sellTitle = create("TextLabel", {
 
 local sellBtn = create("TextButton", {
     Parent = sellSection,
-    Size = UDim2.new(0, 72, 0, 29),
-    Position = UDim2.new(1, -78, 0, 7),
+    Size = UDim2.new(0, 72, 0, 27), -- Diperkecil dari 29 menjadi 27
+    Position = UDim2.new(1, -78, 0, 6), -- Posisi diatur ulang
     BackgroundColor3 = Color3.fromRGB(50, 150, 50),
     Text = "START",
     Font = Enum.Font.GothamBold,
@@ -229,8 +233,8 @@ create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)})
 -- ========== TELEPORT SECTION ==========
 local teleportSection = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 42),
-    Position = UDim2.new(0, 0, 0, 165),
+    Size = UDim2.new(1, 0, 0, 40), -- Diperkecil dari 42 menjadi 40
+    Position = UDim2.new(0, 0, 0, 154), -- Posisi diatur ulang
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -252,8 +256,8 @@ local teleportTitle = create("TextLabel", {
 
 local teleportBtn = create("TextButton", {
     Parent = teleportSection,
-    Size = UDim2.new(0, 72, 0, 29),
-    Position = UDim2.new(1, -78, 0, 7),
+    Size = UDim2.new(0, 72, 0, 27), -- Diperkecil dari 29 menjadi 27
+    Position = UDim2.new(1, -78, 0, 6), -- Posisi diatur ulang
     BackgroundColor3 = Color3.fromRGB(150, 100, 50),
     Text = "OPEN",
     Font = Enum.Font.GothamBold,
@@ -344,11 +348,12 @@ local function createTeleportGUI()
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     })
 
+    -- Teleport Frame - Diperkecil menjadi lebih compact
     local teleportFrame = create("Frame", {
         Name = "TeleportFrame",
         Parent = teleportGui,
-        Size = UDim2.new(0, 280, 0, 350),
-        Position = UDim2.new(0.5, -140, 0.5, -175),
+        Size = UDim2.new(0, 280, 0, 300), -- Diperkecil dari 350 menjadi 300
+        Position = UDim2.new(0.5, -140, 0.5, -150),
         BackgroundColor3 = Color3.fromRGB(15, 20, 30),
         BorderSizePixel = 0
     })
@@ -358,11 +363,11 @@ local function createTeleportGUI()
 
     local teleportTitle = create("TextLabel", {
         Parent = teleportFrame,
-        Size = UDim2.new(1, 0, 0, 40),
+        Size = UDim2.new(1, 0, 0, 35), -- Diperkecil dari 40 menjadi 35
         BackgroundColor3 = Color3.fromRGB(25, 35, 55),
         Text = "🚀 Island Teleport",
         Font = Enum.Font.GothamBold,
-        TextSize = 16,
+        TextSize = 14, -- Diperkecil dari 16 menjadi 14
         TextColor3 = Color3.fromRGB(100, 180, 255),
         TextYAlignment = Enum.TextYAlignment.Center
     })
@@ -371,12 +376,12 @@ local function createTeleportGUI()
 
     local closeTeleportBtn = create("TextButton", {
         Parent = teleportTitle,
-        Size = UDim2.new(0, 25, 0, 25),
-        Position = UDim2.new(1, -29, 0, 7),
+        Size = UDim2.new(0, 22, 0, 22), -- Diperkecil dari 25 menjadi 22
+        Position = UDim2.new(1, -26, 0, 6), -- Posisi diatur ulang
         BackgroundColor3 = Color3.fromRGB(220, 50, 50),
         Text = "X",
         Font = Enum.Font.GothamBold,
-        TextSize = 13,
+        TextSize = 12, -- Diperkecil dari 13 menjadi 12
         TextColor3 = Color3.fromRGB(255, 255, 255)
     })
 
@@ -384,25 +389,25 @@ local function createTeleportGUI()
 
     local scrollFrame = create("ScrollingFrame", {
         Parent = teleportFrame,
-        Size = UDim2.new(1, -20, 1, -60),
-        Position = UDim2.new(0, 10, 0, 50),
+        Size = UDim2.new(1, -20, 1, -50), -- Diatur ulang
+        Position = UDim2.new(0, 10, 0, 45), -- Posisi diatur ulang
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-        CanvasSize = UDim2.new(0, 0, 0, #game:GetService("HttpService"):JSONEncode(islandCoords) * 40)
+        CanvasSize = UDim2.new(0, 0, 0, #game:GetService("HttpService"):JSONEncode(islandCoords) * 35) -- Diperkecil dari 40 menjadi 35
     })
 
     local yPosition = 0
     for islandName, position in pairs(islandCoords) do
         local islandBtn = create("TextButton", {
             Parent = scrollFrame,
-            Size = UDim2.new(1, 0, 0, 35),
+            Size = UDim2.new(1, 0, 0, 32), -- Diperkecil dari 35 menjadi 32
             Position = UDim2.new(0, 0, 0, yPosition),
             BackgroundColor3 = Color3.fromRGB(35, 45, 65),
             Text = "📍 " .. islandName,
             Font = Enum.Font.Gotham,
-            TextSize = 12,
+            TextSize = 11, -- Diperkecil dari 12 menjadi 11
             TextColor3 = Color3.fromRGB(220, 220, 220),
             TextYAlignment = Enum.TextYAlignment.Center
         })
@@ -439,7 +444,7 @@ local function createTeleportGUI()
             end
         end)
 
-        yPosition = yPosition + 40
+        yPosition = yPosition + 35 -- Diperkecil dari 40 menjadi 35
     end
 
     closeTeleportBtn.MouseButton1Click:Connect(function()
@@ -720,7 +725,7 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 370)
+        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 250) -- Diperbarui ukuran normal
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
