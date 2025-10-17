@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -40,12 +41,12 @@ local screenGui = create("ScreenGui", {
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 })
 
--- Main Frame - Diperbesar untuk menampung section baru
+-- Main Frame - Diperbesar untuk menampung section Anti-AFK
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 340), -- Diperbesar dari 290 menjadi 340
-    Position = UDim2.new(0.5, -150, 0.5, -170),
+    Size = UDim2.new(0, 300, 0, 380), -- Diperbesar untuk Anti-AFK
+    Position = UDim2.new(0.5, -150, 0.5, -190),
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -110,7 +111,7 @@ local minimizeBtn = create("TextButton", {
 
 create("UICorner", {Parent = minimizeBtn, CornerRadius = UDim.new(0, 6)})
 
--- Content Frame - Diperbesar untuk menampung section baru
+-- Content Frame - Diperbesar untuk menampung section Anti-AFK
 local contentFrame = create("ScrollingFrame", {
     Name = "Content",
     Parent = mainFrame,
@@ -120,10 +121,10 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 420) -- Diperbesar dari 370 menjadi 420
+    CanvasSize = UDim2.new(0, 0, 0, 460) -- Diperbesar untuk Anti-AFK
 })
 
--- Status Box - Diperkecil
+-- Status Box
 local statusBox = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 50),
@@ -139,7 +140,7 @@ local statusLabel = create("TextLabel", {
     Size = UDim2.new(1, -12, 1, -8),
     Position = UDim2.new(0, 6, 0, 4),
     BackgroundTransparency = 1,
-    Text = "🔴 Status: Idle\nScript: V.2.2\nUpdate: +Buff Speed Fishing\nNote: found bug on script? Pm me on discord!",
+    Text = "🔴 Status: Idle\nScript: V.2.2\nUpdate: +Buff Speed Fishing, +Add Anti AFK\nNote: found bug on script? Pm me on discord!",
     Font = Enum.Font.GothamBold,
     TextSize = 10,
     TextColor3 = Color3.fromRGB(255, 100, 100),
@@ -148,7 +149,7 @@ local statusLabel = create("TextLabel", {
 
 -- Fungsi untuk update status dengan format yang dipertahankan
 local function updateStatus(newStatus, color)
-    local baseText = "Script: V.2.2\nUpdate: +Buff Speed Fishing\nNote: found bug on script? Pm me on discord!"
+    local baseText = "Script: V.2.2\nUpdate: +Buff Speed Fishing, +Add Anti AFK\nNote: found bug on script? Pm me on discord!"
     statusLabel.Text = newStatus .. "\n" .. baseText
     statusLabel.TextColor3 = color or Color3.fromRGB(255, 100, 100)
 end
@@ -156,11 +157,48 @@ end
 -- Inisialisasi status awal
 updateStatus("🔴 Status: Idle")
 
+-- ========== ANTI-AFK SECTION ==========
+local antiAFKSection = create("Frame", {
+    Parent = contentFrame,
+    Size = UDim2.new(1, 0, 0, 40),
+    Position = UDim2.new(0, 0, 0, 58),
+    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+})
+
+create("UICorner", {Parent = antiAFKSection, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = antiAFKSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+
+local antiAFKTitle = create("TextLabel", {
+    Parent = antiAFKSection,
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 9, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "⏰ Anti-AFK System",
+    Font = Enum.Font.GothamBold,
+    TextSize = 9,
+    TextColor3 = Color3.fromRGB(220, 220, 220),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Center
+})
+
+local antiAFKBtn = create("TextButton", {
+    Parent = antiAFKSection,
+    Size = UDim2.new(0, 72, 0, 27),
+    Position = UDim2.new(1, -78, 0, 6),
+    BackgroundColor3 = Color3.fromRGB(50, 150, 50),
+    Text = "START",
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+
+create("UICorner", {Parent = antiAFKBtn, CornerRadius = UDim.new(0, 6)})
+
 -- Fish Section - Posisi diatur ulang
 local fishSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 58),
+    Position = UDim2.new(0, 0, 0, 106),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -172,7 +210,7 @@ local fishTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎣 Auto Instant Fishing V1",
+    Text = "🎣 Auto Instant Fishing V1 (perfect)",
     Font = Enum.Font.GothamBold,
     TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -197,7 +235,7 @@ create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)})
 local sellSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 106),
+    Position = UDim2.new(0, 0, 0, 154),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -234,7 +272,7 @@ create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)})
 local teleportSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 154),
+    Position = UDim2.new(0, 0, 0, 202),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -271,7 +309,7 @@ create("UICorner", {Parent = teleportBtn, CornerRadius = UDim.new(0, 6)})
 local teleportNPCSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 202),
+    Position = UDim2.new(0, 0, 0, 250),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -308,7 +346,7 @@ create("UICorner", {Parent = teleportNPCBtn, CornerRadius = UDim.new(0, 6)})
 local teleportEventSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 250),
+    Position = UDim2.new(0, 0, 0, 298),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -389,11 +427,57 @@ end
 
 addHover(closeBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80)) 
 addHover(minimizeBtn, Color3.fromRGB(70, 80, 100), Color3.fromRGB(90, 100, 120))
+addHover(antiAFKBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(teleportBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
 addHover(teleportNPCBtn, Color3.fromRGB(100, 80, 180), Color3.fromRGB(120, 100, 200))
 addHover(teleportEventBtn, Color3.fromRGB(180, 80, 120), Color3.fromRGB(200, 100, 140))
+
+-- ===================================
+-- ========== ANTI-AFK SYSTEM =========
+-- ===================================
+local antiAFKEnabled = false
+local AFKConnection = nil
+
+local function toggleAntiAFK()
+    antiAFKEnabled = not antiAFKEnabled
+    
+    if antiAFKEnabled then
+        -- Enable Anti-AFK
+        if AFKConnection then
+            AFKConnection:Disconnect()
+        end
+        
+        AFKConnection = player.Idled:Connect(function()
+            pcall(function()
+                VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                task.wait(1)
+                VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            end)
+        end)
+        
+        antiAFKBtn.Text = "STOP"
+        antiAFKBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        updateStatus("⏰ Anti-AFK: Active", Color3.fromRGB(100, 255, 100))
+        print("[✅] Anti-AFK Activated")
+        
+    else
+        -- Disable Anti-AFK
+        if AFKConnection then
+            AFKConnection:Disconnect()
+            AFKConnection = nil
+        end
+        
+        antiAFKBtn.Text = "START"
+        antiAFKBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        updateStatus("🔴 Status: Idle")
+        print("[❌] Anti-AFK Deactivated")
+    end
+end
+
+-- Anti-AFK Button Logic
+antiAFKBtn.MouseButton1Click:Connect(toggleAntiAFK)
 
 -- ===================================
 -- ========== TELEPORT SYSTEM =========
@@ -1198,6 +1282,10 @@ closeBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = false
     autoSellEnabled = false
     fishingActive = false
+    -- Matikan Anti-AFK juga saat close
+    if antiAFKEnabled then
+        toggleAntiAFK()
+    end
     screenGui:Destroy()
 end)
 
@@ -1206,12 +1294,12 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 340)
+        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 380)
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
 
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
-print("📌 Features: Auto Fish, Auto Sell, Island TP, NPC TP, Event TP")
+print("📌 Features: Anti-AFK, Auto Fish, Auto Sell, Island TP, NPC TP, Event TP")
 print("=================================")
