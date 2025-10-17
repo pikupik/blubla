@@ -1217,7 +1217,7 @@ local function autoFishingLoop()
 end
 
 -- ===================================
--- ========== FISHING V2 ===========
+-- ========== FISHING V2 FIXED ===========
 -- ===================================
 
 local autoFishingV2Enabled = false
@@ -1230,126 +1230,182 @@ local miniGameRemoteV2 = net:WaitForChild("RF/RequestFishingMinigameStarted")
 local finishRemoteV2 = net:WaitForChild("RE/FishingCompleted")
 local equipRemoteV2 = net:WaitForChild("RE/EquipToolFromHotbar")
 
--- 🎯 Exclaim Listener untuk V2 - FIXED VERSION
+-- Function untuk debug notification
+local function showDebug(message, color)
+    color = color or Color3.fromRGB(255, 255, 255)
+    updateStatus("🔧 " .. message, color)
+    
+    -- Buat notifikasi kecil
+    local notif = create("TextLabel", {
+        Parent = screenGui,
+        Size = UDim2.new(0, 200, 0, 30),
+        Position = UDim2.new(1, -210, 0, 10),
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+        BackgroundTransparency = 0.3,
+        Text = message,
+        TextColor3 = color,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextStrokeTransparency = 0,
+        ZIndex = 100
+    })
+    
+    create("UICorner", {Parent = notif, CornerRadius = UDim.new(0, 5)})
+    
+    -- Animate dan destroy
+    task.spawn(function()
+        task.wait(3)
+        TweenService:Create(notif, TweenInfo.new(0.5), {BackgroundTransparency = 1, TextTransparency = 1}):Play()
+        task.wait(0.5)
+        notif:Destroy()
+    end)
+end
+
+-- 🎯 EXCLAIM LISTENER - SIMPLE VERSION
 task.spawn(function()
+    showDebug("Loading Exclaim Listener...", Color3.fromRGB(100, 200, 255))
+    
     local success, exclaimEvent = pcall(function()
-        return net:WaitForChild("RE/ReplicateTextEffect", 5)
+        return net:WaitForChild("RE/ReplicateTextEffect", 10)
     end)
 
     if success and exclaimEvent then
+        showDebug("Exclaim Listener Ready!", Color3.fromRGB(100, 255, 100))
+        
         exclaimEvent.OnClientEvent:Connect(function(data)
-            if autoFishingV2Enabled and waitingForStrike and data and data.TextData
-                and data.TextData.EffectType == "Exclaim" then
-
+            if not autoFishingV2Enabled then return end
+            if not waitingForStrike then return end
+            
+            -- Cek apakah ini exclaim
+            if data and data.TextData and data.TextData.EffectType == "Exclaim" then
                 local head = player.Character and player.Character:FindFirstChild("Head")
                 if head and data.Container == head then
-                    print("[🎣] STRIKE DETECTED! Waiting 1 second then finishing...")
+                    showDebug("🎣 STRIKE DETECTED!", Color3.fromRGB(255, 255, 0))
+                    waitingForStrike = false
                     
-                    task.spawn(function()
-                        waitingForStrike = false
+                    -- TUNGGU 1 DETIK LALU FINISH
+                    task.wait(1)
+                    
+                    if autoFishingV2Enabled then
+                        local success = pcall(function()
+                            finishRemoteV2:FireServer(true)
+                            showDebug("✅ Fish Caught!", Color3.fromRGB(0, 255, 0))
+                        end)
                         
-                        -- TUNGGU 1 DETIK SETELAH TANDA SERU
-                        task.wait(1)
-                        
-                        if autoFishingV2Enabled then
-                            -- FINISH FISHING
-                            local finishSuccess = pcall(function()
-                                finishRemoteV2:FireServer(true)
-                                print("[✅] Fishing finished successfully")
-                            end)
-                            
-                            if not finishSuccess then
-                                print("[❌] Failed to finish fishing")
-                            end
-                            
-                            -- TUNGGU SEBENTAR SEBELUM RECAST
-                            task.wait(0.5)
+                        if not success then
+                            showDebug("❌ Finish Failed", Color3.fromRGB(255, 0, 0))
                         end
-                    end)
+                    end
                 end
             end
         end)
-        print("[✅] Exclaim detection active V2")
     else
-        warn("[⚠️] ReplicateTextEffect not found, using fallback method")
+        showDebug("❌ Exclaim Event Not Found", Color3.fromRGB(255, 0, 0))
     end
 end)
 
--- Fungsi utama Auto Fishing V2 - FIXED
+-- 🎯 FISHING V2 LOOP - FIXED
 local function autoFishingLoopV2()
+    showDebug("V2 Loop Started", Color3.fromRGB(0, 255, 0))
+    
     while autoFishingV2Enabled do
-        local ok, err = pcall(function()
+        local loopSuccess, loopError = pcall(function()
             fishingActiveV2 = true
-            updateStatus("🎣 Status: Fishing V2 - Waiting for strike", Color3.fromRGB(100, 255, 100))
             
-            -- Equip rod
-            pcall(function()
+            -- STEP 1: EQUIP ROD
+            showDebug("Equipping Rod...", Color3.fromRGB(200, 200, 100))
+            local equipSuccess = pcall(function()
                 equipRemoteV2:FireServer(1)
             end)
-            task.wait(0.3)
-
-            -- Start fishing
-            local timestamp = workspace:GetServerTimeNow()
-            rodRemoteV2:InvokeServer(timestamp)
-            print("[🎣] Casting rod...")
-
-            local baseX, baseY = -0.7499996, 1
-            local x = baseX + (math.random(-500, 500) / 10000000)
-            local y = baseY + (math.random(-500, 500) / 10000000)
-
-            miniGameRemoteV2:InvokeServer(x, y)
-            print("[🎣] Minigame started, waiting for strike...")
             
-            -- Set state menunggu strike
+            if not equipSuccess then
+                showDebug("❌ Equip Failed", Color3.fromRGB(255, 0, 0))
+                return
+            end
+            
+            task.wait(0.5)
+            
+            -- STEP 2: CAST ROD
+            showDebug("Casting...", Color3.fromRGB(200, 200, 100))
+            local castSuccess, castResult = pcall(function()
+                local timestamp = workspace:GetServerTimeNow()
+                return rodRemoteV2:InvokeServer(timestamp)
+            end)
+            
+            if not castSuccess then
+                showDebug("❌ Cast Failed", Color3.fromRGB(255, 0, 0))
+                return
+            end
+            
+            task.wait(0.5)
+            
+            -- STEP 3: START MINIGAME
+            showDebug("Starting Minigame...", Color3.fromRGB(200, 200, 100))
+            local minigameSuccess = pcall(function()
+                local baseX, baseY = -0.7499996, 1
+                local x = baseX + (math.random(-500, 500) / 10000000)
+                local y = baseY + (math.random(-500, 500) / 10000000)
+                return miniGameRemoteV2:InvokeServer(x, y)
+            end)
+            
+            if not minigameSuccess then
+                showDebug("❌ Minigame Failed", Color3.fromRGB(255, 0, 0))
+                return
+            end
+            
+            showDebug("🎣 Waiting for Strike...", Color3.fromRGB(100, 255, 255))
             waitingForStrike = true
             
-            -- FALLBACK SYSTEM: Jika tidak ada strike dalam waktu tertentu, recast
-            local maxWaitTime = 15  -- Maksimal menunggu 15 detik
+            -- STEP 4: WAIT FOR STRIKE (MAX 20 DETIK)
             local waitTime = 0
+            local maxWaitTime = 20
             
             while waitingForStrike and waitTime < maxWaitTime and autoFishingV2Enabled do
                 task.wait(0.5)
                 waitTime = waitTime + 0.5
                 
-                -- Update status setiap 5 detik
-                if waitTime % 5 < 0.6 then
-                    updateStatus("🎣 Status: Fishing V2 - Waiting " .. math.floor(waitTime) .. "s", Color3.fromRGB(100, 255, 100))
+                -- Update status setiap 3 detik
+                if math.floor(waitTime) % 3 == 0 then
+                    updateStatus("🎣 V2 - Waiting: " .. math.floor(waitTime) .. "s", Color3.fromRGB(100, 255, 100))
                 end
             end
             
-            -- Jika timeout, finish dan lanjut ke cast berikutnya
+            -- STEP 5: FALLBACK - JIKA TIDAK ADA STRIKE
             if waitingForStrike and autoFishingV2Enabled then
-                print("[⏰] Fallback: No strike detected, finishing...")
+                showDebug("⏰ Fallback - No Strike", Color3.fromRGB(255, 150, 0))
                 pcall(function()
                     finishRemoteV2:FireServer(true)
                 end)
                 waitingForStrike = false
             end
             
-            -- Tunggu sebentar sebelum cast berikutnya
+            -- STEP 6: COOLDOWN SEBELUM CAST BERIKUTNYA
             if autoFishingV2Enabled then
-                task.wait(0.5)
+                task.wait(1)
             end
             
-        end)
+        end) -- pcall end
         
-        if not ok then 
-            warn("[V2 Error]:", err)
+        -- ERROR HANDLING
+        if not loopSuccess then
+            showDebug("❌ Loop Error: " .. tostring(loopError), Color3.fromRGB(255, 0, 0))
             waitingForStrike = false
-            -- Tunggu sebelum retry
+            
             if autoFishingV2Enabled then
-                task.wait(2)
+                task.wait(3) -- Tunggu 3 detik sebelum retry
             end
         end
-    end
+        
+    end -- while end
     
-    -- Cleanup ketika loop berhenti
+    -- CLEANUP
     fishingActiveV2 = false
     waitingForStrike = false
+    showDebug("V2 Stopped", Color3.fromRGB(255, 0, 0))
     updateStatus("🔴 Status: Idle")
 end
 
--- Fishing V2 Button
+-- 🎯 FISHING V2 BUTTON
 fishV2Btn.MouseButton1Click:Connect(function()
     autoFishingV2Enabled = not autoFishingV2Enabled
     
@@ -1363,7 +1419,7 @@ fishV2Btn.MouseButton1Click:Connect(function()
         
         fishV2Btn.Text = "STOP"
         fishV2Btn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        updateStatus("⚡ Status: Auto Fishing V2 Started", Color3.fromRGB(100, 255, 100))
+        updateStatus("⚡ V2 Started - Hold Rod First!", Color3.fromRGB(100, 255, 100))
         
         -- Reset state
         waitingForStrike = false
@@ -1373,7 +1429,7 @@ fishV2Btn.MouseButton1Click:Connect(function()
     else
         fishV2Btn.Text = "START"
         fishV2Btn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        updateStatus("🔴 Status: Auto Fishing V2 Stopped")
+        updateStatus("🔴 V2 Stopped", Color3.fromRGB(255, 100, 100))
         fishingActiveV2 = false
         waitingForStrike = false
     end
