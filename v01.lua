@@ -40,12 +40,12 @@ local screenGui = create("ScreenGui", {
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 })
 
--- Main Frame - Diperbesar untuk menampung section baru
+-- Main Frame - Diperbesar untuk menampung section V2
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 340), -- Diperbesar dari 290 menjadi 340
-    Position = UDim2.new(0.5, -150, 0.5, -170),
+    Size = UDim2.new(0, 300, 0, 390), -- Diperbesar dari 340 menjadi 390
+    Position = UDim2.new(0.5, -150, 0.5, -195),
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -110,7 +110,7 @@ local minimizeBtn = create("TextButton", {
 
 create("UICorner", {Parent = minimizeBtn, CornerRadius = UDim.new(0, 6)})
 
--- Content Frame - Diperbesar untuk menampung section baru
+-- Content Frame - Diperbesar untuk menampung section V2
 local contentFrame = create("ScrollingFrame", {
     Name = "Content",
     Parent = mainFrame,
@@ -120,7 +120,7 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 420) -- Diperbesar dari 370 menjadi 420
+    CanvasSize = UDim2.new(0, 0, 0, 470) -- Diperbesar dari 420 menjadi 470
 })
 
 -- Status Box - Diperkecil
@@ -156,11 +156,48 @@ end
 -- Inisialisasi status awal
 updateStatus("🔴 Status: Idle")
 
--- Fish Section - Posisi diatur ulang
-local fishSection = create("Frame", {
+-- ========== FISHING V2 SECTION ==========
+local fishV2Section = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
     Position = UDim2.new(0, 0, 0, 58),
+    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+})
+
+create("UICorner", {Parent = fishV2Section, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = fishV2Section, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+
+local fishV2Title = create("TextLabel", {
+    Parent = fishV2Section,
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 9, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "🎣 Auto Instant Fishing V2 (FAST)",
+    Font = Enum.Font.GothamBold,
+    TextSize = 9,
+    TextColor3 = Color3.fromRGB(220, 220, 220),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Center
+})
+
+local fishV2Btn = create("TextButton", {
+    Parent = fishV2Section,
+    Size = UDim2.new(0, 72, 0, 27),
+    Position = UDim2.new(1, -78, 0, 6),
+    BackgroundColor3 = Color3.fromRGB(50, 150, 50),
+    Text = "START",
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+
+create("UICorner", {Parent = fishV2Btn, CornerRadius = UDim.new(0, 6)})
+
+-- Fish Section V1 - Posisi diatur ulang
+local fishSection = create("Frame", {
+    Parent = contentFrame,
+    Size = UDim2.new(1, 0, 0, 40),
+    Position = UDim2.new(0, 0, 0, 106),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -172,7 +209,7 @@ local fishTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎣 Auto Instant Fishing V1 (Perfect cast)",
+    Text = "🎣 Auto Instant Fishing V1 (Hold Your Rod First)",
     Font = Enum.Font.GothamBold,
     TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -197,7 +234,7 @@ create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)})
 local sellSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 106),
+    Position = UDim2.new(0, 0, 0, 154),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -234,7 +271,7 @@ create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)})
 local teleportSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 154),
+    Position = UDim2.new(0, 0, 0, 202),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -271,7 +308,7 @@ create("UICorner", {Parent = teleportBtn, CornerRadius = UDim.new(0, 6)})
 local teleportNPCSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 202),
+    Position = UDim2.new(0, 0, 0, 250),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -308,7 +345,7 @@ create("UICorner", {Parent = teleportNPCBtn, CornerRadius = UDim.new(0, 6)})
 local teleportEventSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 250),
+    Position = UDim2.new(0, 0, 0, 298),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -389,6 +426,7 @@ end
 
 addHover(closeBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80)) 
 addHover(minimizeBtn, Color3.fromRGB(70, 80, 100), Color3.fromRGB(90, 100, 120))
+addHover(fishV2Btn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(teleportBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
@@ -872,7 +910,7 @@ local function createEventTeleportGUI()
         Parent = eventTeleportFrame,
         Size = UDim2.new(1, 0, 0, 35),
         BackgroundColor3 = Color3.fromRGB(25, 35, 55),
-        Text = "🎯 Event Teleport (Experimental)",
+        Text = "🎯 Event Teleport",
         Font = Enum.Font.GothamBold,
         TextSize = 12,
         TextColor3 = Color3.fromRGB(100, 180, 255),
@@ -899,7 +937,7 @@ local function createEventTeleportGUI()
         Size = UDim2.new(1, -20, 0, 50),
         Position = UDim2.new(0, 10, 0, 45),
         BackgroundTransparency = 1,
-        Text = "Teleport to active events\n🔍 Experimental - Mencari di semua lokasi\n⚡ Hanya work ketika event ACTIVE",
+        Text = "Teleport to active events\n⚡ Hanya work ketika event ACTIVE",
         Font = Enum.Font.Gotham,
         TextSize = 10,
         TextColor3 = Color3.fromRGB(100, 255, 200),
@@ -1147,15 +1185,14 @@ task.spawn(function()
 	end
 end)
 
--- Fungsi utama Auto Fishing
-
+-- Fungsi utama Auto Fishing V1
 local function autoFishingLoop()
 	while autoFishingEnabled do
 		local ok, err = pcall(function()
 
 			updateDelayBasedOnRod()
 			fishingActive = true
-			updateStatus("🎣 Status: Fishing", Color3.fromRGB(100, 255, 100))
+			updateStatus("🎣 Status: Fishing V1", Color3.fromRGB(100, 255, 100))
 			equipRemote:FireServer(1)
 			task.wait(0.1)
 
@@ -1176,6 +1213,88 @@ local function autoFishingLoop()
 		task.wait(0.2)
 	end
 	fishingActive = false
+   updateStatus("🔴 Status: Idle")
+end
+
+-- ===================================
+-- ========== FISHING V2 ===========
+-- ===================================
+
+local autoFishingV2Enabled = false
+local fishingActiveV2 = false
+
+-- Remote Events/Functions untuk V2
+local rodRemoteV2 = net:WaitForChild("RF/ChargeFishingRod")
+local miniGameRemoteV2 = net:WaitForChild("RF/RequestFishingMinigameStarted")
+local finishRemoteV2 = net:WaitForChild("RE/FishingCompleted")
+local equipRemoteV2 = net:WaitForChild("RE/EquipToolFromHotbar")
+
+-- 🎯 Exclaim (Tanda Seru) Listener untuk V2 - INSTANT FINISH
+task.spawn(function()
+	local success, exclaimEvent = pcall(function()
+		return net:WaitForChild("RE/ReplicateTextEffect", 5)
+	end)
+
+	if success and exclaimEvent then
+		exclaimEvent.OnClientEvent:Connect(function(data)
+			if autoFishingV2Enabled and data and data.TextData
+				and data.TextData.EffectType == "Exclaim" then
+
+				local head = player.Character and player.Character:FindFirstChild("Head")
+				if head and data.Container == head then
+					print("🎯 Tanda seru detected! Instant finish...")
+					
+					-- Langsung finish tanpa delay
+					finishRemoteV2:FireServer(true)  -- true = success
+					
+					-- Auto recast cepat
+					task.wait(0.2)  -- Delay kecil biar smooth
+					local timestamp = workspace:GetServerTimeNow()
+					rodRemoteV2:InvokeServer(timestamp)
+					
+					local baseX, baseY = -0.7499996, 1
+					local x = baseX + (math.random(-500, 500) / 10000000)
+					local y = baseY + (math.random(-500, 500) / 10000000)
+					
+					miniGameRemoteV2:InvokeServer(x, y)
+				end
+			end
+		end)
+		print("[✅] Exclaim detection active V2 (instant finish).")
+	else
+		warn("[⚠️] ReplicateTextEffect not found, skipping Exclaim logic V2.")
+	end
+end)
+
+-- Fungsi utama Auto Fishing V2
+local function autoFishingLoopV2()
+	while autoFishingV2Enabled do
+		local ok, err = pcall(function()
+			fishingActiveV2 = true
+			updateStatus("🎣 Status: Fishing V2 (FAST)", Color3.fromRGB(100, 255, 100))
+			equipRemoteV2:FireServer(1)
+			task.wait(0.1)
+
+			local timestamp = workspace:GetServerTimeNow()
+			rodRemoteV2:InvokeServer(timestamp)
+
+			local baseX, baseY = -0.7499996, 1
+			local x = baseX + (math.random(-500, 500) / 10000000)
+			local y = baseY + (math.random(-500, 500) / 10000000)
+
+			miniGameRemoteV2:InvokeServer(x, y)
+			
+			-- V2 menggunakan delay yang lebih pendek karena ada instant finish
+			task.wait(1.5) -- Base delay, akan diinterrupt oleh exclaim listener
+			
+			-- Fallback jika exclaim tidak terdeteksi
+			finishRemoteV2:FireServer(true)
+			task.wait(0.3)
+		end)
+		if not ok then warn(err) end
+		task.wait(0.2)
+	end
+	fishingActiveV2 = false
    updateStatus("🔴 Status: Idle")
 end
 
@@ -1214,18 +1333,50 @@ end
 -- ========== BUTTON LOGIC ===========
 -- ===================================
 
+-- Fishing V2 Button
+fishV2Btn.MouseButton1Click:Connect(function()
+    autoFishingV2Enabled = not autoFishingV2Enabled
+    
+    if autoFishingV2Enabled then
+        -- Stop V1 jika sedang berjalan
+        if autoFishingEnabled then
+            autoFishingEnabled = false
+            fishBtn.Text = "START"
+            fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        end
+        
+        fishV2Btn.Text = "STOP"
+        fishV2Btn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        updateStatus("⚡ Status: Auto Fishing V2 Started", Color3.fromRGB(100, 255, 100))
+        task.spawn(autoFishingLoopV2)
+    else
+        fishV2Btn.Text = "START"
+        fishV2Btn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        updateStatus("🔴 Status: Auto Fishing V2 Stopped")
+        fishingActiveV2 = false
+    end
+end)
+
+-- Fishing V1 Button
 fishBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = not autoFishingEnabled
     
     if autoFishingEnabled then
+        -- Stop V2 jika sedang berjalan
+        if autoFishingV2Enabled then
+            autoFishingV2Enabled = false
+            fishV2Btn.Text = "START"
+            fishV2Btn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        end
+        
         fishBtn.Text = "STOP"
         fishBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        updateStatus("🟢 Status: Auto Fishing Started", Color3.fromRGB(100, 255, 100))
+        updateStatus("🟢 Status: Auto Fishing V1 Started", Color3.fromRGB(100, 255, 100))
         task.spawn(autoFishingLoop)
     else
         fishBtn.Text = "START"
         fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        updateStatus("🔴 Status: Auto Fishing Stopped")
+        updateStatus("🔴 Status: Auto Fishing V1 Stopped")
         delayInitialized = false
         fishingActive = false
     end
@@ -1263,8 +1414,10 @@ end)
 
 closeBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = false
+    autoFishingV2Enabled = false
     autoSellEnabled = false
     fishingActive = false
+    fishingActiveV2 = false
     screenGui:Destroy()
 end)
 
@@ -1273,12 +1426,13 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 340)
+        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 390)
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
 
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
-print("📌 Features: Auto Fish, Auto Sell, Island TP, NPC TP, Event TP")
+print("📌 Features: Auto Fish V1 & V2, Auto Sell, Island TP, NPC TP, Event TP")
+print("🎯 V2 Features: Instant Finish (Fast Fishing)")
 print("=================================")
