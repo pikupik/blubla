@@ -801,58 +801,7 @@ end
 -- ========== SIMPLE EVENT TELEPORT =========
 -- ===================================
 
-local eventsList = {
-    "Shark Hunt",
-    "Ghost Shark Hunt", 
-    "Worm Hunt",
-    "Black Hole",
-    "Shocked",
-    "Ghost Worm",
-    "Meteor Rain"
-}
-
-local function findEventByName(eventName)
-    print("🔍 Searching for event:", eventName)
-    
-    -- Cari di folder Props seperti di script kedua
-    local props = workspace:FindFirstChild("Props")
-    if props then
-        local eventObj = props:FindFirstChild(eventName)
-        if eventObj then
-            -- Cari fishing boat seperti di script kedua
-            local fishingBoat = eventObj:FindFirstChild("Fishing Boat")
-            if fishingBoat then
-                print("✅ Found event with fishing boat:", eventName)
-                return fishingBoat
-            else
-                print("✅ Found event object:", eventName)
-                return eventObj
-            end
-        end
-    end
-    
-    -- Fallback: cari di seluruh workspace berdasarkan nama (logic lama)
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if string.lower(obj.Name) == string.lower(eventName) then
-            print("✅ Found event object:", obj:GetFullName())
-            return obj
-        end
-    end
-    
-    -- Cari dengan partial match kalau exact ga ketemu
-    for _, obj in pairs(workspace:GetDescendants()) do
-        local objNameLower = string.lower(obj.Name)
-        local eventNameLower = string.lower(eventName)
-        
-        if string.find(objNameLower, eventNameLower) or string.find(eventNameLower, objNameLower) then
-            print("✅ Found similar event object:", obj:GetFullName())
-            return obj
-        end
-    end
-    
-    print("❌ Event not found:", eventName)
-    return nil
-end
+local eventsList = { "Shark Hunt", "Ghost Shark Hunt", "Worm Hunt", "Black Hole", "Shocked", "Ghost Worm", "Meteor Rain" }
 
 local function createEventTeleportGUI()
     local eventTeleportGui = create("ScreenGui", {
@@ -879,7 +828,7 @@ local function createEventTeleportGUI()
         Parent = eventTeleportFrame,
         Size = UDim2.new(1, 0, 0, 35),
         BackgroundColor3 = Color3.fromRGB(25, 35, 55),
-        Text = "🎯 Event Teleport (Find by Name)",
+        Text = "🎯 Event Teleport",
         Font = Enum.Font.GothamBold,
         TextSize = 12,
         TextColor3 = Color3.fromRGB(100, 180, 255),
@@ -906,7 +855,7 @@ local function createEventTeleportGUI()
         Size = UDim2.new(1, -20, 0, 50),
         Position = UDim2.new(0, 10, 0, 45),
         BackgroundTransparency = 1,
-        Text = "Teleport to active events\n🎯 Find events in Props folder\n⚡ Only works when event is ACTIVE",
+        Text = "Teleport to active events\n🎯 Only works when event is ACTIVE\n⚡ Looks for Fishing Boat in Props",
         Font = Enum.Font.Gotham,
         TextSize = 10,
         TextColor3 = Color3.fromRGB(100, 255, 200),
@@ -951,40 +900,26 @@ local function createEventTeleportGUI()
             -- Beri waktu sebentar untuk update status
             task.wait(0.3)
             
-            local eventObject = findEventByName(eventName)
-            
-            if eventObject then
-                local charFolder = workspace:FindFirstChild("Characters")
-                local char = charFolder and charFolder:FindFirstChild(player.Name)
-                if not char then 
-                    updateStatus("❌ Character not found")
-                    return 
-                end
+            -- Logic persis dari script kedua
+            local props = workspace:FindFirstChild("Props")
+            if props and props:FindFirstChild(eventName) and props[eventName]:FindFirstChild("Fishing Boat") then
+                local fishingBoat = props[eventName]["Fishing Boat"]
+                local boatCFrame = fishingBoat:GetPivot()
+                local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
                 
-                local hrp = char:FindFirstChild("HumanoidRootPart")
-                if not hrp then 
-                    updateStatus("❌ HRP not found")
-                    return 
-                end
+                if hrp then
+                    local success, err = pcall(function()
+                        hrp.CFrame = boatCFrame + Vector3.new(0, 15, 0)
+                    end)
 
-                local success, err = pcall(function()
-                    -- Dapatkan posisi event menggunakan logic dari script kedua
-                    local targetCFrame = eventObject:GetPivot()
-                    
-                    -- Jika ini adalah fishing boat, teleport ke atas dengan offset lebih tinggi
-                    if eventObject.Name == "Fishing Boat" then
-                        hrp.CFrame = targetCFrame + Vector3.new(0, 15, 0)
+                    if success then
+                        updateStatus("✅ Teleported to: " .. eventName, Color3.fromRGB(100, 255, 100))
+                        eventTeleportGui:Destroy()
                     else
-                        -- Untuk event biasa, teleport ke atas dengan offset normal
-                        hrp.CFrame = targetCFrame + Vector3.new(0, 10, 0)
+                        updateStatus("❌ Teleport failed: " .. tostring(err))
                     end
-                end)
-
-                if success then
-                    updateStatus("✅ Teleported to: " .. eventName, Color3.fromRGB(100, 255, 100))
-                    eventTeleportGui:Destroy()
                 else
-                    updateStatus("❌ Teleport failed: " .. tostring(err))
+                    updateStatus("❌ HRP not found")
                 end
             else
                 updateStatus("❌ " .. eventName .. " not found!\nMake sure event is ACTIVE", Color3.fromRGB(255, 100, 100))
@@ -1042,7 +977,6 @@ local function createEventTeleportGUI()
 
     addHover(closeEventTeleportBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80))
 end
-
 
 -- ===================================
 -- ========== FISHING V1 ===========
