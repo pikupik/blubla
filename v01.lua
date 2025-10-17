@@ -40,12 +40,12 @@ local screenGui = create("ScreenGui", {
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 })
 
--- Main Frame - Diperkecil menjadi ukuran kotak
+-- Main Frame - Diperbesar untuk menampung section baru
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 290), -- Diperbesar untuk menampung section baru
-    Position = UDim2.new(0.5, -150, 0.5, -145),
+    Size = UDim2.new(0, 300, 0, 340), -- Diperbesar dari 290 menjadi 340
+    Position = UDim2.new(0.5, -150, 0.5, -170),
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -120,7 +120,7 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 370) -- Diperbesar untuk menampung section baru
+    CanvasSize = UDim2.new(0, 0, 0, 420) -- Diperbesar dari 370 menjadi 420
 })
 
 -- Status Box - Diperkecil
@@ -139,7 +139,7 @@ local statusLabel = create("TextLabel", {
     Size = UDim2.new(1, -12, 1, -8),
     Position = UDim2.new(0, 6, 0, 4),
     BackgroundTransparency = 1,
-    Text = "🔴 Status: Idle\nScript: Beta Test V.1.1a\nUpdate: +Adding Teleport To NPC & Islands\nNote: found bug on script? Pm me on discord!",
+    Text = "🔴 Status: Idle\nScript: Beta Release V.2.1a\nUpdate: +Adding Teleport To NPC, Islands & Events\nNote: found bug on script? Pm me on discord!",
     Font = Enum.Font.GothamBold,
     TextSize = 10,
     TextColor3 = Color3.fromRGB(255, 100, 100),
@@ -148,7 +148,7 @@ local statusLabel = create("TextLabel", {
 
 -- Fungsi untuk update status dengan format yang dipertahankan
 local function updateStatus(newStatus, color)
-    local baseText = "🔴 Script: Beta Test V.1.1a\nUpdate: +Adding Teleport to NPC & Islands\nNote: found bug on script? Pm me on discord!"
+    local baseText = "Script: Beta Release V.2.1a\nUpdate: +Adding Teleport to NPC, Islands & Events\nNote: found bug on script? Pm me on discord!"
     statusLabel.Text = newStatus .. "\n" .. baseText
     statusLabel.TextColor3 = color or Color3.fromRGB(255, 100, 100)
 end
@@ -304,6 +304,43 @@ local teleportNPCBtn = create("TextButton", {
 
 create("UICorner", {Parent = teleportNPCBtn, CornerRadius = UDim.new(0, 6)})
 
+-- ========== TELEPORT TO EVENT SECTION ==========
+local teleportEventSection = create("Frame", {
+    Parent = contentFrame,
+    Size = UDim2.new(1, 0, 0, 40),
+    Position = UDim2.new(0, 0, 0, 250),
+    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+})
+
+create("UICorner", {Parent = teleportEventSection, CornerRadius = UDim.new(0, 7)})
+create("UIStroke", {Parent = teleportEventSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+
+local teleportEventTitle = create("TextLabel", {
+    Parent = teleportEventSection,
+    Size = UDim2.new(0.55, 0, 1, 0),
+    Position = UDim2.new(0, 9, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "🎯 Teleport to Events",
+    Font = Enum.Font.GothamBold,
+    TextSize = 9,
+    TextColor3 = Color3.fromRGB(220, 220, 220),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Center
+})
+
+local teleportEventBtn = create("TextButton", {
+    Parent = teleportEventSection,
+    Size = UDim2.new(0, 72, 0, 27),
+    Position = UDim2.new(1, -78, 0, 6),
+    BackgroundColor3 = Color3.fromRGB(180, 80, 120),
+    Text = "OPEN",
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+
+create("UICorner", {Parent = teleportEventBtn, CornerRadius = UDim.new(0, 6)})
+
 -- ===================================
 -- ========== DRAG & HOVER ==========
 -- ===================================
@@ -356,6 +393,7 @@ addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(teleportBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
 addHover(teleportNPCBtn, Color3.fromRGB(100, 80, 180), Color3.fromRGB(120, 100, 200))
+addHover(teleportEventBtn, Color3.fromRGB(180, 80, 120), Color3.fromRGB(200, 100, 140))
 
 -- ===================================
 -- ========== TELEPORT SYSTEM =========
@@ -760,6 +798,190 @@ local function createNPCTeleportGUI()
 end
 
 -- ===================================
+-- ========== TELEPORT TO EVENT SYSTEM =========
+-- ===================================
+
+local eventsList = { 
+    "Shark Hunt", 
+    "Ghost Shark Hunt", 
+    "Worm Hunt", 
+    "Black Hole", 
+    "Shocked", 
+    "Ghost Worm", 
+    "Meteor Rain" 
+}
+
+local function createEventTeleportGUI()
+    local eventTeleportGui = create("ScreenGui", {
+        Name = "EventTeleportGUI",
+        Parent = playerGui,
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    })
+
+    -- Event Teleport Frame
+    local eventTeleportFrame = create("Frame", {
+        Name = "EventTeleportFrame",
+        Parent = eventTeleportGui,
+        Size = UDim2.new(0, 280, 0, 320),
+        Position = UDim2.new(0.5, -140, 0.5, -160),
+        BackgroundColor3 = Color3.fromRGB(15, 20, 30),
+        BorderSizePixel = 0
+    })
+
+    create("UICorner", {Parent = eventTeleportFrame, CornerRadius = UDim.new(0, 10)})
+    create("UIStroke", {Parent = eventTeleportFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5})
+
+    local eventTeleportTitle = create("TextLabel", {
+        Parent = eventTeleportFrame,
+        Size = UDim2.new(1, 0, 0, 35),
+        BackgroundColor3 = Color3.fromRGB(25, 35, 55),
+        Text = "🎯 Event Teleport",
+        Font = Enum.Font.GothamBold,
+        TextSize = 14,
+        TextColor3 = Color3.fromRGB(100, 180, 255),
+        TextYAlignment = Enum.TextYAlignment.Center
+    })
+
+    create("UICorner", {Parent = eventTeleportTitle, CornerRadius = UDim.new(0, 10)})
+
+    local closeEventTeleportBtn = create("TextButton", {
+        Parent = eventTeleportTitle,
+        Size = UDim2.new(0, 22, 0, 22),
+        Position = UDim2.new(1, -26, 0, 6),
+        BackgroundColor3 = Color3.fromRGB(220, 50, 50),
+        Text = "X",
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextColor3 = Color3.fromRGB(255, 255, 255)
+    })
+
+    create("UICorner", {Parent = closeEventTeleportBtn, CornerRadius = UDim.new(0, 6)})
+
+    local infoLabel = create("TextLabel", {
+        Parent = eventTeleportFrame,
+        Size = UDim2.new(1, -20, 0, 40),
+        Position = UDim2.new(0, 10, 0, 45),
+        BackgroundTransparency = 1,
+        Text = "Teleport to active events\n⚠️ Only works if event is active",
+        Font = Enum.Font.Gotham,
+        TextSize = 10,
+        TextColor3 = Color3.fromRGB(255, 200, 100),
+        TextXAlignment = Enum.TextXAlignment.Center,
+        TextYAlignment = Enum.TextYAlignment.Center
+    })
+
+    local scrollFrame = create("ScrollingFrame", {
+        Parent = eventTeleportFrame,
+        Size = UDim2.new(1, -20, 1, -100),
+        Position = UDim2.new(0, 10, 0, 95),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
+        CanvasSize = UDim2.new(0, 0, 0, #eventsList * 35)
+    })
+
+    local yPosition = 0
+    for _, eventName in ipairs(eventsList) do
+        local eventBtn = create("TextButton", {
+            Parent = scrollFrame,
+            Size = UDim2.new(1, 0, 0, 32),
+            Position = UDim2.new(0, 0, 0, yPosition),
+            BackgroundColor3 = Color3.fromRGB(35, 45, 65),
+            Text = "⚡ " .. eventName,
+            Font = Enum.Font.Gotham,
+            TextSize = 11,
+            TextColor3 = Color3.fromRGB(220, 220, 220),
+            TextYAlignment = Enum.TextYAlignment.Center
+        })
+
+        create("UICorner", {Parent = eventBtn, CornerRadius = UDim.new(0, 6)})
+        create("UIStroke", {Parent = eventBtn, Color = Color3.fromRGB(60, 100, 160), Thickness = 1})
+
+        -- Hover effect
+        addHover(eventBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
+
+        eventBtn.MouseButton1Click:Connect(function()
+            local props = workspace:FindFirstChild("Props")
+            if props and props:FindFirstChild(eventName) and props[eventName]:FindFirstChild("Fishing Boat") then
+                local fishingBoat = props[eventName]["Fishing Boat"]
+                local boatCFrame = fishingBoat:GetPivot()
+                
+                local charFolder = workspace:FindFirstChild("Characters")
+                local char = charFolder and charFolder:FindFirstChild(player.Name)
+                if not char then 
+                    updateStatus("❌ Character not found")
+                    return 
+                end
+                
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if not hrp then 
+                    updateStatus("❌ HRP not found")
+                    return 
+                end
+
+                local success, err = pcall(function()
+                    hrp.CFrame = boatCFrame + Vector3.new(0, 15, 0)
+                end)
+
+                if success then
+                    updateStatus("✅ Teleported to " .. eventName, Color3.fromRGB(100, 255, 100))
+                    eventTeleportGui:Destroy()
+                else
+                    updateStatus("❌ Teleport failed: " .. tostring(err))
+                end
+            else
+                updateStatus("❌ " .. eventName .. " Not Found!", Color3.fromRGB(255, 100, 100))
+            end
+        end)
+
+        yPosition = yPosition + 35
+    end
+
+    closeEventTeleportBtn.MouseButton1Click:Connect(function()
+        eventTeleportGui:Destroy()
+    end)
+
+    -- Drag functionality untuk event teleport window
+    local eventDragging, eventDragInput, eventDragStart, eventStartPos
+
+    local function updateEventDrag(input)
+        local delta = input.Position - eventDragStart
+        TweenService:Create(eventTeleportFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad), {
+            Position = UDim2.new(eventStartPos.X.Scale, eventStartPos.X.Offset + delta.X, eventStartPos.Y.Scale, eventStartPos.Y.Offset + delta.Y)
+        }):Play()
+    end
+
+    eventTeleportTitle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            eventDragging = true
+            eventDragStart = input.Position
+            eventStartPos = eventTeleportFrame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    eventDragging = false
+                end
+            end)
+        end
+    end)
+
+    eventTeleportTitle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            eventDragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if eventDragging and input == eventDragInput then
+            updateEventDrag(input)
+        end
+    end)
+
+    addHover(closeEventTeleportBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80))
+end
+
+-- ===================================
 -- ========== FISHING V1 ===========
 -- ===================================
 local autoFishingEnabled = false
@@ -990,6 +1212,11 @@ teleportNPCBtn.MouseButton1Click:Connect(function()
     createNPCTeleportGUI()
 end)
 
+-- Teleport to Event Button Logic
+teleportEventBtn.MouseButton1Click:Connect(function()
+    createEventTeleportGUI()
+end)
+
 closeBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = false
     autoSellEnabled = false
@@ -1002,12 +1229,12 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 290)
+        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 340)
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
 
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
-print("📌 Features: Auto Fish, Auto Sell, Island TP, NPC TP")
+print("📌 Features: Auto Fish, Auto Sell, Island TP, NPC TP, Event TP")
 print("=================================")
