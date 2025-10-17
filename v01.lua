@@ -1233,7 +1233,7 @@ local equipRemoteV2 = net:WaitForChild("RE/EquipToolFromHotbar")
 -- 🎯 Exclaim Listener untuk V2 - TUNGGU 1 DETIK SETELAH TANDA SERU
 task.spawn(function()
     local success, exclaimEvent = pcall(function()
-        return net:WaitForChild("RE/ReplicateTextEffect", 2)
+        return net:WaitForChild("RE/ReplicateTextEffect", 5)
     end)
 
     if success and exclaimEvent then
@@ -1243,33 +1243,28 @@ task.spawn(function()
 
                 local head = player.Character and player.Character:FindFirstChild("Head")
                 if head and data.Container == head then
-                    print("🎯 Tanda seru detected! Tunggu 1 detik lalu finish...")
                     
                     -- SETELAH TANDA SERU: TUNGGU 1 DETIK
                     task.spawn(function()
-                        waitingForStrike = false  -- Stop waiting state
-                        
-                        -- Tunggu 1 detik seperti yang diminta
-                        task.wait(1.0)
+                        waitingForStrike = false
+                        task.wait(0.3)
                         
                         if autoFishingV2Enabled then
                             -- FINISH setelah 1 detik
                             pcall(function()
                                 finishRemoteV2:FireServer(true)
-                                print("[✅] Finish setelah tunggu 1 detik")
                             end)
                             
                             -- LANGSUNG LEMPAR LAGI TANPA TUNGGU
-                            task.wait(0.3)  -- Small delay untuk prevent spam
+                            task.wait(0.3)
                             
                             if autoFishingV2Enabled then
                                 -- RECAST INSTANT
                                 pcall(function()
                                     local timestamp = workspace:GetServerTimeNow()
                                     rodRemoteV2:InvokeServer(timestamp)
-                                    print("[✅] Instant recast setelah finish")
                                     
-                                    task.wait(0.2)
+                                    task.wait(0.3)
                                     
                                     local baseX, baseY = -0.7499996, 1
                                     local x = baseX + (math.random(-500, 500) / 10000000)
