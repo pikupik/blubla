@@ -894,35 +894,43 @@ local function createEventTeleportGUI()
         -- Hover effect
         addHover(eventBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
 
+        -- TEMPATIN DI SINI - ganti bagian button click dengan kode debug:
         eventBtn.MouseButton1Click:Connect(function()
-            updateStatus("🔍 Searching for: " .. eventName, Color3.fromRGB(255, 200, 100))
+            updateStatus("🔍 Testing event: " .. eventName, Color3.fromRGB(255, 200, 100))
             
-            -- Beri waktu sebentar untuk update status
-            task.wait(0.3)
-            
-            -- Logic persis dari script kedua
+            -- Coba cek struktur workspace langsung
             local props = workspace:FindFirstChild("Props")
-            if props and props:FindFirstChild(eventName) and props[eventName]:FindFirstChild("Fishing Boat") then
-                local fishingBoat = props[eventName]["Fishing Boat"]
-                local boatCFrame = fishingBoat:GetPivot()
-                local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-                
-                if hrp then
-                    local success, err = pcall(function()
-                        hrp.CFrame = boatCFrame + Vector3.new(0, 15, 0)
-                    end)
-
-                    if success then
-                        updateStatus("✅ Teleported to: " .. eventName, Color3.fromRGB(100, 255, 100))
-                        eventTeleportGui:Destroy()
-                    else
-                        updateStatus("❌ Teleport failed: " .. tostring(err))
-                    end
-                else
-                    updateStatus("❌ HRP not found")
+            if not props then
+                updateStatus("❌ Props folder tidak ditemukan", Color3.fromRGB(255, 100, 100))
+                return
+            end
+            
+            local eventFolder = props:FindFirstChild(eventName)
+            if not eventFolder then
+                updateStatus("❌ Event '"..eventName.."' tidak ditemukan di Props", Color3.fromRGB(255, 100, 100))
+                return
+            end
+            
+            local fishingBoat = eventFolder:FindFirstChild("Fishing Boat")
+            if not fishingBoat then
+                updateStatus("❌ Fishing Boat tidak ditemukan di event", Color3.fromRGB(255, 100, 100))
+                -- Tampilkan apa yang ada di folder event
+                local children = ""
+                for _, child in pairs(eventFolder:GetChildren()) do
+                    children = children .. child.Name .. ", "
                 end
+                updateStatus("Yang ada: " .. children, Color3.fromRGB(255, 200, 100))
+                return
+            end
+            
+            -- Jika semua ada, teleport
+            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                hrp.CFrame = fishingBoat:GetPivot() + Vector3.new(0, 15, 0)
+                updateStatus("✅ Berhasil teleport ke " .. eventName, Color3.fromRGB(100, 255, 100))
+                eventTeleportGui:Destroy()
             else
-                updateStatus("❌ " .. eventName .. " not found!\nMake sure event is ACTIVE", Color3.fromRGB(255, 100, 100))
+                updateStatus("❌ HRP tidak ditemukan", Color3.fromRGB(255, 100, 100))
             end
         end)
 
@@ -933,7 +941,7 @@ local function createEventTeleportGUI()
         eventTeleportGui:Destroy()
     end)
 
-    -- PERBAIKAN: Drag functionality untuk event window - FIXED
+    -- Drag functionality
     local eventDragging, eventDragInput, eventDragStart, eventStartPos
 
     local function updateEventDrag(input)
