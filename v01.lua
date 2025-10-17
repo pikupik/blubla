@@ -40,12 +40,12 @@ local screenGui = create("ScreenGui", {
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 })
 
--- Main Frame - Diperbesar untuk menampung section V2
+-- Main Frame - Diperbesar untuk menampung section baru
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 390), -- Diperbesar dari 340 menjadi 390
-    Position = UDim2.new(0.5, -150, 0.5, -195),
+    Size = UDim2.new(0, 300, 0, 340), -- Diperbesar dari 290 menjadi 340
+    Position = UDim2.new(0.5, -150, 0.5, -170),
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -110,7 +110,7 @@ local minimizeBtn = create("TextButton", {
 
 create("UICorner", {Parent = minimizeBtn, CornerRadius = UDim.new(0, 6)})
 
--- Content Frame - Diperbesar untuk menampung section V2
+-- Content Frame - Diperbesar untuk menampung section baru
 local contentFrame = create("ScrollingFrame", {
     Name = "Content",
     Parent = mainFrame,
@@ -120,7 +120,7 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 470) -- Diperbesar dari 420 menjadi 470
+    CanvasSize = UDim2.new(0, 0, 0, 420) -- Diperbesar dari 370 menjadi 420
 })
 
 -- Status Box - Diperkecil
@@ -139,7 +139,7 @@ local statusLabel = create("TextLabel", {
     Size = UDim2.new(1, -12, 1, -8),
     Position = UDim2.new(0, 6, 0, 4),
     BackgroundTransparency = 1,
-    Text = "🔴 Status: Idle\nScript: Beta Release V.2.1a\nUpdate: +Adding Teleport To NPC, Islands & Events\nNote: found bug on script? Pm me on discord!",
+    Text = "🔴 Status: Idle\nScript: V.2.2\nUpdate: +Buff Speed Fishing\nNote: found bug on script? Pm me on discord!",
     Font = Enum.Font.GothamBold,
     TextSize = 10,
     TextColor3 = Color3.fromRGB(255, 100, 100),
@@ -148,7 +148,7 @@ local statusLabel = create("TextLabel", {
 
 -- Fungsi untuk update status dengan format yang dipertahankan
 local function updateStatus(newStatus, color)
-    local baseText = "Script: Beta Release V.2.1a\nUpdate: +Adding Teleport to NPC, Islands & Events\nNote: found bug on script? Pm me on discord!"
+    local baseText = "Script: V.2.2\nUpdate: +Buff Speed Fishing\nNote: found bug on script? Pm me on discord!"
     statusLabel.Text = newStatus .. "\n" .. baseText
     statusLabel.TextColor3 = color or Color3.fromRGB(255, 100, 100)
 end
@@ -156,48 +156,11 @@ end
 -- Inisialisasi status awal
 updateStatus("🔴 Status: Idle")
 
--- ========== FISHING V2 SECTION ==========
-local fishV2Section = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 58),
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
-
-create("UICorner", {Parent = fishV2Section, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = fishV2Section, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
-
-local fishV2Title = create("TextLabel", {
-    Parent = fishV2Section,
-    Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "🎣 Auto Instant Fishing V2 (FAST)",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Center
-})
-
-local fishV2Btn = create("TextButton", {
-    Parent = fishV2Section,
-    Size = UDim2.new(0, 72, 0, 27),
-    Position = UDim2.new(1, -78, 0, 6),
-    BackgroundColor3 = Color3.fromRGB(50, 150, 50),
-    Text = "START",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
-
-create("UICorner", {Parent = fishV2Btn, CornerRadius = UDim.new(0, 6)})
-
--- Fish Section V1 - Posisi diatur ulang
+-- Fish Section - Posisi diatur ulang
 local fishSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 106),
+    Position = UDim2.new(0, 0, 0, 58),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -209,7 +172,7 @@ local fishTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎣 Auto Instant Fishing V1 (Hold Your Rod First)",
+    Text = "🎣 Auto Instant Fishing V1",
     Font = Enum.Font.GothamBold,
     TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -234,7 +197,7 @@ create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)})
 local sellSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 154),
+    Position = UDim2.new(0, 0, 0, 106),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -271,7 +234,7 @@ create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)})
 local teleportSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 202),
+    Position = UDim2.new(0, 0, 0, 154),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -308,7 +271,7 @@ create("UICorner", {Parent = teleportBtn, CornerRadius = UDim.new(0, 6)})
 local teleportNPCSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 250),
+    Position = UDim2.new(0, 0, 0, 202),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -345,7 +308,7 @@ create("UICorner", {Parent = teleportNPCBtn, CornerRadius = UDim.new(0, 6)})
 local teleportEventSection = create("Frame", {
     Parent = contentFrame,
     Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 298),
+    Position = UDim2.new(0, 0, 0, 250),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
@@ -426,7 +389,6 @@ end
 
 addHover(closeBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80)) 
 addHover(minimizeBtn, Color3.fromRGB(70, 80, 100), Color3.fromRGB(90, 100, 120))
-addHover(fishV2Btn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(teleportBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
@@ -1171,7 +1133,7 @@ task.spawn(function()
 				if head and data.Container == head then
 					task.spawn(function()
 						for i = 1, 3 do
-                    task.wait(BypassDelay)
+                    task.wait(1)
                     finishRemote:FireServer()
                     rconsoleclear()
                   end
@@ -1185,14 +1147,14 @@ task.spawn(function()
 	end
 end)
 
--- Fungsi utama Auto Fishing V1
+-- Fungsi utama Auto Fishing
+
 local function autoFishingLoop()
 	while autoFishingEnabled do
 		local ok, err = pcall(function()
 
-			updateDelayBasedOnRod()
 			fishingActive = true
-			updateStatus("🎣 Status: Fishing V1", Color3.fromRGB(100, 255, 100))
+			updateStatus("🎣 Status: Fishing", Color3.fromRGB(100, 255, 100))
 			equipRemote:FireServer(1)
 			task.wait(0.1)
 
@@ -1204,10 +1166,10 @@ local function autoFishingLoop()
 			local y = baseY + (math.random(-500, 500) / 10000000)
 
 			miniGameRemote:InvokeServer(x, y)
-			task.wait(customDelay)
+			task.wait(1)
 			finishRemote:FireServer(true)
 
-			task.wait(BypassDelay)
+			task.wait(1)
 		end)
 		if not ok then warn(err) end
 		task.wait(0.2)
@@ -1215,248 +1177,6 @@ local function autoFishingLoop()
 	fishingActive = false
    updateStatus("🔴 Status: Idle")
 end
-
--- ===================================
--- ========== FISHING V2 ===========
--- ===================================
-
-local autoFishingV2Enabled = false
-local fishingActiveV2 = false
-local waitingForStrike = false
-local currentFishingSession = 0
-
--- Debug function untuk Delta
-local function showDebug(message, color)
-    color = color or Color3.fromRGB(255, 255, 255)
-    print("[DEBUG] " .. message)
-    -- Untuk Delta, kita bisa tambahkan notifikasi visual juga
-    updateStatus("🔍 " .. message, color)
-end
-
--- Remote Events/Functions untuk V2
-local rodRemoteV2 = net:WaitForChild("RF/ChargeFishingRod")
-local miniGameRemoteV2 = net:WaitForChild("RF/RequestFishingMinigameStarted")
-local finishRemoteV2 = net:WaitForChild("RE/FishingCompleted")
-local equipRemoteV2 = net:WaitForChild("RE/EquipToolFromHotbar")
-
--- 🎯 Exclaim Listener untuk V2 - WITH DEBUG
-task.spawn(function()
-    local success, exclaimEvent = pcall(function()
-        return net:WaitForChild("RE/ReplicateTextEffect")
-    end)
-
-    if success and exclaimEvent then
-        exclaimEvent.OnClientEvent:Connect(function(data)
-            if not autoFishingV2Enabled then 
-                showDebug("V2 not enabled, ignoring exclaim", Color3.fromRGB(255, 100, 100))
-                return 
-            end
-            if not waitingForStrike then 
-                showDebug("Not waiting for strike, ignoring exclaim", Color3.fromRGB(255, 100, 100))
-                return 
-            end
-            
-            showDebug("Exclaim event received", Color3.fromRGB(255, 255, 100))
-            
-            if data and data.TextData and data.TextData.EffectType == "Exclaim" then
-                showDebug("Exclaim type confirmed", Color3.fromRGB(100, 255, 100))
-                
-                local head = player.Character and player.Character:FindFirstChild("Head")
-                if head and data.Container == head then
-                    showDebug("STRIKE DETECTED! Head container matched", Color3.fromRGB(100, 255, 100))
-                    waitingForStrike = false
-                    
-                    local session = currentFishingSession
-                    showDebug("Session: " .. session, Color3.fromRGB(100, 200, 255))
-                    
-                    -- Tunggu 1 detik setelah tanda seru
-                    showDebug("Waiting 1 second before finish...", Color3.fromRGB(255, 200, 100))
-                    task.wait(1)
-                    
-                    -- Pastikan masih dalam session yang sama dan masih aktif
-                    if autoFishingV2Enabled and session == currentFishingSession then
-                        showDebug("Finishing fishing...", Color3.fromRGB(100, 255, 100))
-                        local success, err = pcall(function()
-                            finishRemoteV2:FireServer(true)
-                        end)
-                        
-                        if success then
-                            showDebug("Fish caught successfully!", Color3.fromRGB(100, 255, 100))
-                            updateStatus("✅ Fish Caught!", Color3.fromRGB(100, 255, 100))
-                        else
-                            showDebug("Finish failed: " .. tostring(err), Color3.fromRGB(255, 100, 100))
-                            updateStatus("❌ Finish failed", Color3.fromRGB(255, 100, 100))
-                        end
-                    else
-                        showDebug("Session changed or V2 stopped", Color3.fromRGB(255, 100, 100))
-                    end
-                else
-                    showDebug("Head container mismatch", Color3.fromRGB(255, 100, 100))
-                end
-            else
-                showDebug("Not exclaim type or data missing", Color3.fromRGB(255, 100, 100))
-            end
-        end)
-        showDebug("Exclaim listener activated for V2", Color3.fromRGB(100, 255, 100))
-    else
-        showDebug("Exclaim event not found", Color3.fromRGB(255, 100, 100))
-    end
-end)
-
--- Fungsi utama Auto Fishing V2 - WITH DEBUG
-local function autoFishingLoopV2()
-    currentFishingSession += 1
-    local mySession = currentFishingSession
-    
-    showDebug("Starting Fishing V2 Loop - Session: " .. mySession, Color3.fromRGB(100, 255, 100))
-    
-    while autoFishingV2Enabled and mySession == currentFishingSession do
-        local success, err = pcall(function()
-            -- Reset state
-            waitingForStrike = true
-            fishingActiveV2 = true
-            
-            -- Step 1: Equip rod
-            showDebug("Step 1: Equipping rod...", Color3.fromRGB(100, 200, 255))
-            updateStatus("🎣 Equipping rod...", Color3.fromRGB(100, 255, 100))
-            
-            pcall(function()
-                equipRemoteV2:FireServer(1)
-            end)
-            task.wait(0.5)
-
-            -- Step 2: Cast rod
-            showDebug("Step 2: Casting rod...", Color3.fromRGB(100, 200, 255))
-            updateStatus("🎣 Casting...", Color3.fromRGB(100, 255, 100))
-            
-            local timestamp = workspace:GetServerTimeNow()
-            local castSuccess, castErr = pcall(function()
-                rodRemoteV2:InvokeServer(timestamp)
-            end)
-            
-            if not castSuccess then
-                showDebug("Cast failed: " .. tostring(castErr), Color3.fromRGB(255, 100, 100))
-                waitingForStrike = false
-                return
-            end
-            
-            showDebug("Cast successful", Color3.fromRGB(100, 255, 100))
-            task.wait(0.5)
-
-            -- Step 3: Start minigame
-            showDebug("Step 3: Starting minigame...", Color3.fromRGB(100, 200, 255))
-            updateStatus("🎣 Starting minigame...", Color3.fromRGB(100, 255, 100))
-            
-            local baseX, baseY = -0.7499996, 1
-            local x = baseX + (math.random(-500, 500) / 10000000)
-            local y = baseY + (math.random(-500, 500) / 10000000)
-
-            local minigameSuccess, minigameErr = pcall(function()
-                miniGameRemoteV2:InvokeServer(x, y)
-            end)
-            
-            if not minigameSuccess then
-                showDebug("Minigame failed: " .. tostring(minigameErr), Color3.fromRGB(255, 100, 100))
-                waitingForStrike = false
-                return
-            end
-            
-            showDebug("Minigame started successfully", Color3.fromRGB(100, 255, 100))
-            updateStatus("🎣 Waiting for strike...", Color3.fromRGB(255, 200, 100))
-
-            -- Step 4: Wait for strike dengan timeout
-            showDebug("Step 4: Waiting for strike...", Color3.fromRGB(100, 200, 255))
-            local waitStart = tick()
-            local maxWaitTime = 25  -- 25 detik maksimal
-            
-            while waitingForStrike and autoFishingV2Enabled and mySession == currentFishingSession do
-                local elapsed = tick() - waitStart
-                
-                if elapsed > maxWaitTime then
-                    showDebug("TIMEOUT: No strike detected after " .. math.floor(elapsed) .. "s", Color3.fromRGB(255, 100, 100))
-                    break
-                end
-                
-                -- Update status setiap 5 detik
-                if math.floor(elapsed) % 5 == 0 then
-                    showDebug("Still waiting... " .. math.floor(elapsed) .. "s elapsed", Color3.fromRGB(255, 200, 100))
-                    updateStatus("🎣 Waiting " .. math.floor(elapsed) .. "s...", Color3.fromRGB(255, 200, 100))
-                end
-                
-                task.wait(0.1)
-            end
-
-            -- Step 5: Finish (timeout atau strike)
-            if waitingForStrike and autoFishingV2Enabled and mySession == currentFishingSession then
-                showDebug("Finishing (timeout/no strike)", Color3.fromRGB(255, 150, 100))
-                pcall(function()
-                    finishRemoteV2:FireServer(true)
-                end)
-                waitingForStrike = false
-                updateStatus("⏰ No strike, recasting...", Color3.fromRGB(255, 150, 100))
-            else
-                showDebug("Strike processed or session ended", Color3.fromRGB(100, 255, 100))
-            end
-
-            -- Step 6: Wait sebelum cast berikutnya
-            if autoFishingV2Enabled and mySession == currentFishingSession then
-                showDebug("Waiting before next cast...", Color3.fromRGB(100, 200, 255))
-                task.wait(1.5)
-            end
-
-        end)
-        
-        if not success then 
-            showDebug("Loop error: " .. tostring(err), Color3.fromRGB(255, 100, 100))
-            waitingForStrike = false
-            if autoFishingV2Enabled and mySession == currentFishingSession then
-                updateStatus("❌ Error, retrying...", Color3.fromRGB(255, 100, 100))
-                task.wait(3)
-            end
-        end
-    end
-    
-    -- Cleanup
-    fishingActiveV2 = false
-    waitingForStrike = false
-    if mySession == currentFishingSession then
-        showDebug("Fishing V2 Loop Ended - Session: " .. mySession, Color3.fromRGB(255, 100, 100))
-        updateStatus("🔴 Fishing V2 Stopped", Color3.fromRGB(255, 100, 100))
-    end
-end
-
--- Fishing V2 Button - WITH DEBUG
-fishV2Btn.MouseButton1Click:Connect(function()
-    autoFishingV2Enabled = not autoFishingV2Enabled
-    
-    if autoFishingV2Enabled then
-        -- Stop V1 jika sedang berjalan
-        if autoFishingEnabled then
-            autoFishingEnabled = false
-            fishBtn.Text = "START"
-            fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        end
-        
-        fishV2Btn.Text = "STOP"
-        fishV2Btn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        showDebug("Fishing V2 STARTED", Color3.fromRGB(100, 255, 100))
-        updateStatus("⚡ Starting Fishing V2...", Color3.fromRGB(100, 255, 100))
-        
-        -- Reset state
-        waitingForStrike = false
-        fishingActiveV2 = true
-        
-        -- Start loop
-        task.spawn(autoFishingLoopV2)
-    else
-        fishV2Btn.Text = "START"
-        fishV2Btn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        showDebug("Fishing V2 STOPPED", Color3.fromRGB(255, 100, 100))
-        fishingActiveV2 = false
-        waitingForStrike = false
-        currentFishingSession += 1  -- Invalidasi session lama
-    end
-end)
 
 -- ===================================
 -- ========== AUTO SELL LOOP =========
@@ -1493,50 +1213,18 @@ end
 -- ========== BUTTON LOGIC ===========
 -- ===================================
 
--- Fishing V2 Button
-fishV2Btn.MouseButton1Click:Connect(function()
-    autoFishingV2Enabled = not autoFishingV2Enabled
-    
-    if autoFishingV2Enabled then
-        -- Stop V1 jika sedang berjalan
-        if autoFishingEnabled then
-            autoFishingEnabled = false
-            fishBtn.Text = "START"
-            fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        end
-        
-        fishV2Btn.Text = "STOP"
-        fishV2Btn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        updateStatus("⚡ Status: Auto Fishing V2 Started", Color3.fromRGB(100, 255, 100))
-        task.spawn(autoFishingLoopV2)
-    else
-        fishV2Btn.Text = "START"
-        fishV2Btn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        updateStatus("🔴 Status: Auto Fishing V2 Stopped")
-        fishingActiveV2 = false
-    end
-end)
-
--- Fishing V1 Button
 fishBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = not autoFishingEnabled
     
     if autoFishingEnabled then
-        -- Stop V2 jika sedang berjalan
-        if autoFishingV2Enabled then
-            autoFishingV2Enabled = false
-            fishV2Btn.Text = "START"
-            fishV2Btn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        end
-        
         fishBtn.Text = "STOP"
         fishBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        updateStatus("🟢 Status: Auto Fishing V1 Started", Color3.fromRGB(100, 255, 100))
+        updateStatus("🟢 Status: Auto Fishing Started", Color3.fromRGB(100, 255, 100))
         task.spawn(autoFishingLoop)
     else
         fishBtn.Text = "START"
         fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        updateStatus("🔴 Status: Auto Fishing V1 Stopped")
+        updateStatus("🔴 Status: Auto Fishing Stopped")
         delayInitialized = false
         fishingActive = false
     end
@@ -1574,10 +1262,8 @@ end)
 
 closeBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = false
-    autoFishingV2Enabled = false
     autoSellEnabled = false
     fishingActive = false
-    fishingActiveV2 = false
     screenGui:Destroy()
 end)
 
@@ -1586,13 +1272,12 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 390)
+        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 340)
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
 
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
-print("📌 Features: Auto Fish V1 & V2, Auto Sell, Island TP, NPC TP, Event TP")
-print("🎯 V2 Features: Instant Finish (Fast Fishing)")
+print("📌 Features: Auto Fish, Auto Sell, Island TP, NPC TP, Event TP")
 print("=================================")
