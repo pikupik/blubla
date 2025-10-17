@@ -40,12 +40,12 @@ local screenGui = create("ScreenGui", {
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 })
 
--- Main Frame - Diperkecil menjadi ukuran kotak
+-- Main Frame - Diperbesar untuk menampung lebih banyak kategori
 local mainFrame = create("Frame", {
     Name = "MainFrame",
     Parent = screenGui,
-    Size = UDim2.new(0, 300, 0, 250), -- Diperkecil dari 370 menjadi 250
-    Position = UDim2.new(0.5, -150, 0.5, -125),
+    Size = UDim2.new(0, 320, 0, 400),
+    Position = UDim2.new(0.5, -160, 0.5, -200),
     BackgroundColor3 = Color3.fromRGB(15, 20, 30),
     BorderSizePixel = 0
 })
@@ -110,7 +110,7 @@ local minimizeBtn = create("TextButton", {
 
 create("UICorner", {Parent = minimizeBtn, CornerRadius = UDim.new(0, 6)})
 
--- Content Frame - Diperkecil dan diatur ulang posisinya
+-- Content Frame - Diperbesar untuk menampung kategori
 local contentFrame = create("ScrollingFrame", {
     Name = "Content",
     Parent = mainFrame,
@@ -120,20 +120,19 @@ local contentFrame = create("ScrollingFrame", {
     BorderSizePixel = 0,
     ScrollBarThickness = 5,
     ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-    CanvasSize = UDim2.new(0, 0, 0, 320) -- Diperkecil dari 520 menjadi 320
+    CanvasSize = UDim2.new(0, 0, 0, 650)
 })
 
--- Status Box - Diperkecil
+-- Status Box
 local statusBox = create("Frame", {
     Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 50), -- Diperkecil dari 54 menjadi 50
+    Size = UDim2.new(1, 0, 0, 50),
     BackgroundColor3 = Color3.fromRGB(25, 35, 50),
 })
 
 create("UICorner", {Parent = statusBox, CornerRadius = UDim.new(0, 7)})
 create("UIStroke", {Parent = statusBox, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
 
--- Status Label dengan format yang dipertahankan
 local statusLabel = create("TextLabel", {
     Parent = statusBox,
     Size = UDim2.new(1, -12, 1, -8),
@@ -146,7 +145,7 @@ local statusLabel = create("TextLabel", {
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
--- Fungsi untuk update status dengan format yang dipertahankan
+-- Fungsi untuk update status
 local function updateStatus(newStatus, color)
     local baseText = "🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
     statusLabel.Text = newStatus .. "\n" .. baseText
@@ -156,116 +155,247 @@ end
 -- Inisialisasi status awal
 updateStatus("🔴 Status: Idle")
 
--- Fish Section - Posisi diatur ulang
-local fishSection = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 40), -- Diperkecil dari 42 menjadi 40
-    Position = UDim2.new(0, 0, 0, 58), -- Posisi diatur ulang
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
+-- ===================================
+-- ========== CATEGORY SYSTEM =========
+-- ===================================
 
-create("UICorner", {Parent = fishSection, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = fishSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+local categoryYPosition = 58
 
-local fishTitle = create("TextLabel", {
-    Parent = fishSection,
-    Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "🎣 Auto Instant Fishing V1",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Center
-})
+-- Fungsi untuk membuat kategori
+local function createCategory(categoryName, icon)
+    local categoryFrame = create("Frame", {
+        Parent = contentFrame,
+        Size = UDim2.new(1, 0, 0, 32),
+        Position = UDim2.new(0, 0, 0, categoryYPosition),
+        BackgroundColor3 = Color3.fromRGB(30, 40, 60),
+        BorderSizePixel = 0
+    })
+    
+    create("UICorner", {Parent = categoryFrame, CornerRadius = UDim.new(0, 7)})
+    create("UIStroke", {Parent = categoryFrame, Color = Color3.fromRGB(50, 80, 120), Thickness = 1})
+    
+    local categoryText = create("TextLabel", {
+        Parent = categoryFrame,
+        Size = UDim2.new(1, -12, 1, 0),
+        Position = UDim2.new(0, 12, 0, 0),
+        BackgroundTransparency = 1,
+        Text = icon .. " " .. categoryName,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextColor3 = Color3.fromRGB(180, 200, 255),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center
+    })
+    
+    categoryYPosition = categoryYPosition + 40
+    return categoryFrame, categoryYPosition
+end
 
-local fishBtn = create("TextButton", {
-    Parent = fishSection,
-    Size = UDim2.new(0, 72, 0, 27), -- Diperkecil dari 29 menjadi 27
-    Position = UDim2.new(1, -78, 0, 6), -- Posisi diatur ulang
-    BackgroundColor3 = Color3.fromRGB(50, 150, 50),
-    Text = "START",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
+-- Fungsi untuk membuat section dalam kategori
+local function createSection(parentCategory, sectionName, buttonText, buttonColor, yOffset)
+    local section = create("Frame", {
+        Parent = parentCategory,
+        Size = UDim2.new(1, -10, 0, 32),
+        Position = UDim2.new(0, 5, 0, yOffset),
+        BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+        BorderSizePixel = 0
+    })
+    
+    create("UICorner", {Parent = section, CornerRadius = UDim.new(0, 6)})
+    create("UIStroke", {Parent = section, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+    
+    local sectionTitle = create("TextLabel", {
+        Parent = section,
+        Size = UDim2.new(0.6, 0, 1, 0),
+        Position = UDim2.new(0, 8, 0, 0),
+        BackgroundTransparency = 1,
+        Text = sectionName,
+        Font = Enum.Font.Gotham,
+        TextSize = 11,
+        TextColor3 = Color3.fromRGB(220, 220, 220),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center
+    })
+    
+    local sectionBtn = create("TextButton", {
+        Parent = section,
+        Size = UDim2.new(0, 70, 0, 24),
+        Position = UDim2.new(1, -75, 0, 4),
+        BackgroundColor3 = buttonColor,
+        Text = buttonText,
+        Font = Enum.Font.GothamBold,
+        TextSize = 10,
+        TextColor3 = Color3.fromRGB(255, 255, 255)
+    })
+    
+    create("UICorner", {Parent = sectionBtn, CornerRadius = UDim.new(0, 6)})
+    
+    return section, sectionBtn
+end
 
-create("UICorner", {Parent = fishBtn, CornerRadius = UDim.new(0, 6)})
+-- Fungsi untuk membuat dropdown
+local function createDropdown(parentCategory, sectionName, options, yOffset)
+    local dropdownOpen = false
+    local dropdownHeight = 32
+    
+    local dropdownSection = create("Frame", {
+        Parent = parentCategory,
+        Size = UDim2.new(1, -10, 0, dropdownHeight),
+        Position = UDim2.new(0, 5, 0, yOffset),
+        BackgroundColor3 = Color3.fromRGB(25, 35, 50),
+        BorderSizePixel = 0,
+        ClipsDescendants = true
+    })
+    
+    create("UICorner", {Parent = dropdownSection, CornerRadius = UDim.new(0, 6)})
+    create("UIStroke", {Parent = dropdownSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+    
+    local dropdownTitle = create("TextLabel", {
+        Parent = dropdownSection,
+        Size = UDim2.new(0.6, 0, 0, 32),
+        Position = UDim2.new(0, 8, 0, 0),
+        BackgroundTransparency = 1,
+        Text = sectionName,
+        Font = Enum.Font.Gotham,
+        TextSize = 11,
+        TextColor3 = Color3.fromRGB(220, 220, 220),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center
+    })
+    
+    local dropdownBtn = create("TextButton", {
+        Parent = dropdownSection,
+        Size = UDim2.new(0, 70, 0, 24),
+        Position = UDim2.new(1, -75, 0, 4),
+        BackgroundColor3 = Color3.fromRGB(80, 120, 200),
+        Text = "OPEN",
+        Font = Enum.Font.GothamBold,
+        TextSize = 10,
+        TextColor3 = Color3.fromRGB(255, 255, 255)
+    })
+    
+    create("UICorner", {Parent = dropdownBtn, CornerRadius = UDim.new(0, 6)})
+    
+    -- Options container
+    local optionsContainer = create("Frame", {
+        Parent = dropdownSection,
+        Size = UDim2.new(1, -10, 0, 0),
+        Position = UDim2.new(0, 5, 0, 35),
+        BackgroundTransparency = 1,
+        Visible = false
+    })
+    
+    local function toggleDropdown()
+        dropdownOpen = not dropdownOpen
+        local targetSize = dropdownOpen and (32 + (#options * 30) + 5) or 32
+        local targetCanvas = dropdownOpen and (32 + (#options * 30) + 5) or 32
+        
+        TweenService:Create(dropdownSection, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+            Size = UDim2.new(1, -10, 0, targetSize)
+        }):Play()
+        
+        optionsContainer.Visible = dropdownOpen
+        dropdownBtn.Text = dropdownOpen and "CLOSE" : "OPEN"
+        
+        if dropdownOpen then
+            for i, option in pairs(options) do
+                local optionBtn = create("TextButton", {
+                    Parent = optionsContainer,
+                    Size = UDim2.new(1, 0, 0, 28),
+                    Position = UDim2.new(0, 0, 0, (i-1) * 30),
+                    BackgroundColor3 = Color3.fromRGB(35, 45, 65),
+                    Text = option.name,
+                    Font = Enum.Font.Gotham,
+                    TextSize = 10,
+                    TextColor3 = Color3.fromRGB(220, 220, 220),
+                    TextYAlignment = Enum.TextYAlignment.Center
+                })
+                
+                create("UICorner", {Parent = optionBtn, CornerRadius = UDim.new(0, 4)})
+                create("UIStroke", {Parent = optionBtn, Color = Color3.fromRGB(60, 100, 160), Thickness = 1})
+                
+                addHover(optionBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
+                
+                optionBtn.MouseButton1Click:Connect(function()
+                    option.callback()
+                    if option.closeOnClick then
+                        toggleDropdown()
+                    end
+                end)
+            end
+            optionsContainer.Size = UDim2.new(1, 0, 0, #options * 30)
+        else
+            optionsContainer:ClearAllChildren()
+        end
+    end
+    
+    dropdownBtn.MouseButton1Click:Connect(toggleDropdown)
+    
+    return dropdownSection
+end
 
--- Sell Section - Posisi diatur ulang
-local sellSection = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 40), -- Diperkecil dari 42 menjadi 40
-    Position = UDim2.new(0, 0, 0, 106), -- Posisi diatur ulang
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
+-- ===================================
+-- ========== CREATE CATEGORIES =========
+-- ===================================
 
-create("UICorner", {Parent = sellSection, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = sellSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+-- Kategori: MAIN
+local mainCategory, mainY = createCategory("MAIN", "🏠")
+mainCategory.Size = UDim2.new(1, 0, 0, 120)
 
-local sellTitle = create("TextLabel", {
-    Parent = sellSection,
-    Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "💰 Auto Sell All",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Center
-})
+-- Auto Fishing Section
+local fishSection, fishBtn = createSection(mainCategory, "🎣 Auto Instant Fishing V1", "START", Color3.fromRGB(50, 150, 50), 35)
 
-local sellBtn = create("TextButton", {
-    Parent = sellSection,
-    Size = UDim2.new(0, 72, 0, 27), -- Diperkecil dari 29 menjadi 27
-    Position = UDim2.new(1, -78, 0, 6), -- Posisi diatur ulang
-    BackgroundColor3 = Color3.fromRGB(50, 150, 50),
-    Text = "START",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
+-- Auto Sell Section  
+local sellSection, sellBtn = createSection(mainCategory, "💰 Auto Sell All", "START", Color3.fromRGB(50, 150, 50), 72)
 
-create("UICorner", {Parent = sellBtn, CornerRadius = UDim.new(0, 6)})
+-- Kategori: TELEPORT
+local teleportCategory, teleportY = createCategory("TELEPORT", "🚀")
+teleportCategory.Size = UDim2.new(1, 0, 0, 180)
 
--- ========== TELEPORT SECTION ==========
-local teleportSection = create("Frame", {
-    Parent = contentFrame,
-    Size = UDim2.new(1, 0, 0, 40), -- Diperkecil dari 42 menjadi 40
-    Position = UDim2.new(0, 0, 0, 154), -- Posisi diatur ulang
-    BackgroundColor3 = Color3.fromRGB(25, 35, 50),
-})
+-- Island Teleport Dropdown
+local islandCoords = {
+    {name = "📍 Weather Machine", callback = function() teleportToIsland("Weather Machine", Vector3.new(-1471, -3, 1929)) end},
+    {name = "📍 Esoteric Depths", callback = function() teleportToIsland("Esoteric Depths", Vector3.new(3157, -1303, 1439)) end},
+    {name = "📍 Tropical Grove", callback = function() teleportToIsland("Tropical Grove", Vector3.new(-2038, 3, 3650)) end},
+    {name = "📍 Stingray Shores", callback = function() teleportToIsland("Stingray Shores", Vector3.new(-32, 4, 2773)) end},
+    {name = "📍 Kohana Volcano", callback = function() teleportToIsland("Kohana Volcano", Vector3.new(-519, 24, 189)) end},
+    {name = "📍 Coral Reefs", callback = function() teleportToIsland("Coral Reefs", Vector3.new(-3095, 1, 2177)) end},
+    {name = "📍 Crater Island", callback = function() teleportToIsland("Crater Island", Vector3.new(968, 1, 4854)) end}
+}
 
-create("UICorner", {Parent = teleportSection, CornerRadius = UDim.new(0, 7)})
-create("UIStroke", {Parent = teleportSection, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
+local islandDropdown = createDropdown(teleportCategory, "🏝️ Teleport to Islands", islandCoords, 35)
 
-local teleportTitle = create("TextLabel", {
-    Parent = teleportSection,
-    Size = UDim2.new(0.55, 0, 1, 0),
-    Position = UDim2.new(0, 9, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "🚀 Teleport to Islands",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
-    TextColor3 = Color3.fromRGB(220, 220, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Center
-})
+-- Event Teleport Dropdown
+local eventCoords = {
+    {name = "🎄 Winter Fest", callback = function() teleportToIsland("Winter Fest", Vector3.new(1611, 4, 3280)) end},
+    {name = "🏛️ Treasure Hall", callback = function() teleportToIsland("Treasure Hall", Vector3.new(-3600, -267, -1558)) end},
+    {name = "🗿 Sishypus Statue", callback = function() teleportToIsland("Sishypus Statue", Vector3.new(-3792, -135, -986)) end}
+}
 
-local teleportBtn = create("TextButton", {
-    Parent = teleportSection,
-    Size = UDim2.new(0, 72, 0, 27), -- Diperkecil dari 29 menjadi 27
-    Position = UDim2.new(1, -78, 0, 6), -- Posisi diatur ulang
-    BackgroundColor3 = Color3.fromRGB(150, 100, 50),
-    Text = "OPEN",
-    Font = Enum.Font.GothamBold,
-    TextSize = 10,
-    TextColor3 = Color3.fromRGB(255, 255, 255)
-})
+local eventDropdown = createDropdown(teleportCategory, "🎪 Event Locations", eventCoords, 80)
 
-create("UICorner", {Parent = teleportBtn, CornerRadius = UDim.new(0, 6)})
+-- Kategori: MISC
+local miscCategory, miscY = createCategory("MISC", "⚙️")
+miscCategory.Size = UDim2.new(1, 0, 0, 120)
+
+-- Anti AFK Section
+local antiAfkSection, antiAfkBtn = createSection(miscCategory, "🔒 Anti AFK", "START", Color3.fromRGB(80, 120, 200), 35)
+
+-- No Clip Section
+local noClipSection, noClipBtn = createSection(miscCategory, "👻 No Clip", "START", Color3.fromRGB(150, 100, 200), 72)
+
+-- Kategori: SERVER
+local serverCategory, serverY = createCategory("SERVER", "🌐")
+serverCategory.Size = UDim2.new(1, 0, 0, 80)
+
+-- Server Hop Section
+local serverHopSection, serverHopBtn = createSection(serverCategory, "🔄 Server Hop", "HOP", Color3.fromRGB(200, 100, 50), 35)
+
+-- Reconnect Section
+local reconnectSection, reconnectBtn = createSection(serverCategory, "🔁 Reconnect", "RECONNECT", Color3.fromRGB(200, 150, 50), 72)
+
+-- Update canvas size
+contentFrame.CanvasSize = UDim2.new(0, 0, 0, serverY + 10)
 
 -- ===================================
 -- ========== DRAG & HOVER ==========
@@ -317,178 +447,42 @@ addHover(closeBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80))
 addHover(minimizeBtn, Color3.fromRGB(70, 80, 100), Color3.fromRGB(90, 100, 120))
 addHover(fishBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
 addHover(sellBtn, Color3.fromRGB(50, 150, 50), Color3.fromRGB(70, 170, 70))
-addHover(teleportBtn, Color3.fromRGB(150, 100, 50), Color3.fromRGB(170, 120, 70))
+addHover(antiAfkBtn, Color3.fromRGB(80, 120, 200), Color3.fromRGB(100, 140, 220))
+addHover(noClipBtn, Color3.fromRGB(150, 100, 200), Color3.fromRGB(170, 120, 220))
+addHover(serverHopBtn, Color3.fromRGB(200, 100, 50), Color3.fromRGB(220, 120, 70))
+addHover(reconnectBtn, Color3.fromRGB(200, 150, 50), Color3.fromRGB(220, 170, 70))
 
 -- ===================================
 -- ========== TELEPORT SYSTEM =========
 -- ===================================
 
-local islandCoords = {
-    ["Weather Machine"] = Vector3.new(-1471, -3, 1929),
-    ["Esoteric Depths"] = Vector3.new(3157, -1303, 1439),
-    ["Tropical Grove"] = Vector3.new(-2038, 3, 3650),
-    ["Stingray Shores"] = Vector3.new(-32, 4, 2773),
-    ["Kohana Volcano"] = Vector3.new(-519, 24, 189),
-    ["Coral Reefs"] = Vector3.new(-3095, 1, 2177),
-    ["Crater Island"] = Vector3.new(968, 1, 4854),
-    ["Kohana"] = Vector3.new(-658, 3, 719),
-    ["Winter Fest"] = Vector3.new(1611, 4, 3280),
-    ["Isoteric Island"] = Vector3.new(1987, 4, 1400),
-    ["Treasure Hall"] = Vector3.new(-3600, -267, -1558),
-    ["Lost Shore"] = Vector3.new(-3663, 38, -989),
-    ["Sishypus Statue"] = Vector3.new(-3792, -135, -986),
-    ["Ancient Jungle"] = Vector3.new(1316, 7, -196)
-}
-
-local function createTeleportGUI()
-    local teleportGui = create("ScreenGui", {
-        Name = "TeleportGUI",
-        Parent = playerGui,
-        ResetOnSpawn = false,
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    })
-
-    -- Teleport Frame - Diperkecil menjadi lebih compact
-    local teleportFrame = create("Frame", {
-        Name = "TeleportFrame",
-        Parent = teleportGui,
-        Size = UDim2.new(0, 280, 0, 300), -- Diperkecil dari 350 menjadi 300
-        Position = UDim2.new(0.5, -140, 0.5, -150),
-        BackgroundColor3 = Color3.fromRGB(15, 20, 30),
-        BorderSizePixel = 0
-    })
-
-    create("UICorner", {Parent = teleportFrame, CornerRadius = UDim.new(0, 10)})
-    create("UIStroke", {Parent = teleportFrame, Color = Color3.fromRGB(40, 80, 150), Thickness = 1.5})
-
-    local teleportTitle = create("TextLabel", {
-        Parent = teleportFrame,
-        Size = UDim2.new(1, 0, 0, 35), -- Diperkecil dari 40 menjadi 35
-        BackgroundColor3 = Color3.fromRGB(25, 35, 55),
-        Text = "🚀 Island Teleport",
-        Font = Enum.Font.GothamBold,
-        TextSize = 14, -- Diperkecil dari 16 menjadi 14
-        TextColor3 = Color3.fromRGB(100, 180, 255),
-        TextYAlignment = Enum.TextYAlignment.Center
-    })
-
-    create("UICorner", {Parent = teleportTitle, CornerRadius = UDim.new(0, 10)})
-
-    local closeTeleportBtn = create("TextButton", {
-        Parent = teleportTitle,
-        Size = UDim2.new(0, 22, 0, 22), -- Diperkecil dari 25 menjadi 22
-        Position = UDim2.new(1, -26, 0, 6), -- Posisi diatur ulang
-        BackgroundColor3 = Color3.fromRGB(220, 50, 50),
-        Text = "X",
-        Font = Enum.Font.GothamBold,
-        TextSize = 12, -- Diperkecil dari 13 menjadi 12
-        TextColor3 = Color3.fromRGB(255, 255, 255)
-    })
-
-    create("UICorner", {Parent = closeTeleportBtn, CornerRadius = UDim.new(0, 6)})
-
-    local scrollFrame = create("ScrollingFrame", {
-        Parent = teleportFrame,
-        Size = UDim2.new(1, -20, 1, -50), -- Diatur ulang
-        Position = UDim2.new(0, 10, 0, 45), -- Posisi diatur ulang
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-        CanvasSize = UDim2.new(0, 0, 0, #game:GetService("HttpService"):JSONEncode(islandCoords) * 35) -- Diperkecil dari 40 menjadi 35
-    })
-
-    local yPosition = 0
-    for islandName, position in pairs(islandCoords) do
-        local islandBtn = create("TextButton", {
-            Parent = scrollFrame,
-            Size = UDim2.new(1, 0, 0, 32), -- Diperkecil dari 35 menjadi 32
-            Position = UDim2.new(0, 0, 0, yPosition),
-            BackgroundColor3 = Color3.fromRGB(35, 45, 65),
-            Text = "📍 " .. islandName,
-            Font = Enum.Font.Gotham,
-            TextSize = 11, -- Diperkecil dari 12 menjadi 11
-            TextColor3 = Color3.fromRGB(220, 220, 220),
-            TextYAlignment = Enum.TextYAlignment.Center
-        })
-
-        create("UICorner", {Parent = islandBtn, CornerRadius = UDim.new(0, 6)})
-        create("UIStroke", {Parent = islandBtn, Color = Color3.fromRGB(60, 100, 160), Thickness = 1})
-
-        -- Hover effect
-        addHover(islandBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
-
-        islandBtn.MouseButton1Click:Connect(function()
-            local charFolder = workspace:WaitForChild("Characters", 5)
-            local char = charFolder:FindFirstChild(player.Name)
-            if not char then 
-                updateStatus("❌ Character not found")
-                return 
-            end
-            
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if not hrp then 
-                updateStatus("❌ HRP not found")
-                return 
-            end
-
-            local success, err = pcall(function()
-                hrp.CFrame = CFrame.new(position + Vector3.new(0, 5, 0))
-            end)
-
-            if success then
-                updateStatus("✅ Success Teleport to " .. islandName, Color3.fromRGB(100, 255, 100))
-                teleportGui:Destroy()
-            else
-                updateStatus("❌ Teleport failed")
-            end
-        end)
-
-        yPosition = yPosition + 35 -- Diperkecil dari 40 menjadi 35
+local function teleportToIsland(islandName, position)
+    local charFolder = workspace:WaitForChild("Characters", 5)
+    local char = charFolder:FindFirstChild(player.Name)
+    if not char then 
+        updateStatus("❌ Character not found")
+        return 
+    end
+    
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then 
+        updateStatus("❌ HRP not found")
+        return 
     end
 
-    closeTeleportBtn.MouseButton1Click:Connect(function()
-        teleportGui:Destroy()
+    local success, err = pcall(function()
+        hrp.CFrame = CFrame.new(position + Vector3.new(0, 5, 0))
     end)
 
-    -- Drag functionality for teleport window
-    local teleportDragging, teleportDragInput, teleportDragStart, teleportStartPos
-
-    local function updateTeleportDrag(input)
-        local delta = input.Position - teleportDragStart
-        TweenService:Create(teleportFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad), {
-            Position = UDim2.new(teleportStartPos.X.Scale, teleportStartPos.X.Offset + delta.X, teleportStartPos.Y.Scale, teleportStartPos.Y.Offset + delta.Y)
-        }):Play()
+    if success then
+        updateStatus("✅ Teleported to " .. islandName, Color3.fromRGB(100, 255, 100))
+    else
+        updateStatus("❌ Teleport failed: " .. tostring(err))
     end
-
-    teleportTitle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            teleportDragging = true
-            teleportDragStart = input.Position
-            teleportStartPos = teleportFrame.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    teleportDragging = false
-                end
-            end)
-        end
-    end)
-
-    teleportTitle.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            teleportDragInput = input
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if teleportDragging and input == teleportDragInput then
-            updateTeleportDrag(input)
-        end
-    end)
 end
 
 -- ===================================
--- ========== FISHING V1 ===========
+-- ========== FISHING SYSTEM =========
 -- ===================================
 local autoFishingEnabled = false
 local autoSellEnabled = false
@@ -610,11 +604,9 @@ task.spawn(function()
 end)
 
 -- Fungsi utama Auto Fishing
-
 local function autoFishingLoop()
 	while autoFishingEnabled do
 		local ok, err = pcall(function()
-
 			updateDelayBasedOnRod()
 			fishingActive = true
 			updateStatus("🎣 Status: Fishing", Color3.fromRGB(100, 255, 100))
@@ -644,7 +636,6 @@ end
 -- ===================================
 -- ========== AUTO SELL LOOP =========
 -- ===================================
-
 local function autoSellLoop()
     while autoSellEnabled do
         task.wait(1)
@@ -673,9 +664,40 @@ local function autoSellLoop()
 end
 
 -- ===================================
+-- ========== MISC FUNCTIONS =========
+-- ===================================
+local antiAfkEnabled = false
+local noClipEnabled = false
+
+-- Anti AFK
+local function antiAfkLoop()
+    while antiAfkEnabled do
+        local virtualUser = game:GetService("VirtualUser")
+        virtualUser:CaptureController()
+        virtualUser:ClickButton2(Vector2.new())
+        task.wait(30)
+    end
+end
+
+-- No Clip
+local function noClipLoop()
+    while noClipEnabled do
+        if character then
+            for _, part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                end
+            end
+        end
+        task.wait(0.1)
+    end
+end
+
+-- ===================================
 -- ========== BUTTON LOGIC ===========
 -- ===================================
 
+-- Fishing Button
 fishBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = not autoFishingEnabled
     
@@ -693,6 +715,7 @@ fishBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- Sell Button
 sellBtn.MouseButton1Click:Connect(function()
     autoSellEnabled = not autoSellEnabled
     
@@ -708,14 +731,53 @@ sellBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Teleport Button Logic
-teleportBtn.MouseButton1Click:Connect(function()
-    createTeleportGUI()
+-- Anti AFK Button
+antiAfkBtn.MouseButton1Click:Connect(function()
+    antiAfkEnabled = not antiAfkEnabled
+    
+    if antiAfkEnabled then
+        antiAfkBtn.Text = "STOP"
+        antiAfkBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        updateStatus("🟢 Anti AFK Enabled", Color3.fromRGB(100, 255, 100))
+        task.spawn(antiAfkLoop)
+    else
+        antiAfkBtn.Text = "START"
+        antiAfkBtn.BackgroundColor3 = Color3.fromRGB(80, 120, 200)
+        updateStatus("🔴 Anti AFK Disabled")
+    end
+end)
+
+-- No Clip Button
+noClipBtn.MouseButton1Click:Connect(function()
+    noClipEnabled = not noClipEnabled
+    
+    if noClipEnabled then
+        noClipBtn.Text = "STOP"
+        noClipBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        updateStatus("🟢 No Clip Enabled", Color3.fromRGB(100, 255, 100))
+        task.spawn(noClipLoop)
+    else
+        noClipBtn.Text = "START"
+        noClipBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 200)
+        updateStatus("🔴 No Clip Disabled")
+    end
+end)
+
+-- Server Hop Button (Placeholder)
+serverHopBtn.MouseButton1Click:Connect(function()
+    updateStatus("🔄 Server Hop Feature - Coming Soon", Color3.fromRGB(255, 200, 100))
+end)
+
+-- Reconnect Button (Placeholder)
+reconnectBtn.MouseButton1Click:Connect(function()
+    updateStatus("🔁 Reconnect Feature - Coming Soon", Color3.fromRGB(255, 200, 100))
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
     autoFishingEnabled = false
     autoSellEnabled = false
+    antiAfkEnabled = false
+    noClipEnabled = false
     fishingActive = false
     screenGui:Destroy()
 end)
@@ -725,11 +787,12 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0, 300, 0, 33) or UDim2.new(0, 300, 0, 250) -- Diperbarui ukuran normal
+        Size = minimized and UDim2.new(0, 320, 0, 33) or UDim2.new(0, 320, 0, 400)
     }):Play()
     minimizeBtn.Text = minimized and "+" or "—"
 end)
 
 print("=================================")
 print("🐟 Fish It Auto Farm Loaded!")
+print("📁 Categories: MAIN, TELEPORT, MISC, SERVER")
 print("=================================")
