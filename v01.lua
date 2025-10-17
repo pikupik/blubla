@@ -9,7 +9,6 @@ local playerGui = player:WaitForChild("PlayerGui")
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
-
 ---- Hapus GUI lama
 if playerGui:FindFirstChild("FishItAutoGUI") then
     playerGui:FindFirstChild("FishItAutoGUI"):Destroy()
@@ -132,6 +131,7 @@ local statusBox = create("Frame", {
 create("UICorner", {Parent = statusBox, CornerRadius = UDim.new(0, 7)})
 create("UIStroke", {Parent = statusBox, Color = Color3.fromRGB(40, 60, 90), Thickness = 1})
 
+-- Status Label dengan format yang dipertahankan
 local statusLabel = create("TextLabel", {
     Parent = statusBox,
     Size = UDim2.new(1, -12, 0, 18),
@@ -143,6 +143,16 @@ local statusLabel = create("TextLabel", {
     TextColor3 = Color3.fromRGB(255, 100, 100),
     TextXAlignment = Enum.TextXAlignment.Left
 })
+
+-- Fungsi untuk update status dengan format yang dipertahankan
+local function updateStatus(newStatus, color)
+    local baseText = "🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
+    statusLabel.Text = newStatus .. "\n" .. baseText
+    statusLabel.TextColor3 = color or Color3.fromRGB(255, 100, 100)
+end
+
+-- Inisialisasi status awal
+updateStatus("🔴 Status: Idle")
 
 local fishSection = create("Frame", {
     Parent = contentFrame,
@@ -407,13 +417,13 @@ local function createTeleportGUI()
             local charFolder = workspace:WaitForChild("Characters", 5)
             local char = charFolder:FindFirstChild(player.Name)
             if not char then 
-                statusLabel.Text = "❌ Character not found"
+                updateStatus("❌ Character not found")
                 return 
             end
             
             local hrp = char:FindFirstChild("HumanoidRootPart")
             if not hrp then 
-                statusLabel.Text = "❌ HRP not found"
+                updateStatus("❌ HRP not found")
                 return 
             end
 
@@ -422,16 +432,12 @@ local function createTeleportGUI()
             end)
 
             if success then
-                statusLabel.Text = "✅ Teleported to " .. islandName
-                statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+                updateStatus("✅ Success Teleport to " .. islandName, Color3.fromRGB(100, 255, 100))
                 teleportGui:Destroy()
             else
-                statusLabel.Text = "❌ Teleport failed"
-                statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+                updateStatus("❌ Teleport failed")
             end
         end)
-        statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 
         yPosition = yPosition + 40
     end
@@ -560,14 +566,12 @@ local function updateDelayBasedOnRod()
         customDelay = RodDelays[rodName].custom
         BypassDelay = RodDelays[rodName].bypass
         delayInitialized = true
-        statusLabel.Text = "✅ Rod Detected: " .. rodName
-        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+        updateStatus("✅ Rod Detected: " .. rodName, Color3.fromRGB(100, 255, 100))
     else
         customDelay = 10
         BypassDelay = 1
         delayInitialized = true
-        statusLabel.Text = "⚠️ Default Delay Applied"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+        updateStatus("⚠️ Default Delay Applied", Color3.fromRGB(255, 200, 100))
     end
 end
 
@@ -608,7 +612,7 @@ local function autoFishingLoop()
 
 			updateDelayBasedOnRod()
 			fishingActive = true
-			statusLabel.Text = "🎣 Fishing..."
+			updateStatus("🎣 Status: Fishing", Color3.fromRGB(100, 255, 100))
 			equipRemote:FireServer(1)
 			task.wait(0.1)
 
@@ -629,8 +633,7 @@ local function autoFishingLoop()
 		task.wait(0.2)
 	end
 	fishingActive = false
-   statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
-   statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+   updateStatus("🔴 Status: Idle")
 end
 
 -- ===================================
@@ -642,31 +645,26 @@ local function autoSellLoop()
         task.wait(1)
         
         local success, err = pcall(function()
-            statusLabel.Text = "💰 Selling fish..."
-            statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+            updateStatus("💰 Status: Selling", Color3.fromRGB(255, 215, 0))
             
             local sellSuccess = pcall(function()
                 sellRemote:InvokeServer()
             end)
 
             if sellSuccess then
-                statusLabel.Text = "✅ Sold!. Please Stop Selling Button"
-                statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+                updateStatus("✅ Status: Sold!. Please Stop Selling Button", Color3.fromRGB(100, 255, 100))
             else
-                statusLabel.Text = "❌ Sell Failed"
-                statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+                updateStatus("❌ Status: Sell Failed")
             end
         end)
           
         
         if not success then
             warn("[Auto Sell Error]:", err)
-            statusLabel.Text = "❌ Sell Error!"
-            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            updateStatus("❌ Status: Sell Error!")
         end
     end
-    statusLabel.Text = "🔴 Status: Idle\n🔴 Script: Beta Test V.0.1a\nNote: found bug on script? Pm me on discord!"
-    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+    updateStatus("🔴 Status: Idle")
 end
 
 -- ===================================
@@ -679,14 +677,12 @@ fishBtn.MouseButton1Click:Connect(function()
     if autoFishingEnabled then
         fishBtn.Text = "STOP"
         fishBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        statusLabel.Text = "🟢 Auto Fishing Started"
-        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+        updateStatus("🟢 Status: Auto Fishing Started", Color3.fromRGB(100, 255, 100))
         task.spawn(autoFishingLoop)
     else
         fishBtn.Text = "START"
         fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        statusLabel.Text = "🔴 Auto Fishing Stopped"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        updateStatus("🔴 Status: Auto Fishing Stopped")
         delayInitialized = false
         fishingActive = false
     end
@@ -698,14 +694,12 @@ sellBtn.MouseButton1Click:Connect(function()
     if autoSellEnabled then
         sellBtn.Text = "STOP"
         sellBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        statusLabel.Text = "🟢 Auto Sell Started"
-        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+        updateStatus("🟢 Status: Auto Sell Started", Color3.fromRGB(100, 255, 100))
         task.spawn(autoSellLoop)
     else
         sellBtn.Text = "START"
         sellBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        statusLabel.Text = "🔴 Auto Sell Stopped"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        updateStatus("🔴 Status: Auto Sell Stopped")
     end
 end)
 
