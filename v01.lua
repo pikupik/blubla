@@ -803,6 +803,50 @@ end
 
 local eventsList = { "Shark Hunt", "Ghost Shark Hunt", "Worm Hunt", "Black Hole", "Shocked", "Ghost Worm", "Meteor Rain" }
 
+local function findEventLocation(eventName)
+    print("🔍 Mencari event:", eventName)
+    
+    -- Coba di berbagai lokasi yang mungkin
+    local searchLocations = {
+        workspace,
+        workspace:FindFirstChild("Events"),
+        workspace:FindFirstChild("Props"), 
+        workspace:FindFirstChild("Map"),
+        workspace:FindFirstChild("World"),
+        workspace:FindFirstChild("Game"),
+    }
+    
+    for _, location in pairs(searchLocations) do
+        if location then
+            print("📍 Cek di:", location.Name)
+            local eventObj = location:FindFirstChild(eventName)
+            if eventObj then
+                print("✅ Ditemukan di:", location.Name)
+                return eventObj
+            end
+            
+            -- Coba cari dengan partial name
+            for _, child in pairs(location:GetChildren()) do
+                if string.find(string.lower(child.Name), string.lower(eventName)) then
+                    print("✅ Ditemukan (partial match):", child.Name, "di", location.Name)
+                    return child
+                end
+            end
+        end
+    end
+    
+    -- Coba cari di seluruh workspace
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if string.lower(obj.Name) == string.lower(eventName) then
+            print("✅ Ditemukan di:", obj:GetFullName())
+            return obj
+        end
+    end
+    
+    print("❌ Tidak ditemukan di mana pun")
+    return nil
+end
+
 local function createEventTeleportGUI()
     local eventTeleportGui = create("ScreenGui", {
         Name = "EventTeleportGUI",
@@ -828,7 +872,7 @@ local function createEventTeleportGUI()
         Parent = eventTeleportFrame,
         Size = UDim2.new(1, 0, 0, 35),
         BackgroundColor3 = Color3.fromRGB(25, 35, 55),
-        Text = "🎯 Event Teleport",
+        Text = "🎯 Event Teleport (Experimental)",
         Font = Enum.Font.GothamBold,
         TextSize = 12,
         TextColor3 = Color3.fromRGB(100, 180, 255),
@@ -855,7 +899,7 @@ local function createEventTeleportGUI()
         Size = UDim2.new(1, -20, 0, 50),
         Position = UDim2.new(0, 10, 0, 45),
         BackgroundTransparency = 1,
-        Text = "Teleport to active events\n🎯 Only works when event is ACTIVE\n⚡ Looks for Fishing Boat in Props",
+        Text = "Teleport to active events\n🔍 Experimental - Mencari di semua lokasi\n⚡ Hanya work ketika event ACTIVE",
         Font = Enum.Font.Gotham,
         TextSize = 10,
         TextColor3 = Color3.fromRGB(100, 255, 200),
@@ -894,43 +938,38 @@ local function createEventTeleportGUI()
         -- Hover effect
         addHover(eventBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
 
-        -- TEMPATIN DI SINI - ganti bagian button click dengan kode debug:
         eventBtn.MouseButton1Click:Connect(function()
-            updateStatus("🔍 Testing event: " .. eventName, Color3.fromRGB(255, 200, 100))
+            updateStatus("🔍 Mencari: " .. eventName, Color3.fromRGB(255, 200, 100))
             
-            -- Coba cek struktur workspace langsung
-            local props = workspace:FindFirstChild("Props")
-            if not props then
-                updateStatus("❌ Props folder tidak ditemukan", Color3.fromRGB(255, 100, 100))
-                return
-            end
+            task.wait(0.3)
             
-            local eventFolder = props:FindFirstChild(eventName)
-            if not eventFolder then
-                updateStatus("❌ Event '"..eventName.."' tidak ditemukan di Props", Color3.fromRGB(255, 100, 100))
-                return
-            end
+            local eventObject = findEventLocation(eventName)
             
-            local fishingBoat = eventFolder:FindFirstChild("Fishing Boat")
-            if not fishingBoat then
-                updateStatus("❌ Fishing Boat tidak ditemukan di event", Color3.fromRGB(255, 100, 100))
-                -- Tampilkan apa yang ada di folder event
-                local children = ""
-                for _, child in pairs(eventFolder:GetChildren()) do
-                    children = children .. child.Name .. ", "
+            if eventObject then
+                local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    local success, err = pcall(function()
+                        -- Coba cari Fishing Boat dulu
+                        local fishingBoat = eventObject:FindFirstChild("Fishing Boat")
+                        if fishingBoat then
+                            hrp.CFrame = fishingBoat:GetPivot() + Vector3.new(0, 15, 0)
+                            updateStatus("✅ Teleport ke Fishing Boat " .. eventName, Color3.fromRGB(100, 255, 100))
+                        else
+                            -- Kalau ga ada fishing boat, teleport ke event object langsung
+                            hrp.CFrame = eventObject:GetPivot() + Vector3.new(0, 10, 0)
+                            updateStatus("✅ Teleport ke " .. eventName, Color3.fromRGB(100, 255, 100))
+                        end
+                        eventTeleportGui:Destroy()
+                    end)
+
+                    if not success then
+                        updateStatus("❌ Gagal teleport: " .. tostring(err))
+                    end
+                else
+                    updateStatus("❌ HRP tidak ditemukan")
                 end
-                updateStatus("Yang ada: " .. children, Color3.fromRGB(255, 200, 100))
-                return
-            end
-            
-            -- Jika semua ada, teleport
-            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                hrp.CFrame = fishingBoat:GetPivot() + Vector3.new(0, 15, 0)
-                updateStatus("✅ Berhasil teleport ke " .. eventName, Color3.fromRGB(100, 255, 100))
-                eventTeleportGui:Destroy()
             else
-                updateStatus("❌ HRP tidak ditemukan", Color3.fromRGB(255, 100, 100))
+                updateStatus("❌ " .. eventName .. " tidak ditemukan\nPastikan event sedang ACTIVE", Color3.fromRGB(255, 100, 100))
             end
         end)
 
