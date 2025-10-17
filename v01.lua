@@ -320,7 +320,7 @@ local teleportEventTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎯 Teleport to Events",
+    Text = "🎯 Teleport to Events (Bug dont use it now)",
     Font = Enum.Font.GothamBold,
     TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -798,61 +798,38 @@ local function createNPCTeleportGUI()
 end
 
 -- ===================================
--- ========== TELEPORT TO EVENT SYSTEM =========
+-- ========== SIMPLE EVENT TELEPORT =========
 -- ===================================
 
-local eventsList = { 
-    "Shark Hunt", 
-    "Ghost Shark Hunt", 
-    "Worm Hunt", 
-    "Black Hole", 
-    "Shocked", 
-    "Ghost Worm", 
-    "Meteor Rain" 
-}
-
-local function findEventBoat(eventName)
-    -- Cari di berbagai lokasi yang mungkin
-    local possiblePaths = {
-        workspace:FindFirstChild("Props"),
-        workspace:FindFirstChild("Events"),
-        workspace:FindFirstChild("LiveEvents"),
-        workspace:FindFirstChild("ActiveEvents"),
-        workspace
-    }
+local function findEventByName(eventName)
+    print("🔍 Searching for event:", eventName)
     
-    for _, location in ipairs(possiblePaths) do
-        if location then
-            -- Coba cari event dengan nama yang sesuai
-            local eventObj = location:FindFirstChild(eventName)
-            if eventObj then
-                -- Cari fishing boat di dalam event
-                local fishingBoat = eventObj:FindFirstChild("Fishing Boat")
-                if fishingBoat then
-                    return fishingBoat
-                end
-                
-                -- Coba cari part lain yang mungkin menjadi target teleport
-                local boatModel = eventObj:FindFirstChildWhichIsA("Model")
-                if boatModel then
-                    return boatModel
-                end
-                
-                -- Jika tidak ada boat, cari part utama
-                local primaryPart = eventObj.PrimaryPart or eventObj:FindFirstChildWhichIsA("Part")
-                if primaryPart then
-                    return primaryPart
-                end
-            end
+    -- Cari di seluruh workspace berdasarkan nama
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if string.lower(obj.Name) == string.lower(eventName) then
+            print("✅ Found event object:", obj:GetFullName())
+            return obj
         end
     end
     
+    -- Cari dengan partial match kalau exact ga ketemu
+    for _, obj in pairs(workspace:GetDescendants()) do
+        local objNameLower = string.lower(obj.Name)
+        local eventNameLower = string.lower(eventName)
+        
+        if string.find(objNameLower, eventNameLower) or string.find(eventNameLower, objNameLower) then
+            print("✅ Found similar event object:", obj:GetFullName())
+            return obj
+        end
+    end
+    
+    print("❌ Event not found:", eventName)
     return nil
 end
 
-local function createEventTeleportGUI()
+local function createSimpleEventTeleportGUI()
     local eventTeleportGui = create("ScreenGui", {
-        Name = "EventTeleportGUI",
+        Name = "SimpleEventTeleportGUI",
         Parent = playerGui,
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -875,9 +852,9 @@ local function createEventTeleportGUI()
         Parent = eventTeleportFrame,
         Size = UDim2.new(1, 0, 0, 35),
         BackgroundColor3 = Color3.fromRGB(25, 35, 55),
-        Text = "🎯 Event Teleport",
+        Text = "🎯 Event Teleport (Find by Name)",
         Font = Enum.Font.GothamBold,
-        TextSize = 14,
+        TextSize = 12,
         TextColor3 = Color3.fromRGB(100, 180, 255),
         TextYAlignment = Enum.TextYAlignment.Center
     })
@@ -902,10 +879,10 @@ local function createEventTeleportGUI()
         Size = UDim2.new(1, -20, 0, 50),
         Position = UDim2.new(0, 10, 0, 45),
         BackgroundTransparency = 1,
-        Text = "Teleport to active events\n⚠️ Only works if event is active\n🔍 Auto-detects event location",
+        Text = "Teleport to active events\n🎯 Find by exact name\n⚡ Only works when event is ACTIVE",
         Font = Enum.Font.Gotham,
         TextSize = 10,
-        TextColor3 = Color3.fromRGB(255, 200, 100),
+        TextColor3 = Color3.fromRGB(100, 255, 200),
         TextXAlignment = Enum.TextXAlignment.Center,
         TextYAlignment = Enum.TextYAlignment.Center
     })
@@ -942,14 +919,14 @@ local function createEventTeleportGUI()
         addHover(eventBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
 
         eventBtn.MouseButton1Click:Connect(function()
-            updateStatus("🔍 Searching for " .. eventName .. "...", Color3.fromRGB(255, 200, 100))
+            updateStatus("🔍 Searching for: " .. eventName, Color3.fromRGB(255, 200, 100))
             
-            -- Beri waktu untuk update status
-            task.wait(0.1)
+            -- Beri waktu sebentar untuk update status
+            task.wait(0.3)
             
-            local targetObject = findEventBoat(eventName)
+            local eventObject = findEventByName(eventName)
             
-            if targetObject then
+            if eventObject then
                 local charFolder = workspace:FindFirstChild("Characters")
                 local char = charFolder and charFolder:FindFirstChild(player.Name)
                 if not char then 
@@ -964,57 +941,20 @@ local function createEventTeleportGUI()
                 end
 
                 local success, err = pcall(function()
-                    -- Dapatkan posisi target
-                    local targetCFrame = targetObject:GetPivot()
-                    -- Teleport ke atas target dengan offset
-                    hrp.CFrame = targetCFrame + Vector3.new(0, 15, 0)
+                    -- Dapatkan posisi event
+                    local targetCFrame = eventObject:GetPivot()
+                    -- Teleport ke atas event dengan offset
+                    hrp.CFrame = targetCFrame + Vector3.new(0, 10, 0)
                 end)
 
                 if success then
-                    updateStatus("✅ Teleported to " .. eventName, Color3.fromRGB(100, 255, 100))
+                    updateStatus("✅ Teleported to: " .. eventName, Color3.fromRGB(100, 255, 100))
                     eventTeleportGui:Destroy()
                 else
                     updateStatus("❌ Teleport failed: " .. tostring(err))
                 end
             else
-                -- Coba method alternatif: cari di seluruh workspace
-                updateStatus("🔍 Deep search for " .. eventName + "...")
-                
-                -- Tunggu sebentar untuk pencarian lebih dalam
-                task.wait(0.2)
-                
-                -- Method alternatif: cari semua objek yang mengandung nama event
-                local foundEvent = nil
-                for _, obj in pairs(workspace:GetDescendants()) do
-                    if string.find(string.lower(obj.Name), string.lower(eventName)) then
-                        foundEvent = obj
-                        break
-                    end
-                end
-                
-                if foundEvent then
-                    local charFolder = workspace:FindFirstChild("Characters")
-                    local char = charFolder and charFolder:FindFirstChild(player.Name)
-                    local hrp = char and char:FindFirstChild("HumanoidRootPart")
-                    
-                    if hrp then
-                        local success, err = pcall(function()
-                            local targetCFrame = foundEvent:GetPivot()
-                            hrp.CFrame = targetCFrame + Vector3.new(0, 15, 0)
-                        end)
-                        
-                        if success then
-                            updateStatus("✅ Teleported near " .. eventName, Color3.fromRGB(100, 255, 100))
-                            eventTeleportGui:Destroy()
-                        else
-                            updateStatus("❌ Teleport failed: " .. tostring(err))
-                        end
-                    else
-                        updateStatus("❌ " .. eventName .. " found but teleport failed")
-                    end
-                else
-                    updateStatus("❌ " .. eventName .. " Not Found!", Color3.fromRGB(255, 100, 100))
-                end
+                updateStatus("❌ " .. eventName .. " not found!\nMake sure event is ACTIVE", Color3.fromRGB(255, 100, 100))
             end
         end)
 
@@ -1025,7 +965,7 @@ local function createEventTeleportGUI()
         eventTeleportGui:Destroy()
     end)
 
-    -- Drag functionality untuk event teleport window
+    -- Drag functionality
     local eventDragging, eventDragInput, eventDragStart, eventStartPos
 
     local function updateEventDrag(input)
@@ -1062,6 +1002,14 @@ local function createEventTeleportGUI()
 
     addHover(closeEventTeleportBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80))
 end
+
+-- Ganti fungsi teleportEventBtn dengan yang baru
+teleportEventBtn.MouseButton1Click:Connect(function()
+    createSimpleEventTeleportGUI()
+end)
+
+-- Update status text di main GUI
+teleportEventTitle.Text = "🎯 Teleport to Events"
 -- ===================================
 -- ========== FISHING V1 ===========
 -- ===================================
