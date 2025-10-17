@@ -811,6 +811,45 @@ local eventsList = {
     "Meteor Rain" 
 }
 
+local function findEventBoat(eventName)
+    -- Cari di berbagai lokasi yang mungkin
+    local possiblePaths = {
+        workspace:FindFirstChild("Props"),
+        workspace:FindFirstChild("Events"),
+        workspace:FindFirstChild("LiveEvents"),
+        workspace:FindFirstChild("ActiveEvents"),
+        workspace
+    }
+    
+    for _, location in ipairs(possiblePaths) do
+        if location then
+            -- Coba cari event dengan nama yang sesuai
+            local eventObj = location:FindFirstChild(eventName)
+            if eventObj then
+                -- Cari fishing boat di dalam event
+                local fishingBoat = eventObj:FindFirstChild("Fishing Boat")
+                if fishingBoat then
+                    return fishingBoat
+                end
+                
+                -- Coba cari part lain yang mungkin menjadi target teleport
+                local boatModel = eventObj:FindFirstChildWhichIsA("Model")
+                if boatModel then
+                    return boatModel
+                end
+                
+                -- Jika tidak ada boat, cari part utama
+                local primaryPart = eventObj.PrimaryPart or eventObj:FindFirstChildWhichIsA("Part")
+                if primaryPart then
+                    return primaryPart
+                end
+            end
+        end
+    end
+    
+    return nil
+end
+
 local function createEventTeleportGUI()
     local eventTeleportGui = create("ScreenGui", {
         Name = "EventTeleportGUI",
@@ -823,8 +862,8 @@ local function createEventTeleportGUI()
     local eventTeleportFrame = create("Frame", {
         Name = "EventTeleportFrame",
         Parent = eventTeleportGui,
-        Size = UDim2.new(0, 280, 0, 320),
-        Position = UDim2.new(0.5, -140, 0.5, -160),
+        Size = UDim2.new(0, 300, 0, 350),
+        Position = UDim2.new(0.5, -150, 0.5, -175),
         BackgroundColor3 = Color3.fromRGB(15, 20, 30),
         BorderSizePixel = 0
     })
@@ -860,10 +899,10 @@ local function createEventTeleportGUI()
 
     local infoLabel = create("TextLabel", {
         Parent = eventTeleportFrame,
-        Size = UDim2.new(1, -20, 0, 40),
+        Size = UDim2.new(1, -20, 0, 50),
         Position = UDim2.new(0, 10, 0, 45),
         BackgroundTransparency = 1,
-        Text = "Teleport to active events\n⚠️ Only works if event is active",
+        Text = "Teleport to active events\n⚠️ Only works if event is active\n🔍 Auto-detects event location",
         Font = Enum.Font.Gotham,
         TextSize = 10,
         TextColor3 = Color3.fromRGB(255, 200, 100),
@@ -873,20 +912,20 @@ local function createEventTeleportGUI()
 
     local scrollFrame = create("ScrollingFrame", {
         Parent = eventTeleportFrame,
-        Size = UDim2.new(1, -20, 1, -100),
-        Position = UDim2.new(0, 10, 0, 95),
+        Size = UDim2.new(1, -20, 1, -110),
+        Position = UDim2.new(0, 10, 0, 105),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-        CanvasSize = UDim2.new(0, 0, 0, #eventsList * 35)
+        CanvasSize = UDim2.new(0, 0, 0, #eventsList * 40)
     })
 
     local yPosition = 0
     for _, eventName in ipairs(eventsList) do
         local eventBtn = create("TextButton", {
             Parent = scrollFrame,
-            Size = UDim2.new(1, 0, 0, 32),
+            Size = UDim2.new(1, 0, 0, 35),
             Position = UDim2.new(0, 0, 0, yPosition),
             BackgroundColor3 = Color3.fromRGB(35, 45, 65),
             Text = "⚡ " .. eventName,
@@ -903,11 +942,14 @@ local function createEventTeleportGUI()
         addHover(eventBtn, Color3.fromRGB(35, 45, 65), Color3.fromRGB(45, 55, 75))
 
         eventBtn.MouseButton1Click:Connect(function()
-            local props = workspace:FindFirstChild("Props")
-            if props and props:FindFirstChild(eventName) and props[eventName]:FindFirstChild("Fishing Boat") then
-                local fishingBoat = props[eventName]["Fishing Boat"]
-                local boatCFrame = fishingBoat:GetPivot()
-                
+            updateStatus("🔍 Searching for " .. eventName .. "...", Color3.fromRGB(255, 200, 100))
+            
+            -- Beri waktu untuk update status
+            task.wait(0.1)
+            
+            local targetObject = findEventBoat(eventName)
+            
+            if targetObject then
                 local charFolder = workspace:FindFirstChild("Characters")
                 local char = charFolder and charFolder:FindFirstChild(player.Name)
                 if not char then 
@@ -922,7 +964,10 @@ local function createEventTeleportGUI()
                 end
 
                 local success, err = pcall(function()
-                    hrp.CFrame = boatCFrame + Vector3.new(0, 15, 0)
+                    -- Dapatkan posisi target
+                    local targetCFrame = targetObject:GetPivot()
+                    -- Teleport ke atas target dengan offset
+                    hrp.CFrame = targetCFrame + Vector3.new(0, 15, 0)
                 end)
 
                 if success then
@@ -932,11 +977,48 @@ local function createEventTeleportGUI()
                     updateStatus("❌ Teleport failed: " .. tostring(err))
                 end
             else
-                updateStatus("❌ " .. eventName .. " Not Found!", Color3.fromRGB(255, 100, 100))
+                -- Coba method alternatif: cari di seluruh workspace
+                updateStatus("🔍 Deep search for " .. eventName + "...")
+                
+                -- Tunggu sebentar untuk pencarian lebih dalam
+                task.wait(0.2)
+                
+                -- Method alternatif: cari semua objek yang mengandung nama event
+                local foundEvent = nil
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if string.find(string.lower(obj.Name), string.lower(eventName)) then
+                        foundEvent = obj
+                        break
+                    end
+                end
+                
+                if foundEvent then
+                    local charFolder = workspace:FindFirstChild("Characters")
+                    local char = charFolder and charFolder:FindFirstChild(player.Name)
+                    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                    
+                    if hrp then
+                        local success, err = pcall(function()
+                            local targetCFrame = foundEvent:GetPivot()
+                            hrp.CFrame = targetCFrame + Vector3.new(0, 15, 0)
+                        end)
+                        
+                        if success then
+                            updateStatus("✅ Teleported near " .. eventName, Color3.fromRGB(100, 255, 100))
+                            eventTeleportGui:Destroy()
+                        else
+                            updateStatus("❌ Teleport failed: " .. tostring(err))
+                        end
+                    else
+                        updateStatus("❌ " .. eventName .. " found but teleport failed")
+                    end
+                else
+                    updateStatus("❌ " .. eventName .. " Not Found!", Color3.fromRGB(255, 100, 100))
+                end
             end
         end)
 
-        yPosition = yPosition + 35
+        yPosition = yPosition + 40
     end
 
     closeEventTeleportBtn.MouseButton1Click:Connect(function()
@@ -980,7 +1062,6 @@ local function createEventTeleportGUI()
 
     addHover(closeEventTeleportBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80))
 end
-
 -- ===================================
 -- ========== FISHING V1 ===========
 -- ===================================
