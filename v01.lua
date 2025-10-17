@@ -1222,6 +1222,7 @@ end
 
 local autoFishingV2Enabled = false
 local fishingActiveV2 = false
+local waitingForStrike = false
 
 -- Remote Events/Functions untuk V2
 local rodRemoteV2 = net:WaitForChild("RF/ChargeFishingRod")
@@ -1229,73 +1230,125 @@ local miniGameRemoteV2 = net:WaitForChild("RF/RequestFishingMinigameStarted")
 local finishRemoteV2 = net:WaitForChild("RE/FishingCompleted")
 local equipRemoteV2 = net:WaitForChild("RE/EquipToolFromHotbar")
 
--- 🎯 Exclaim (Tanda Seru) Listener untuk V2 - INSTANT FINISH
+-- 🎯 Exclaim Listener untuk V2 - TUNGGU 1 DETIK SETELAH TANDA SERU
 task.spawn(function()
-	local success, exclaimEvent = pcall(function()
-		return net:WaitForChild("RE/ReplicateTextEffect", 5)
-	end)
+    local success, exclaimEvent = pcall(function()
+        return net:WaitForChild("RE/ReplicateTextEffect", 2)
+    end)
 
-	if success and exclaimEvent then
-		exclaimEvent.OnClientEvent:Connect(function(data)
-			if autoFishingV2Enabled and data and data.TextData
-				and data.TextData.EffectType == "Exclaim" then
+    if success and exclaimEvent then
+        exclaimEvent.OnClientEvent:Connect(function(data)
+            if autoFishingV2Enabled and waitingForStrike and data and data.TextData
+                and data.TextData.EffectType == "Exclaim" then
 
-				local head = player.Character and player.Character:FindFirstChild("Head")
-				if head and data.Container == head then
-					print("🎯 Tanda seru detected! Instant finish...")
-					
-					-- Langsung finish tanpa delay
-					finishRemoteV2:FireServer()
-					
-					-- Auto recast cepat
-					task.wait(0.2)  -- Delay kecil biar smooth
-					local timestamp = workspace:GetServerTimeNow()
-					rodRemoteV2:InvokeServer(timestamp)
-					
-					local baseX, baseY = -0.7499996, 1
-					local x = baseX + (math.random(-500, 500) / 10000000)
-					local y = baseY + (math.random(-500, 500) / 10000000)
-					
-					miniGameRemoteV2:InvokeServer(x, y)
-				end
-			end
-		end)
-		print("[✅] Exclaim detection active V2 (instant finish).")
-	else
-		warn("[⚠️] ReplicateTextEffect not found, skipping Exclaim logic V2.")
-	end
+                local head = player.Character and player.Character:FindFirstChild("Head")
+                if head and data.Container == head then
+                    print("🎯 Tanda seru detected! Tunggu 1 detik lalu finish...")
+                    
+                    -- SETELAH TANDA SERU: TUNGGU 1 DETIK
+                    task.spawn(function()
+                        waitingForStrike = false  -- Stop waiting state
+                        
+                        -- Tunggu 1 detik seperti yang diminta
+                        task.wait(1.0)
+                        
+                        if autoFishingV2Enabled then
+                            -- FINISH setelah 1 detik
+                            pcall(function()
+                                finishRemoteV2:FireServer(true)
+                                print("[✅] Finish setelah tunggu 1 detik")
+                            end)
+                            
+                            -- LANGSUNG LEMPAR LAGI TANPA TUNGGU
+                            task.wait(0.3)  -- Small delay untuk prevent spam
+                            
+                            if autoFishingV2Enabled then
+                                -- RECAST INSTANT
+                                pcall(function()
+                                    local timestamp = workspace:GetServerTimeNow()
+                                    rodRemoteV2:InvokeServer(timestamp)
+                                    print("[✅] Instant recast setelah finish")
+                                    
+                                    task.wait(0.2)
+                                    
+                                    local baseX, baseY = -0.7499996, 1
+                                    local x = baseX + (math.random(-500, 500) / 10000000)
+                                    local y = baseY + (math.random(-500, 500) / 10000000)
+                                    
+                                    miniGameRemoteV2:InvokeServer(x, y)
+                                    print("[✅] Minigame started untuk cast baru")
+                                    
+                                    -- Set state kembali ke waiting for strike
+                                    waitingForStrike = true
+                                end)
+                            end
+                        end
+                    end)
+                end
+            end
+        end)
+        print("[✅] Exclaim detection active V2 (tunggu 1 detik).")
+    else
+        warn("[⚠️] ReplicateTextEffect not found, skipping Exclaim logic V2.")
+    end
 end)
 
 -- Fungsi utama Auto Fishing V2
 local function autoFishingLoopV2()
-	while autoFishingV2Enabled do
-		local ok, err = pcall(function()
-			fishingActiveV2 = true
-			updateStatus("🎣 Status: Fishing V2 (FAST)", Color3.fromRGB(100, 255, 100))
-			equipRemoteV2:FireServer(1)
-			task.wait(0.1)
+    while autoFishingV2Enabled do
+        local ok, err = pcall(function()
+            fishingActiveV2 = true
+            updateStatus("🎣 Status: Fishing V2 (1s Delay)", Color3.fromRGB(100, 255, 100))
+            
+            -- Equip rod
+            pcall(function()
+                equipRemoteV2:FireServer(1)
+            end)
+            task.wait(0.2)
 
-			local timestamp = workspace:GetServerTimeNow()
-			rodRemoteV2:InvokeServer(timestamp)
+            -- Start fishing
+            local timestamp = workspace:GetServerTimeNow()
+            rodRemoteV2:InvokeServer(timestamp)
 
-			local baseX, baseY = -0.7499996, 1
-			local x = baseX + (math.random(-500, 500) / 10000000)
-			local y = baseY + (math.random(-500, 500) / 10000000)
+            local baseX, baseY = -0.7499996, 1
+            local x = baseX + (math.random(-500, 500) / 10000000)
+            local y = baseY + (math.random(-500, 500) / 10000000)
 
-			miniGameRemoteV2:InvokeServer(x, y)
-			
-			-- V2 menggunakan delay yang lebih pendek karena ada instant finish
-			task.wait(1.5) -- Base delay, akan diinterrupt oleh exclaim listener
-			
-			-- Fallback jika exclaim tidak terdeteksi
-			finishRemoteV2:FireServer(true)
-			task.wait(0.3)
-		end)
-		if not ok then warn(err) end
-		task.wait(0.2)
-	end
-	fishingActiveV2 = false
-   updateStatus("🔴 Status: Idle")
+            miniGameRemoteV2:InvokeServer(x, y)
+            
+            -- Set state menunggu strike
+            waitingForStrike = true
+            print("[🎣] Casting done, waiting for strike...")
+            
+            -- Fallback: jika tidak ada strike dalam 10 detik, finish dan recast
+            local fallbackTimer = 0
+            while waitingForStrike and fallbackTimer < 10 and autoFishingV2Enabled do
+                task.wait(0.5)
+                fallbackTimer = fallbackTimer + 0.5
+            end
+            
+            -- Fallback finish jika timeout
+            if waitingForStrike and autoFishingV2Enabled then
+                print("[⏰] Fallback: No strike detected, finishing...")
+                pcall(function()
+                    finishRemoteV2:FireServer(true)
+                end)
+                waitingForStrike = false
+                task.wait(0.5)
+            end
+            
+        end)
+        if not ok then 
+            warn("[V2 Error]:", err)
+            waitingForStrike = false
+        end
+        
+        task.wait(0.2)
+    end
+    
+    fishingActiveV2 = false
+    waitingForStrike = false
+    updateStatus("🔴 Status: Idle")
 end
 
 -- ===================================
