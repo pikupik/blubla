@@ -9,18 +9,6 @@ local playerGui = player:WaitForChild("PlayerGui")
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
-local RodIdle = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("FishingRodReelIdle")
-local RodReel = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("EasyFishReelStart")
-local RodShake = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Animations"):WaitForChild("CastFromFullChargePosition1Hand")
-
-local character = Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", humanoid)
-
-local RodShakeAnim = animator:LoadAnimation(RodShake)
-local RodIdleAnim = animator:LoadAnimation(RodIdle)
-local RodReelAnim = animator:LoadAnimation(RodReel)
-
 
 ---- Hapus GUI lama
 if playerGui:FindFirstChild("FishItAutoGUI") then
@@ -620,12 +608,11 @@ local function autoFishingLoop()
 
 			updateDelayBasedOnRod()
 			fishingActive = true
-			statusLabel.Text = "🎣 Casting..."
+			statusLabel.Text = "🎣 Fishing..."
 			equipRemote:FireServer(1)
 			task.wait(0.1)
 
 			local timestamp = workspace:GetServerTimeNow()
-         RodShakeAnim:Play()
 			rodRemote:InvokeServer(timestamp)
 
 			local baseX, baseY = -0.7499996, 1
@@ -633,7 +620,6 @@ local function autoFishingLoop()
 			local y = baseY + (math.random(-500, 500) / 10000000)
 
 			miniGameRemote:InvokeServer(x, y)
-         RodIdleAnim:Play()
 			task.wait(customDelay)
 			finishRemote:FireServer(true)
 
