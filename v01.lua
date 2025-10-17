@@ -1233,7 +1233,7 @@ local equipRemoteV2 = net:WaitForChild("RE/EquipToolFromHotbar")
 -- 🎯 Exclaim Listener untuk V2 - TUNGGU 1 DETIK SETELAH TANDA SERU
 task.spawn(function()
     local success, exclaimEvent = pcall(function()
-        return net:WaitForChild("RE/ReplicateTextEffect", 5)
+        return net:WaitForChild("RE/ReplicateTextEffect", 2)
     end)
 
     if success and exclaimEvent then
@@ -1247,7 +1247,7 @@ task.spawn(function()
                     -- SETELAH TANDA SERU: TUNGGU 1 DETIK
                     task.spawn(function()
                         waitingForStrike = false
-                        task.wait(0.3)
+                        task.wait(0.5)
                         
                         if autoFishingV2Enabled then
                             -- FINISH setelah 1 detik
@@ -1256,7 +1256,7 @@ task.spawn(function()
                             end)
                             
                             -- LANGSUNG LEMPAR LAGI TANPA TUNGGU
-                            task.wait(0.3)
+                            task.wait(0.5)
                             
                             if autoFishingV2Enabled then
                                 -- RECAST INSTANT
