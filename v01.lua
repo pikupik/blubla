@@ -320,7 +320,7 @@ local teleportEventTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
-    Text = "🎯 Teleport to Events (Bug dont use it now)",
+    Text = "🎯 Teleport to Events",
     Font = Enum.Font.GothamBold,
     TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -471,7 +471,7 @@ local function createTeleportGUI()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-        CanvasSize = UDim2.new(0, 0, 0, #game:GetService("HttpService"):JSONEncode(islandCoords) * 35)
+        CanvasSize = UDim2.new(0, 0, 0, 0) -- Akan diupdate nanti
     })
 
     local yPosition = 0
@@ -523,44 +523,57 @@ local function createTeleportGUI()
         yPosition = yPosition + 35
     end
 
+    -- Update canvas size setelah semua button dibuat
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, yPosition)
+
     closeTeleportBtn.MouseButton1Click:Connect(function()
         teleportGui:Destroy()
     end)
 
-    -- Drag functionality for teleport window
+    -- PERBAIKAN: Drag functionality for teleport window - FIXED
     local teleportDragging, teleportDragInput, teleportDragStart, teleportStartPos
 
     local function updateTeleportDrag(input)
+        if not teleportDragging then return end
         local delta = input.Position - teleportDragStart
-        TweenService:Create(teleportFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad), {
-            Position = UDim2.new(teleportStartPos.X.Scale, teleportStartPos.X.Offset + delta.X, teleportStartPos.Y.Scale, teleportStartPos.Y.Offset + delta.Y)
-        }):Play()
+        teleportFrame.Position = UDim2.new(
+            teleportStartPos.X.Scale, 
+            teleportStartPos.X.Offset + delta.X, 
+            teleportStartPos.Y.Scale, 
+            teleportStartPos.Y.Offset + delta.Y
+        )
     end
 
     teleportTitle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             teleportDragging = true
             teleportDragStart = input.Position
             teleportStartPos = teleportFrame.Position
-            input.Changed:Connect(function()
+            
+            local connection
+            connection = input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     teleportDragging = false
+                    connection:Disconnect()
                 end
             end)
         end
     end)
 
     teleportTitle.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
             teleportDragInput = input
         end
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if teleportDragging and input == teleportDragInput then
+        if input == teleportDragInput and teleportDragging then
             updateTeleportDrag(input)
         end
     end)
+
+    -- Hover effect untuk close button
+    addHover(closeTeleportBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80))
 end
 
 -- ===================================
@@ -670,7 +683,7 @@ local function createNPCTeleportGUI()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(50, 100, 180),
-        CanvasSize = UDim2.new(0, 0, 0, #npcList * 35)
+        CanvasSize = UDim2.new(0, 0, 0, 0)
     })
 
     local function createNPCButtons(filterText)
@@ -759,37 +772,44 @@ local function createNPCTeleportGUI()
         npcTeleportGui:Destroy()
     end)
 
-    -- Drag functionality untuk NPC teleport window
+    -- PERBAIKAN: Drag functionality untuk NPC teleport window - FIXED
     local npcDragging, npcDragInput, npcDragStart, npcStartPos
 
     local function updateNPCDrag(input)
+        if not npcDragging then return end
         local delta = input.Position - npcDragStart
-        TweenService:Create(npcTeleportFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad), {
-            Position = UDim2.new(npcStartPos.X.Scale, npcStartPos.X.Offset + delta.X, npcStartPos.Y.Scale, npcStartPos.Y.Offset + delta.Y)
-        }):Play()
+        npcTeleportFrame.Position = UDim2.new(
+            npcStartPos.X.Scale, 
+            npcStartPos.X.Offset + delta.X, 
+            npcStartPos.Y.Scale, 
+            npcStartPos.Y.Offset + delta.Y
+        )
     end
 
     npcTeleportTitle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             npcDragging = true
             npcDragStart = input.Position
             npcStartPos = npcTeleportFrame.Position
-            input.Changed:Connect(function()
+            
+            local connection
+            connection = input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     npcDragging = false
+                    connection:Disconnect()
                 end
             end)
         end
     end)
 
     npcTeleportTitle.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
             npcDragInput = input
         end
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if npcDragging and input == npcDragInput then
+        if input == npcDragInput and npcDragging then
             updateNPCDrag(input)
         end
     end)
@@ -800,6 +820,14 @@ end
 -- ===================================
 -- ========== SIMPLE EVENT TELEPORT =========
 -- ===================================
+
+local eventsList = {
+    "Fishing Frenzy",
+    "Boss Event",
+    "Treasure Hunt",
+    "Mystery Box",
+    "Daily Reward"
+}
 
 local function findEventByName(eventName)
     print("🔍 Searching for event:", eventName)
@@ -827,9 +855,9 @@ local function findEventByName(eventName)
     return nil
 end
 
-local function createSimpleEventTeleportGUI()
+local function createEventTeleportGUI()
     local eventTeleportGui = create("ScreenGui", {
-        Name = "SimpleEventTeleportGUI",
+        Name = "EventTeleportGUI",
         Parent = playerGui,
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -965,37 +993,44 @@ local function createSimpleEventTeleportGUI()
         eventTeleportGui:Destroy()
     end)
 
-    -- Drag functionality
+    -- PERBAIKAN: Drag functionality untuk event window - FIXED
     local eventDragging, eventDragInput, eventDragStart, eventStartPos
 
     local function updateEventDrag(input)
+        if not eventDragging then return end
         local delta = input.Position - eventDragStart
-        TweenService:Create(eventTeleportFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad), {
-            Position = UDim2.new(eventStartPos.X.Scale, eventStartPos.X.Offset + delta.X, eventStartPos.Y.Scale, eventStartPos.Y.Offset + delta.Y)
-        }):Play()
+        eventTeleportFrame.Position = UDim2.new(
+            eventStartPos.X.Scale, 
+            eventStartPos.X.Offset + delta.X, 
+            eventStartPos.Y.Scale, 
+            eventStartPos.Y.Offset + delta.Y
+        )
     end
 
     eventTeleportTitle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             eventDragging = true
             eventDragStart = input.Position
             eventStartPos = eventTeleportFrame.Position
-            input.Changed:Connect(function()
+            
+            local connection
+            connection = input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     eventDragging = false
+                    connection:Disconnect()
                 end
             end)
         end
     end)
 
     eventTeleportTitle.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
             eventDragInput = input
         end
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if eventDragging and input == eventDragInput then
+        if input == eventDragInput and eventDragging then
             updateEventDrag(input)
         end
     end)
@@ -1003,13 +1038,6 @@ local function createSimpleEventTeleportGUI()
     addHover(closeEventTeleportBtn, Color3.fromRGB(220, 50, 50), Color3.fromRGB(240, 80, 80))
 end
 
--- Ganti fungsi teleportEventBtn dengan yang baru
-teleportEventBtn.MouseButton1Click:Connect(function()
-    createSimpleEventTeleportGUI()
-end)
-
--- Update status text di main GUI
-teleportEventTitle.Text = "🎯 Teleport to Events"
 -- ===================================
 -- ========== FISHING V1 ===========
 -- ===================================
@@ -1120,7 +1148,6 @@ task.spawn(function()
 						for i = 1, 3 do
                     task.wait(BypassDelay)
                     finishRemote:FireServer()
-                    rconsoleclear()
                   end
 					end)
 				end
@@ -1133,7 +1160,6 @@ task.spawn(function()
 end)
 
 -- Fungsi utama Auto Fishing
-
 local function autoFishingLoop()
 	while autoFishingEnabled do
 		local ok, err = pcall(function()
