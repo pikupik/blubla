@@ -1233,7 +1233,7 @@ local equipRemoteV2 = net:WaitForChild("RE/EquipToolFromHotbar")
 -- 🎯 Exclaim Listener untuk V2 - TUNGGU 1 DETIK SETELAH TANDA SERU
 task.spawn(function()
     local success, exclaimEvent = pcall(function()
-        return net:WaitForChild("RE/ReplicateTextEffect", 2)
+        return net:WaitForChild("RE/ReplicateTextEffect", 5)
     end)
 
     if success and exclaimEvent then
@@ -1247,7 +1247,7 @@ task.spawn(function()
                     -- SETELAH TANDA SERU: TUNGGU 1 DETIK
                     task.spawn(function()
                         waitingForStrike = false
-                        task.wait(0.5)
+                        task.wait(1)
                         
                         if autoFishingV2Enabled then
                             -- FINISH setelah 1 detik
@@ -1256,7 +1256,7 @@ task.spawn(function()
                             end)
                             
                             -- LANGSUNG LEMPAR LAGI TANPA TUNGGU
-                            task.wait(0.5)
+                            task.wait(1)
                             
                             if autoFishingV2Enabled then
                                 -- RECAST INSTANT
@@ -1264,14 +1264,13 @@ task.spawn(function()
                                     local timestamp = workspace:GetServerTimeNow()
                                     rodRemoteV2:InvokeServer(timestamp)
                                     
-                                    task.wait(0.3)
+                                    task.wait(1)
                                     
                                     local baseX, baseY = -0.7499996, 1
                                     local x = baseX + (math.random(-500, 500) / 10000000)
                                     local y = baseY + (math.random(-500, 500) / 10000000)
                                     
                                     miniGameRemoteV2:InvokeServer(x, y)
-                                    print("[✅] Minigame started untuk cast baru")
                                     
                                     -- Set state kembali ke waiting for strike
                                     waitingForStrike = true
@@ -1293,7 +1292,7 @@ local function autoFishingLoopV2()
     while autoFishingV2Enabled do
         local ok, err = pcall(function()
             fishingActiveV2 = true
-            updateStatus("🎣 Status: Fishing V2 (1s Delay)", Color3.fromRGB(100, 255, 100))
+            updateStatus("🎣 Status: Fishing V2", Color3.fromRGB(100, 255, 100))
             
             -- Equip rod
             pcall(function()
@@ -1313,7 +1312,6 @@ local function autoFishingLoopV2()
             
             -- Set state menunggu strike
             waitingForStrike = true
-            print("[🎣] Casting done, waiting for strike...")
             
             -- Fallback: jika tidak ada strike dalam 10 detik, finish dan recast
             local fallbackTimer = 0
@@ -1324,7 +1322,6 @@ local function autoFishingLoopV2()
             
             -- Fallback finish jika timeout
             if waitingForStrike and autoFishingV2Enabled then
-                print("[⏰] Fallback: No strike detected, finishing...")
                 pcall(function()
                     finishRemoteV2:FireServer(true)
                 end)
