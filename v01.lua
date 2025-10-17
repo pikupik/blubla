@@ -209,7 +209,7 @@ local sellTitle = create("TextLabel", {
     Size = UDim2.new(0.55, 0, 1, 0),
     Position = UDim2.new(0, 9, 0, 0),
     BackgroundTransparency = 1,
-    Text = "💰 Auto Sell All",
+    Text = "💰 Auto Sell All (non favorite fish)",
     Font = Enum.Font.GothamBold,
     TextSize = 9,
     TextColor3 = Color3.fromRGB(220, 220, 220),
@@ -1030,7 +1030,6 @@ end
 -- ===================================
 local autoFishingEnabled = false
 local autoSellEnabled = false
-local delayInitialized = false
 
 -- Remote Events/Functions
 local net
@@ -1052,76 +1051,11 @@ local finishRemote = net:WaitForChild("RE/FishingCompleted")
 local equipRemote = net:WaitForChild("RE/EquipToolFromHotbar")
 local sellRemote = net:WaitForChild("RF/SellAllItems")
 
--- Rod Delays
-local RodDelays = {
-    ["Ares Rod"] = {custom = 1.12, bypass = 1.45},
-    ["Angler Rod"] = {custom = 1.12, bypass = 1.45},
-    ["Ghostfinn Rod"] = {custom = 1.12, bypass = 1.45},
-    ["Astral Rod"] = {custom = 1.9, bypass = 1.45},
-    ["Hazmat Rod"] = {custom = 1.9, bypass = 1.45},
-    ["Chrome Rod"] = {custom = 2.3, bypass = 2},
-    ["Steampunk Rod"] = {custom = 2.5, bypass = 2.3},
-    ["Lucky Rod"] = {custom = 3.5, bypass = 3.6},
-    ["Midnight Rod"] = {custom = 3.3, bypass = 3.4},
-    ["Demascus Rod"] = {custom = 3.9, bypass = 3.8},
-    ["Grass Rod"] = {custom = 3.8, bypass = 3.9},
-    ["Luck Rod"] = {custom = 4.2, bypass = 4.1},
-    ["Carbon Rod"] = {custom = 4, bypass = 3.8},
-    ["Lava Rod"] = {custom = 4.2, bypass = 4.1},
-    ["Starter Rod"] = {custom = 4.3, bypass = 4.2},
-}
-
-local customDelay = 1
-local BypassDelay = 0.5
-local fishingActive = false
-
-local function getValidRodName()
-    local backpackGui = player.PlayerGui:FindFirstChild("Backpack")
-    if not backpackGui then return nil end
-    
-    local display = backpackGui:FindFirstChild("Display")
-    if not display then return nil end
-    
-    for _, tile in ipairs(display:GetChildren()) do
-        if tile:IsA("Frame") then
-            local inner = tile:FindFirstChild("Inner")
-            if inner then
-                local tags = inner:FindFirstChild("Tags")
-                if tags then
-                    local itemName = tags:FindFirstChild("ItemName")
-                    if itemName and itemName:IsA("TextLabel") then
-                        local name = itemName.Text
-                        if RodDelays[name] then
-                            return name
-                        end
-                    end
-                end
-            end
-        end
-    end
-    return nil
-end
-
-local function updateDelayBasedOnRod()
-    if delayInitialized then return end
-    local rodName = getValidRodName()
-    if rodName and RodDelays[rodName] then
-        customDelay = RodDelays[rodName].custom
-        BypassDelay = RodDelays[rodName].bypass
-        delayInitialized = true
-        updateStatus("✅ Rod Detected: " .. rodName, Color3.fromRGB(100, 255, 100))
-    else
-        customDelay = 10
-        BypassDelay = 1
-        delayInitialized = true
-        updateStatus("⚠️ Default Delay Applied", Color3.fromRGB(255, 200, 100))
-    end
-end
 
 -- 🎯 Exclaim (Tanda Seru) Listener + Auto Cast lagi
 task.spawn(function()
 	local success, exclaimEvent = pcall(function()
-		return net:WaitForChild("RE/ReplicateTextEffect", 5)
+		return net:WaitForChild("RE/ReplicateTextEffect", 2)
 	end)
 
 	if success and exclaimEvent then
@@ -1166,10 +1100,10 @@ local function autoFishingLoop()
 			local y = baseY + (math.random(-500, 500) / 10000000)
 
 			miniGameRemote:InvokeServer(x, y)
-			task.wait(1)
+			task.wait(2)
 			finishRemote:FireServer(true)
 
-			task.wait(1)
+			task.wait(2)
 		end)
 		if not ok then warn(err) end
 		task.wait(0.2)
@@ -1225,8 +1159,8 @@ fishBtn.MouseButton1Click:Connect(function()
         fishBtn.Text = "START"
         fishBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
         updateStatus("🔴 Status: Auto Fishing Stopped")
-        delayInitialized = false
         fishingActive = false
+        finishRemote:FireServer()
     end
 end)
 
