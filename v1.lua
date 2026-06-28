@@ -1,6 +1,7 @@
 --[[
-    Nexera - GAG 2 (Simple Manual UI)
-    Tanpa UI Library. Menggunakan basic Roblox ScreenGui.
+    Nexera - GAG 2 (Simple Manual UI - Extended)
+    Tanpa UI Library. Menggunakan basic Roblox ScreenGui dengan ScrollingFrame.
+    Fitur tambahan: Steal Bot, Pet Catch, Seed Pack Claimer, Auto Center Plot.
 ]]
 
 ---------------------------------------------------------------
@@ -11,13 +12,14 @@ local Settings = {
     WaterInterval   = 3,
     PlantInterval   = 5,
     SellInterval    = 5,
+    StealInterval   = 1.5,
+    ClaimInterval   = 2,
+    PetInterval     = 3,
 
     WaterFullyGrown = false,
     RequiredCan     = "",
 
-    PlantOrder        = "Top",
     GridSpacing       = 3,
-    PreferSeed        = nil,
     BlacklistMutated  = true,
 }
 
@@ -64,28 +66,30 @@ function Networking.fire(path, ...)
     end
 end
 
-function Networking.on(path, callback)
-    local remote = Networking._resolveRemote(path)
-    if remote and remote.OnClientEvent then
-        return remote.OnClientEvent:Connect(callback)
-    end
-end
-
 Networking._resolve()
 
 local Utils = {}
 function Utils.getLocalPlayer() return Players.LocalPlayer end
 function Utils.getCharacter() return Players.LocalPlayer.Character end
+function Utils.getHumanoidRootPart() 
+    local char = Utils.getCharacter()
+    return char and char:FindFirstChild("HumanoidRootPart")
+end
 function Utils.getMyGarden()
     local plotId = Players.LocalPlayer:GetAttribute("PlotId")
     if not plotId then return nil end
     return workspace:FindFirstChild("Gardens") and workspace.Gardens:FindFirstChild("Plot" .. tostring(plotId))
 end
+function Utils.isNight()
+    local clock = game:GetService("Lighting").ClockTime
+    return clock >= 18 or clock < 6
+end
 
 ---------------------------------------------------------------
--- FARMING LOGIC
+-- FARMING & NEW LOGIC
 ---------------------------------------------------------------
 local isAutoHarvesting, isAutoWatering, isAutoPlanting, isAutoSelling = false, false, false, false
+local isAutoStealing, isAutoClaiming, isAutoCatching = false, false, false
 
 -- HARVEST
 local function collectAllFruits()
@@ -194,6 +198,92 @@ local function autoSellCycle()
     Networking.fire("NPCS.SellAll")
 end
 
+-- SEED PACK CLAIMER
+local function autoClaimPacks()
+    local folder = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("SeedPackSpawnServerLocations")
+    if not folder then return end
+    for _, part in ipairs(folder:GetChildren()) do
+        if part:IsA("BasePart") then
+            Networking.fire("SeedPack.ClickPack", part)
+        end
+    end
+end
+
+-- PET CATCHER (Wild Pets)
+local function autoCatchPets()
+    local folder = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("WildPetSpawns")
+    if not folder then return end
+    for _, model in ipairs(folder:GetChildren()) do
+        if model:IsA("Model") then
+            Networking.fire("Pets.WildPetTame", model)
+            Networking.fire("Pets.WildPetCollected", model)
+        end
+    end
+end
+
+-- STEAL BOT (Simplified Night Steal)
+local function autoStealCycle()
+    if not Utils.isNight() then return end
+    local lp = Players.LocalPlayer
+    local hrp = Utils.getHumanoidRootPart()
+    local myGarden = Utils.getMyGarden()
+    if not hrp or not myGarden then return end
+
+    -- Return logic if already carrying
+    if lp:GetAttribute("CarryingStolenFruit") then
+        local spawn = myGarden:FindFirstChild("SpawnPoint")
+        if spawn then hrp.CFrame = spawn.CFrame + Vector3.new(0, 3, 0) end
+        return
+    end
+
+    -- Find fruit to steal
+    local gardens = workspace:FindFirstChild("Gardens")
+    local myPlotId = lp:GetAttribute("PlotId")
+    if not gardens then return end
+
+    for _, g in ipairs(gardens:GetChildren()) do
+        local plotNum = tonumber(g.Name:match("Plot(%d+)"))
+        if plotNum and plotNum ~= myPlotId then
+            for _, prompt in ipairs(g:GetDescendants()) do
+                if prompt:IsA("ProximityPrompt") and prompt.Name == "StealPrompt" and prompt.Enabled and not prompt:GetAttribute("Collected") and prompt.HoldDuration == 0 then
+                    local fruitPart = prompt.Parent
+                    if fruitPart and fruitPart:IsA("BasePart") then
+                        local savedCFrame = hrp.CFrame
+                        hrp.CFrame = fruitPart.CFrame + Vector3.new(0, 3, 0)
+                        task.wait(0.8)
+                        
+                        pcall(function()
+                            if fireproximityprompt then fireproximityprompt(prompt)
+                            else prompt:InputHoldBegin() task.wait(0.1) prompt:InputHoldEnd() end
+                        end)
+                        
+                        task.wait(0.5)
+                        if lp:GetAttribute("CarryingStolenFruit") then
+                            local spawn = myGarden:FindFirstChild("SpawnPoint")
+                            if spawn then hrp.CFrame = spawn.CFrame + Vector3.new(0, 3, 0) end
+                        else
+                            hrp.CFrame = savedCFrame
+                        end
+                        return -- Do one steal at a time
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- AUTO CENTER PLOT
+local function centerToPlot()
+    local hrp = Utils.getHumanoidRootPart()
+    local garden = Utils.getMyGarden()
+    if hrp and garden then
+        local spawn = garden:FindFirstChild("SpawnPoint")
+        if spawn then
+            hrp.CFrame = spawn.CFrame + Vector3.new(0, 3, 0)
+        end
+    end
+end
+
 ---------------------------------------------------------------
 -- SIMPLE GUI (Draggable Frame)
 ---------------------------------------------------------------
@@ -206,42 +296,57 @@ local sg = Instance.new("ScreenGui")
 sg.Name = "SimpleNexeraUI"
 sg.Parent = CoreGui
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 160, 0, 180)
-frame.Position = UDim2.new(0.05, 0, 0.4, 0)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
-frame.Parent = sg
+-- Wrapper for Dragging
+local wrapper = Instance.new("Frame")
+wrapper.Size = UDim2.new(0, 170, 0, 300)
+wrapper.Position = UDim2.new(0.05, 0, 0.3, 0)
+wrapper.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+wrapper.BorderSizePixel = 0
+wrapper.Active = true
+wrapper.Draggable = true
+wrapper.Parent = sg
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 20)
+title.Size = UDim2.new(1, 0, 0, 25)
 title.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Text = " Nexera Simple"
+title.Text = " Nexera Simple Extended"
 title.Font = Enum.Font.Code
+title.TextSize = 12
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = frame
+title.Parent = wrapper
+
+-- Scrolling Frame
+local scroll = Instance.new("ScrollingFrame")
+scroll.Size = UDim2.new(1, 0, 1, -25)
+scroll.Position = UDim2.new(0, 0, 0, 25)
+scroll.BackgroundTransparency = 1
+scroll.BorderSizePixel = 0
+scroll.ScrollBarThickness = 4
+scroll.CanvasSize = UDim2.new(0, 0, 0, 310) -- Adjust depending on number of buttons
+scroll.Parent = wrapper
 
 local layout = Instance.new("UIListLayout")
 layout.Padding = UDim.new(0, 5)
-layout.Parent = frame
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = scroll
 
 local spacer = Instance.new("Frame")
-spacer.Size = UDim2.new(1, 0, 0, 20)
+spacer.Size = UDim2.new(1, 0, 0, 5)
 spacer.BackgroundTransparency = 1
-spacer.Parent = frame
+spacer.Parent = scroll
 
+-- UI Element Creators
 local function createToggle(name, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -10, 0, 30)
     btn.Position = UDim2.new(0, 5, 0, 0)
     btn.Text = name .. " [OFF]"
     btn.Font = Enum.Font.SourceSansBold
+    btn.TextSize = 14
     btn.TextColor3 = Color3.fromRGB(255, 100, 100)
     btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    btn.Parent = frame
+    btn.Parent = scroll
 
     local state = false
     btn.MouseButton1Click:Connect(function()
@@ -256,6 +361,21 @@ local function createToggle(name, callback)
         callback(state)
     end)
 end
+
+local function createButton(name, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -10, 0, 30)
+    btn.Position = UDim2.new(0, 5, 0, 0)
+    btn.Text = name
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextSize = 14
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    btn.Parent = scroll
+    btn.MouseButton1Click:Connect(callback)
+end
+
+-- === ADDING TOGGLES & BUTTONS === --
 
 createToggle("Auto Harvest", function(state)
     isAutoHarvesting = state
@@ -291,4 +411,36 @@ createToggle("Auto Sell", function(state)
             while isAutoSelling and task.wait(Settings.SellInterval) do pcall(autoSellCycle) end
         end)
     end
+end)
+
+-- New Features
+createToggle("Auto Steal (Night)", function(state)
+    isAutoStealing = state
+    if state then
+        task.spawn(function()
+            while isAutoStealing and task.wait(Settings.StealInterval) do pcall(autoStealCycle) end
+        end)
+    end
+end)
+
+createToggle("Seed Pack Claimer", function(state)
+    isAutoClaiming = state
+    if state then
+        task.spawn(function()
+            while isAutoClaiming and task.wait(Settings.ClaimInterval) do pcall(autoClaimPacks) end
+        end)
+    end
+end)
+
+createToggle("Auto Catch Pet", function(state)
+    isAutoCatching = state
+    if state then
+        task.spawn(function()
+            while isAutoCatching and task.wait(Settings.PetInterval) do pcall(autoCatchPets) end
+        end)
+    end
+end)
+
+createButton("Teleport to Plot", function()
+    pcall(centerToPlot)
 end)
