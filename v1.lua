@@ -1,12 +1,11 @@
 --[[
-    Nexera - GAG 2
-    UI tetap sama (Farm + Economy tab), logic Harvest/Water/Plant/Sell
-    diisi pakai logic asli dari GAG Hub reference (Networking + Utils
-    yang robust, bukan asumsi remote/attribute lagi).
+    Nexera - GAG 2 (Manual UI Version)
+    UI diganti ke Manual (Roblox Instances), logic Harvest/Water/Plant/Sell
+    tetap menggunakan logic asli dari GAG Hub reference.
 ]]
 
 ---------------------------------------------------------------
--- CORE: NETWORKING (robust remote resolver, dot-path based)
+-- CORE: NETWORKING (SAMA PERSIS DENGAN ASLI)
 ---------------------------------------------------------------
 
 local Networking = {}
@@ -120,7 +119,7 @@ end
 Networking._resolve()
 
 ---------------------------------------------------------------
--- CORE: UTILITIES
+-- CORE: UTILITIES (SAMA PERSIS DENGAN ASLI)
 ---------------------------------------------------------------
 
 local Utils = {}
@@ -197,7 +196,7 @@ function Utils.getSheckles()
 end
 
 ---------------------------------------------------------------
--- SETTINGS (interval + behavior config, controlled by UI)
+-- SETTINGS
 ---------------------------------------------------------------
 
 local Settings = {
@@ -218,50 +217,483 @@ local Settings = {
 }
 
 ---------------------------------------------------------------
--- LOAD UI LIBRARY
+-- MANUAL UI SYSTEM
 ---------------------------------------------------------------
 
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
+local GuiLib = {}
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
+-- Cleanup existing GUI if any
+for _, v in pairs(CoreGui:GetChildren()) do
+    if v.Name == "NexeraManualUI" then v:Destroy() end
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "NexeraManualUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = CoreGui
+
+-- Helper: Create Instance
+local function New(class, props)
+    local obj = Instance.new(class)
+    for k, v in pairs(props) do
+        if k ~= "Parent" then obj[k] = v end
+    end
+    return obj
+end
+
+-- Main Window Frame
+local MainFrame = New("Frame", {
+    Name = "MainFrame",
+    Size = UDim2.new(0, 400, 0, 500),
+    Position = UDim2.new(0.5, -200, 0.5, -250),
+    BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+    BorderSizePixel = 0,
+    Parent = ScreenGui
+})
+
+-- Title Bar
+local TitleBar = New("Frame", {
+    Name = "TitleBar",
+    Size = UDim2.new(1, 0, 0, 40),
+    BackgroundColor3 = Color3.fromRGB(20, 20, 20),
+    Parent = MainFrame
+})
+
+local TitleLabel = New("TextLabel", {
+    Name = "Title",
+    Size = UDim2.new(1, -40, 1, 0),
+    BackgroundTransparency = 1,
+    Text = "Nexera - GAG 2",
+    TextColor3 = Color3.fromRGB(255, 255, 255),
+    Font = Enum.Font.GothamBold,
+    TextSize = 18,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    Parent = TitleBar
+})
+
+local CloseBtn = New("TextButton", {
+    Name = "Close",
+    Size = UDim2.new(0, 40, 1, 0),
+    Position = UDim2.new(1, -40, 0, 0),
+    BackgroundColor3 = Color3.fromRGB(200, 50, 50),
+    Text = "X",
+    TextColor3 = Color3.white,
+    Font = Enum.Font.GothamBold,
+    Parent = TitleBar
+})
+
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui.Enabled = not ScreenGui.Enabled
+end)
+
+-- Dragging Logic
+local dragging, dragInput, dragStart, startPos
+local function update(input)
+    local delta = input.Position - dragStart
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        update(input)
+    end
+end)
+
+-- Tab Container
+local TabContainer = New("Frame", {
+    Name = "TabContainer",
+    Size = UDim2.new(1, 0, 0, 40),
+    Position = UDim2.new(0, 0, 0, 40),
+    BackgroundColor3 = Color3.fromRGB(25, 25, 25),
+    Parent = MainFrame
+})
+
+local ContentArea = New("ScrollingFrame", {
+    Name = "ContentArea",
+    Size = UDim2.new(1, 0, 1, -80),
+    Position = UDim2.new(0, 0, 0, 80),
+    BackgroundColor3 = Color3.fromRGB(35, 35, 35),
+    BorderSizePixel = 0,
+    ScrollBarThickness = 5,
+    CanvasSize = UDim2.new(1, 0, 0, 0),
+    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+    Parent = MainFrame
+})
+
+-- Tabs Logic
+local Tabs = {}
+local ActiveTab = nil
+
+function GuiLib:CreateTab(name)
+    local tabBtn = New("TextButton", {
+        Name = name,
+        Size = UDim2.new(0.5, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(25, 25, 25),
+        Text = name,
+        TextColor3 = Color3.fromRGB(150, 150, 150),
+        Font = Enum.Font.GothamMedium,
+        Parent = TabContainer
+    })
+    
+    local tabContent = New("Frame", {
+        Name = name .. "Content",
+        Size = UDim2.new(1, 0, 0, 0),
+        BackgroundTransparency = 1,
+        Visible = false,
+        Parent = ContentArea
+    })
+    
+    local layout = New("UIListLayout", {
+        Parent = tabContent,
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        Padding = UDim.new(0, 5)
+    })
+    
+    local padding = New("UIPadding", {
+        Parent = tabContent,
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+        PaddingTop = UDim.new(0, 10),
+        PaddingBottom = UDim.new(0, 10)
+    })
+
+    local function switchTab()
+        for _, t in pairs(Tabs) do
+            t.Btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            t.Btn.TextColor3 = Color3.fromRGB(150, 150, 150)
+            t.Frame.Visible = false
+        end
+        tabBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        tabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabContent.Visible = true
+        ActiveTab = tabContent
+    end
+
+    tabBtn.MouseButton1Click:Connect(switchTab)
+    
+    table.insert(Tabs, { Btn = tabBtn, Frame = tabContent })
+    if #Tabs == 1 then switchTab() end -- Select first tab by default
+
+    local TabObj = {}
+    
+    function TabObj:CreateSection(title)
+        local section = New("Frame", {
+            Size = UDim2.new(1, 0, 0, 30),
+            BackgroundTransparency = 1,
+            LayoutOrder = 1,
+            Parent = tabContent
+        })
+        New("TextLabel", {
+            Size = UDim2.new(1, 0, 1, 0),
+            BackgroundTransparency = 1,
+            Text = title,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            Font = Enum.Font.GothamBold,
+            TextSize = 16,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Parent = section
+        })
+        New("Frame", {
+            Size = UDim2.new(1, 0, 0, 1),
+            Position = UDim2.new(0, 0, 1, -1),
+            BackgroundColor3 = Color3.fromRGB(60, 60, 60),
+            BorderSizePixel = 0,
+            Parent = section
+        })
+    end
+
+    function TabObj:CreateToggle(config)
+        local container = New("Frame", {
+            Size = UDim2.new(1, 0, 0, 30),
+            BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+            LayoutOrder = 2,
+            Parent = tabContent
+        })
+        
+        local label = New("TextLabel", {
+            Size = UDim2.new(1, -40, 1, 0),
+            BackgroundTransparency = 1,
+            Text = config.Name,
+            TextColor3 = Color3.fromRGB(200, 200, 200),
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Parent = container
+        })
+        
+        local toggleBtn = New("TextButton", {
+            Name = "ToggleBtn",
+            Size = UDim2.new(0, 30, 0, 30),
+            Position = UDim2.new(1, -30, 0, 0),
+            BackgroundColor3 = config.CurrentValue and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(100, 100, 100),
+            Text = "",
+            Parent = container
+        })
+        
+        local state = config.CurrentValue
+        
+        local function updateVisual()
+            toggleBtn.BackgroundColor3 = state and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(100, 100, 100)
+        end
+        
+        toggleBtn.MouseButton1Click:Connect(function()
+            state = not state
+            updateVisual()
+            if config.Callback then config.Callback(state) end
+        end)
+        
+        -- Return object to allow external updates if needed
+        return {
+            SetValue = function(val)
+                state = val
+                updateVisual()
+            end
+        }
+    end
+
+    function TabObj:CreateSlider(config)
+        local container = New("Frame", {
+            Size = UDim2.new(1, 0, 0, 40),
+            BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+            LayoutOrder = 3,
+            Parent = tabContent
+        })
+        
+        local label = New("TextLabel", {
+            Size = UDim2.new(1, 0, 0, 20),
+            Position = UDim2.new(0, 5, 0, 0),
+            BackgroundTransparency = 1,
+            Text = config.Name,
+            TextColor3 = Color3.fromRGB(200, 200, 200),
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Parent = container
+        })
+        
+        local valueLabel = New("TextLabel", {
+            Size = UDim2.new(1, 0, 0, 20),
+            Position = UDim2.new(0, 5, 0, 20),
+            BackgroundTransparency = 1,
+            Text = tostring(config.CurrentValue) .. " " .. (config.Suffix or ""),
+            TextColor3 = Color3.fromRGB(150, 150, 150),
+            Font = Enum.Font.GothamMedium,
+            TextSize = 12,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Parent = container
+        })
+        
+        local sliderBg = New("Frame", {
+            Size = UDim2.new(1, -10, 0, 10),
+            Position = UDim2.new(0, 5, 1, -15),
+            BackgroundColor3 = Color3.fromRGB(60, 60, 60),
+            Parent = container
+        })
+        
+        local sliderFill = New("Frame", {
+            Size = UDim2.new(0, 0, 1, 0),
+            BackgroundColor3 = Color3.fromRGB(0, 120, 200),
+            Parent = sliderBg
+        })
+        
+        local min, max = config.Range[1], config.Range[2]
+        local val = config.CurrentValue
+        
+        local function updateSlider(input)
+            local pos = UDim2.new(0, math.clamp(input.Position.X - sliderBg.AbsolutePosition.X, 0, sliderBg.AbsoluteSize.X), 0, 0)
+            local scale = pos.X.Offset / sliderBg.AbsoluteSize.X
+            val = math.floor((min + (max - min) * scale) / config.Increment + 0.5) * config.Increment
+            val = math.clamp(val, min, max)
+            
+            sliderFill.Size = UDim2.new(scale, 0, 1, 0)
+            valueLabel.Text = tostring(val) .. " " .. (config.Suffix or "")
+            
+            if config.Callback then config.Callback(val) end
+        end
+        
+        local draggingSlider = false
+        sliderBg.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                draggingSlider = true
+                updateSlider(input)
+            end
+        end)
+        
+        UserInputService.InputChanged:Connect(function(input)
+            if draggingSlider and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                updateSlider(input)
+            end
+        end)
+        
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                draggingSlider = false
+            end
+        end)
+        
+        -- Init visual
+        local initScale = (val - min) / (max - min)
+        sliderFill.Size = UDim2.new(initScale, 0, 1, 0)
+    end
+
+    function TabObj:CreateDropdown(config)
+        local container = New("Frame", {
+            Size = UDim2.new(1, 0, 0, 30),
+            BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+            LayoutOrder = 4,
+            Parent = tabContent
+        })
+        
+        local label = New("TextLabel", {
+            Size = UDim2.new(1, -100, 1, 0),
+            BackgroundTransparency = 1,
+            Text = config.Name,
+            TextColor3 = Color3.fromRGB(200, 200, 200),
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Parent = container
+        })
+        
+        local dropBtn = New("TextButton", {
+            Size = UDim2.new(0, 100, 1, 0),
+            Position = UDim2.new(1, -100, 0, 0),
+            BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+            Text = config.CurrentOption,
+            TextColor3 = Color3.white,
+            Font = Enum.Font.GothamMedium,
+            TextSize = 12,
+            Parent = container
+        })
+        
+        local isOpen = false
+        local listFrame = New("Frame", {
+            Size = UDim2.new(1, 0, 0, 0),
+            Position = UDim2.new(0, 0, 1, 0),
+            BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+            ZIndex = 10,
+            Visible = false,
+            Parent = container
+        })
+        
+        local listLayout = New("UIListLayout", { Parent = listFrame })
+        
+        for _, opt in ipairs(config.Options) do
+            local btn = New("TextButton", {
+                Size = UDim2.new(1, 0, 0, 25),
+                BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+                Text = opt,
+                TextColor3 = Color3.white,
+                Font = Enum.Font.GothamMedium,
+                TextSize = 12,
+                Parent = listFrame
+            })
+            btn.MouseButton1Click:Connect(function()
+                dropBtn.Text = opt
+                listFrame.Visible = false
+                isOpen = false
+                container.Size = UDim2.new(1, 0, 0, 30)
+                if config.Callback then config.Callback(opt) end
+            end)
+        end
+        
+        dropBtn.MouseButton1Click:Connect(function()
+            isOpen = not isOpen
+            listFrame.Visible = isOpen
+            if isOpen then
+                container.Size = UDim2.new(1, 0, 0, 30 + (#config.Options * 25))
+            else
+                container.Size = UDim2.new(1, 0, 0, 30)
+            end
+        end)
+    end
+    
+    function TabObj:CreateInput(config)
+        local container = New("Frame", {
+            Size = UDim2.new(1, 0, 0, 30),
+            BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+            LayoutOrder = 5,
+            Parent = tabContent
+        })
+        
+        local label = New("TextLabel", {
+            Size = UDim2.new(1, -120, 1, 0),
+            BackgroundTransparency = 1,
+            Text = config.Name,
+            TextColor3 = Color3.fromRGB(200, 200, 200),
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Parent = container
+        })
+        
+        local box = New("TextBox", {
+            Size = UDim2.new(0, 120, 1, -4),
+            Position = UDim2.new(1, -120, 0, 2),
+            BackgroundColor3 = Color3.fromRGB(20, 20, 20),
+            Text = "",
+            PlaceholderText = config.PlaceholderText or "",
+            TextColor3 = Color3.white,
+            Font = Enum.Font.GothamMedium,
+            ClearTextOnFocus = false,
+            Parent = container
+        })
+        
+        box.FocusLost:Connect(function(enterPressed)
+            if config.Callback then config.Callback(box.Text) end
+        end)
+    end
+
+    return TabObj
+end
+
+-- Notification System
 local Notify = {}
 function Notify:Fire(text)
-    Rayfield:Notify({ Title = "Nexera", Content = text, Duration = 5 })
+    local notif = New("Frame", {
+        Size = UDim2.new(1, -20, 0, 40),
+        Position = UDim2.new(0, 10, 1, -50),
+        BackgroundColor3 = Color3.fromRGB(0, 120, 200),
+        BorderSizePixel = 0,
+        Parent = ScreenGui
+    })
+    
+    New("TextLabel", {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Text = text,
+        TextColor3 = Color3.white,
+        Font = Enum.Font.GothamBold,
+        Parent = notif
+    })
+    
+    task.delay(5, function()
+        notif:Destroy()
+    end)
 end
 
 ---------------------------------------------------------------
--- WINDOW
+-- WINDOW CREATION
 ---------------------------------------------------------------
 
-local Window = Rayfield:CreateWindow({
-   Name = "Nexera - GAG 2",
-   LoadingTitle = "Nexera Scripts",
-   LoadingSubtitle = "by Codepikk",
-   ShowText = "NexERA",
-   Theme = "Default",
-   ToggleUIKeybind = "K",
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false,
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil,
-      FileName = "Big Hub"
-   },
-   Discord = {
-      Enabled = false,
-      Invite = "noinvitelink",
-      RememberJoins = true
-   },
-   KeySystem = false,
-   KeySettings = {
-      Title = "Untitled",
-      Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided",
-      FileName = "Key",
-      SaveKey = true,
-      GrabKeyFromSite = false,
-      Key = {"Hello"}
-   }
-})
+local Window = {}
+function Window:CreateTab(name)
+    return GuiLib:CreateTab(name)
+end
 
 ---------------------------------------------------------------
 -- TAB 1: FARM
@@ -272,9 +704,7 @@ local FarmTab = Window:CreateTab("Farm")
 FarmTab:CreateSection("⚡ Auto Modules")
 
 ---------------------------------------------------------------
--- AUTO HARVEST (real logic — periodic scan + isHarvestable guard)
--- Handles both multi-fruit plants (Fruits folder) and single-harvest
--- plants (HarvestPrompt directly on the plant model).
+-- AUTO HARVEST
 ---------------------------------------------------------------
 
 local isAutoHarvesting = false
@@ -321,7 +751,7 @@ local function collectAllFruits()
     end
 end
 
-local HarvestToggle = FarmTab:CreateToggle({
+local HarvestToggleObj = FarmTab:CreateToggle({
    Name = "Auto Harvest",
    CurrentValue = false,
    Flag = "AutoHarvestToggle",
@@ -353,8 +783,7 @@ local HarvestToggle = FarmTab:CreateToggle({
 })
 
 ---------------------------------------------------------------
--- AUTO WATER (real logic — find/equip can, water plants under
--- growth threshold). Remote: WateringCan.UseWateringCan(pos, canName, tool)
+-- AUTO WATER
 ---------------------------------------------------------------
 
 local isAutoWatering = false
@@ -431,7 +860,7 @@ local function waterPlants()
     end
 end
 
-local WateringToggle = FarmTab:CreateToggle({
+local WateringToggleObj = FarmTab:CreateToggle({
    Name = "Auto Water",
    CurrentValue = false,
    Flag = "AutoWaterToggle",
@@ -452,8 +881,7 @@ local WateringToggle = FarmTab:CreateToggle({
 })
 
 ---------------------------------------------------------------
--- AUTO PLANT (real logic — equip seed from backpack, scan empty
--- grid spots across PlantArea parts, fire Plant.PlantSeed)
+-- AUTO PLANT
 ---------------------------------------------------------------
 
 local isAutoPlanting = false
@@ -642,7 +1070,7 @@ local function autoPlantCycle()
     unequipSeedTool()
 end
 
-local AutoPlantToggle = FarmTab:CreateToggle({
+local AutoPlantToggleObj = FarmTab:CreateToggle({
    Name = "Auto Plant",
    CurrentValue = false,
    Flag = "AutoPlantToggle",
@@ -730,8 +1158,7 @@ local EconTab = Window:CreateTab("Economy")
 EconTab:CreateSection("💰 Economy")
 
 ---------------------------------------------------------------
--- AUTO SELL (real logic — checks backpack/character for fruit
--- before firing, then NPCS.SellAll)
+-- AUTO SELL
 ---------------------------------------------------------------
 
 local isAutoSelling = false
@@ -765,7 +1192,7 @@ local function autoSellCycle()
     Networking.fire("NPCS.SellAll")
 end
 
-local SellToggle = EconTab:CreateToggle({
+local SellToggleObj = EconTab:CreateToggle({
    Name = "Auto Sell (When Full)",
    CurrentValue = false,
    Flag = "AutoSellToggle",
@@ -785,8 +1212,8 @@ local SellToggle = EconTab:CreateToggle({
    end,
 })
 
--- EXAMPLE: Auto Claim Toggle (belum ada remote referensinya — tinggal kamu isi)
-local ClaimToggle = EconTab:CreateToggle({
+-- EXAMPLE: Auto Claim Toggle
+local ClaimToggleObj = EconTab:CreateToggle({
    Name = "Auto Claim Mail",
    CurrentValue = false,
    Flag = "AutoClaimToggle",
@@ -803,4 +1230,4 @@ EconTab:CreateSlider({
    Callback = function(Value) Settings.SellInterval = Value end,
 })
 
-Rayfield:LoadConfiguration()
+print("[Nexera] Manual UI Loaded Successfully")
