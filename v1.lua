@@ -221,7 +221,7 @@ local Settings = {
 -- LOAD UI LIBRARY
 ---------------------------------------------------------------
 
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
 
 local Notify = {}
 function Notify:Fire(text)
