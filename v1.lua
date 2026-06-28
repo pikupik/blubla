@@ -234,7 +234,6 @@ end
 
 local Window = Rayfield:CreateWindow({
    Name = "Nexera - GAG 2",
-   Icon = 0,
    LoadingTitle = "Nexera Scripts",
    LoadingSubtitle = "by Codepikk",
    ShowText = "NexERA",
@@ -268,7 +267,7 @@ local Window = Rayfield:CreateWindow({
 -- TAB 1: FARM
 ---------------------------------------------------------------
 
-local FarmTab = Window:CreateTab("Farm", "sprout")
+local FarmTab = Window:CreateTab("Farm", 6034510) -- leaf icon
 
 FarmTab:CreateSection("⚡ Auto Modules")
 
@@ -726,7 +725,7 @@ FarmTab:CreateToggle({
 -- TAB 2: ECONOMY
 ---------------------------------------------------------------
 
-local EconTab = Window:CreateTab("Economy", "dollar-sign")
+local EconTab = Window:CreateTab("Economy", 6031790) -- dollar-sign icon
 
 EconTab:CreateSection("💰 Economy")
 
