@@ -290,29 +290,57 @@ CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui.Enabled = not ScreenGui.Enabled
 end)
 
--- Dragging Logic
-local dragging, dragInput, dragStart, startPos
+-- Dragging Logic (FIXED)
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
 local function update(input)
+    if not dragging then
+        return
+    end
+
+    if not dragStart or not startPos then
+        return
+    end
+
+    if not input.Position then
+        return
+    end
+
     local delta = input.Position - dragStart
-    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+
+    MainFrame.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
 end
 
 TitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
         dragging = true
         dragStart = input.Position
         startPos = MainFrame.Position
-        
+
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
                 dragging = false
+                dragStart = nil
+                startPos = nil
             end
         end)
     end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+    if dragging and (
+        input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch
+    ) then
         update(input)
     end
 end)
