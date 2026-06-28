@@ -218,6 +218,17 @@ local Settings = {
 }
 
 ---------------------------------------------------------------
+-- LOAD UI LIBRARY
+---------------------------------------------------------------
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Notify = {}
+function Notify:Fire(text)
+    Rayfield:Notify({ Title = "Nexera", Content = text, Duration = 5 })
+end
+
+---------------------------------------------------------------
 -- WINDOW
 ---------------------------------------------------------------
 
